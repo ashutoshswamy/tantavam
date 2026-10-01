@@ -1,4 +1,4 @@
--- Fresh install: run in Supabase SQL editor. Existing DB: run migrations/ instead.
+-- Fresh install: run in Supabase SQL editor. To start over, run reset.sql first.
 -- RLS on with no policies = only the service role (server) can read/write.
 create table categories (
   slug text primary key,
