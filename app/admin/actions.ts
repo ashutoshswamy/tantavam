@@ -86,6 +86,11 @@ export async function saveProduct(formData: FormData) {
         .single();
   fail(error);
 
+  // opening stock goes through set_stock so it shows up in the inventory history
+  const opening = Object.fromEntries(sizes.map((s) => [s, Math.max(0, Math.floor(Number(formData.get(`stock:${s}`)) || 0))]));
+  if (!id && Object.values(opening).some(Boolean))
+    fail((await db.rpc("set_stock", { p_id: data!.id, p_stock: opening, p_reason: "Opening stock" })).error);
+
   fail((await db.from("collection_products").delete().eq("product_id", data!.id)).error);
   const links = formData.getAll("collections").map((c) => ({ collection_id: String(c), product_id: data!.id }));
   if (links.length) fail((await db.from("collection_products").insert(links)).error);

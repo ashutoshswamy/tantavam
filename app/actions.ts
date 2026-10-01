@@ -13,6 +13,9 @@ import { emailOrder, sendEmail } from "@/lib/email";
 
 // ---------- cart (cookie) ----------
 
+const MAX_QTY = 10;
+const clampQty = (n: unknown) => Math.min(Math.max(Math.floor(Number(n)) || 1, 1), MAX_QTY);
+
 async function saveCart(cart: CartItem[]) {
   (await cookies()).set("cart", JSON.stringify(cart), { httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 30 });
 }
@@ -20,17 +23,22 @@ async function saveCart(cart: CartItem[]) {
 export async function addToCart(formData: FormData) {
   const id = String(formData.get("id"));
   const size = String(formData.get("size"));
+  const qty = clampQty(formData.get("qty") ?? 1);
   const cart = await getCart();
   const line = cart.find((i) => i.id === id && i.size === size);
-  if (line) line.qty = Math.min(line.qty + 1, 10);
-  else cart.push({ id, size, qty: 1 });
+  if (line) line.qty = clampQty(line.qty + qty);
+  else cart.push({ id, size, qty });
   await saveCart(cart);
 }
 
-export async function removeFromCart(formData: FormData) {
+// qty 0 removes the line; stock is re-checked at checkout
+export async function setCartQty(formData: FormData) {
   const id = formData.get("id");
   const size = formData.get("size");
-  await saveCart((await getCart()).filter((i) => !(i.id === id && i.size === size)));
+  const qty = Math.floor(Number(formData.get("qty")) || 0);
+  const cart = (await getCart()).filter((i) => qty > 0 || !(i.id === id && i.size === size));
+  for (const i of cart) if (i.id === id && i.size === size) i.qty = clampQty(qty);
+  await saveCart(cart);
 }
 
 // ---------- account: wishlist + addresses ----------

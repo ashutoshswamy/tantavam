@@ -82,3 +82,33 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
     </div>
   );
 }
+
+// Sizes text field; on create it also shows an opening-stock input per typed size.
+export function SizesField({ defaultValue, withStock, className }: { defaultValue: string; withStock: boolean; className: string }) {
+  const [value, setValue] = useState(defaultValue);
+  const sizes = [...new Set(value.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean))];
+  return (
+    <>
+      <label className="grid gap-1.5 text-sm font-medium">
+        Sizes
+        <input name="sizes" required value={value} onChange={(e) => setValue(e.target.value)} className={className} />
+        <span className="text-xs font-normal text-kajal/50">
+          Comma separated.{withStock ? "" : " Set stock in Inventory."}
+        </span>
+      </label>
+      {withStock && !!sizes.length && (
+        <fieldset className="grid gap-1.5 text-sm font-medium">
+          <legend className="mb-1.5">Quantity per size</legend>
+          <div className="flex flex-wrap gap-2">
+            {sizes.map((s) => (
+              <label key={s} className="grid gap-1 text-center text-xs font-normal text-kajal/60">
+                {s}
+                <input name={`stock:${s}`} type="number" min="0" step="1" defaultValue={0} className="w-16 rounded-md border border-kajal/15 px-2 py-1.5 text-center text-sm tabular-nums text-kajal" />
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+    </>
+  );
+}

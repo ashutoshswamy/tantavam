@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { inr } from "@/lib/db";
 import type { getCartLines } from "@/lib/store";
-import { removeFromCart } from "@/app/actions";
+import { Minus, Plus } from "lucide-react";
+import { setCartQty } from "@/app/actions";
 
 export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCartLines>>) {
   if (!lines.length)
@@ -22,11 +23,20 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
             </div>
             <div className="flex-1 text-sm">
               <Link href={`/product/${l.product.slug}`} className="hover:text-rani">{l.product.name}</Link>
-              <p className="text-kajal/60">Size {l.size} · Qty {l.qty}</p>
-              <form action={removeFromCart}>
+              <p className="text-kajal/60">Size {l.size}</p>
+              <form action={setCartQty} className="mt-2 flex items-center gap-3">
                 <input type="hidden" name="id" value={l.id} />
                 <input type="hidden" name="size" value={l.size} />
-                <button className="text-xs underline mt-2 hover:text-rani">Remove</button>
+                <span className="inline-flex items-center border border-kajal/30">
+                  <button name="qty" value={l.qty - 1} aria-label="Decrease quantity" className="px-2 py-1 hover:text-rani">
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-6 text-center tabular-nums" aria-label="Quantity">{l.qty}</span>
+                  <button name="qty" value={l.qty + 1} disabled={l.qty >= 10} aria-label="Increase quantity" className="px-2 py-1 hover:text-rani disabled:opacity-30">
+                    <Plus size={14} />
+                  </button>
+                </span>
+                <button name="qty" value={0} className="text-xs underline hover:text-rani">Remove</button>
               </form>
             </div>
             <p className="text-sm">{inr(l.product.price * l.qty)}</p>

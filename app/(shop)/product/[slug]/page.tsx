@@ -75,6 +75,18 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
                 ))}
               </div>
             </fieldset>
+            <label className="mt-6 flex items-center gap-3 text-sm">
+              Quantity
+              <input
+                type="number"
+                name="qty"
+                min="1"
+                max="10"
+                defaultValue={1}
+                required
+                className="w-20 border border-kajal/30 bg-transparent px-3 py-2 text-center tabular-nums focus-visible:outline-2 outline-gulal"
+              />
+            </label>
             <button
               disabled={!firstInStock}
               className="mt-8 w-full bg-rani text-mallige py-4 text-sm font-medium hover:bg-rani/85 disabled:opacity-50"

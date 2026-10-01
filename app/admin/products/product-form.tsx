@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db, MAX_PRODUCT_IMAGES, type Category, type Collection, type Product } from "@/lib/db";
 import { saveProduct } from "../actions";
-import { ImagesField, Submit } from "../client";
+import { ImagesField, SizesField, Submit } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
 const label = "grid gap-1.5 text-sm font-medium";
@@ -50,11 +50,7 @@ export async function ProductForm({ product }: { product?: Product }) {
                 ))}
               </select>
             </label>
-            <label className={label}>
-              Sizes
-              <input name="sizes" required defaultValue={product?.sizes.join(", ") ?? "S, M, L, XL"} className={field} />
-              <span className="text-xs font-normal text-kajal/50">Comma separated. Set stock in Inventory.</span>
-            </label>
+            <SizesField defaultValue={product?.sizes.join(", ") ?? "S, M, L, XL"} withStock={!product} className={field} />
           </div>
         </Card>
         <Card title="Collections">
