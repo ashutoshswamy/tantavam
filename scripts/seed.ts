@@ -143,7 +143,7 @@ async function seed() {
       { code: "WELCOME15", kind: "percent", value: 15, first_purchase_only: true },
       { code: "DIWALI500", kind: "flat", value: 50000, min_order: 300000, max_uses: 100, expires_at: daysAgo(-60) },
       { code: "SUMMER10", kind: "percent", value: 10, expires_at: daysAgo(30) }, // already expired
-    ]),
+    ], { defaultToNull: false }), // rows have different keys; let missing ones take column defaults
     "coupons",
   );
   ok(await db.from("coupons").update({ active: true, kind: "percent", value: 10, min_order: 0 }).eq("first_order", true), "first-order discount");
@@ -196,7 +196,7 @@ async function seed() {
       { name: "Kavya Nair", email: "kavya@example.com", phone: "+91 99000 12345", body: "Do you offer alterations on the Rani Silk Anarkali? I'm between sizes.", created_at: daysAgo(1) },
       { name: "Arjun Patel", email: "arjun@example.com", body: "Looking for matching outfits for a family of four for a December wedding. Can you help?", created_at: daysAgo(3) },
       { name: "Meera Krishnan", email: "meera@example.com", body: "Loved my saree! Just wanted to say thank you.", read: true, created_at: daysAgo(6) },
-    ]),
+    ], { defaultToNull: false }),
     "messages",
   );
 
