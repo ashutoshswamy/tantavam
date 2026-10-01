@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useFormStatus } from "react-dom";
-import type { ReactNode } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export function Nav({ items }: { items: { href: string; label: string; icon: ReactNode }[] }) {
   const path = usePathname();
@@ -38,5 +39,46 @@ export function Submit({ children, className, confirm, disabled }: { children: R
     >
       {children}
     </button>
+  );
+}
+
+// Keep checkboxes + file picker; blocks submit when kept + new images exceed max (server re-checks).
+export function ImagesField({ images, max }: { images: string[]; max: number }) {
+  const [kept, setKept] = useState(images.length);
+  const [added, setAdded] = useState(0);
+  const input = useRef<HTMLInputElement>(null);
+  const over = kept + added > max;
+  useEffect(() => input.current?.setCustomValidity(over ? `Max ${max} images. Remove ${kept + added - max}.` : ""), [over, kept, added, max]);
+  return (
+    <div className="grid gap-4 p-5">
+      {!!images.length && (
+        <div className="flex flex-wrap gap-3">
+          {images.map((src) => (
+            <label key={src} className="group relative h-32 w-24 overflow-hidden rounded-md bg-line">
+              <Image src={src} alt="" fill sizes="96px" className="object-cover group-has-[:not(:checked)]:opacity-30" />
+              <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-kajal/70 px-1.5 py-1 text-xs text-mallige">
+                <input type="checkbox" name="keep" value={src} defaultChecked onChange={(e) => setKept((k) => k + (e.target.checked ? 1 : -1))} /> Keep
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+      <label className="grid gap-1.5 text-sm font-medium">
+        {images.length ? "Add images" : "Upload images"}
+        <input
+          ref={input}
+          name="images"
+          type="file"
+          accept="image/*"
+          multiple
+          required={!images.length}
+          onChange={(e) => setAdded(e.target.files?.length ?? 0)}
+          className="text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-line file:px-3 file:py-2 file:text-sm"
+        />
+        <span className={`text-xs font-normal ${over ? "text-rani" : "text-kajal/50"}`}>
+          {kept + added} of {max} images{over && ` — remove ${kept + added - max}`}
+        </span>
+      </label>
+    </div>
   );
 }

@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import { db, type Category, type Collection, type Product } from "@/lib/db";
+import { db, MAX_PRODUCT_IMAGES, type Category, type Collection, type Product } from "@/lib/db";
 import { saveProduct } from "../actions";
-import { Submit } from "../client";
+import { ImagesField, Submit } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
 const label = "grid gap-1.5 text-sm font-medium";
@@ -32,24 +31,7 @@ export async function ProductForm({ product }: { product?: Product }) {
           </div>
         </Card>
         <Card title="Images">
-          <div className="grid gap-4 p-5">
-            {!!product?.images.length && (
-              <div className="flex flex-wrap gap-3">
-                {product.images.map((src) => (
-                  <label key={src} className="group relative h-32 w-24 overflow-hidden rounded-md bg-line">
-                    <Image src={src} alt="" fill sizes="96px" className="object-cover group-has-[:not(:checked)]:opacity-30" />
-                    <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-kajal/70 px-1.5 py-1 text-xs text-mallige">
-                      <input type="checkbox" name="keep" value={src} defaultChecked /> Keep
-                    </span>
-                  </label>
-                ))}
-              </div>
-            )}
-            <label className={label}>
-              {product ? "Add images" : "Upload images"}
-              <input name="images" type="file" accept="image/*" multiple required={!product} className="text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-line file:px-3 file:py-2 file:text-sm" />
-            </label>
-          </div>
+          <ImagesField images={product?.images ?? []} max={MAX_PRODUCT_IMAGES} />
         </Card>
       </div>
 

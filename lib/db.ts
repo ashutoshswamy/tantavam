@@ -54,6 +54,7 @@ export type Review = {
 };
 // average is only shown once a product has more approved ratings than this
 export const MIN_RATINGS_FOR_AVERAGE = 10;
+export const MAX_PRODUCT_IMAGES = 5;
 
 export type CartItem = { id: string; size: string; qty: number };
 

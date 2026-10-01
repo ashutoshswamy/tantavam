@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
 import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, type Product, type Review } from "@/lib/db";
 import { Stars } from "../../stars";
 import { ReviewForm } from "./review-form";
+import { Gallery } from "./gallery";
 import { AddToCartForm } from "../../cart-drawer";
 import { WishlistButton } from "../../wishlist-button";
 
@@ -40,20 +40,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
   return (
     <>
       <div className="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-2 gap-10">
-        <div className="grid gap-4">
-          {p.images.map((src, i) => (
-            <div key={src} className="relative aspect-[3/4] bg-line">
-              <Image
-                src={src}
-                alt={p.name}
-                fill
-                priority={i === 0}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
+        <Gallery images={p.images} alt={p.name} />
         <div className="md:sticky md:top-8 self-start">
           <p className="uppercase tracking-[0.25em] text-xs text-rani">{p.category}</p>
           <h1 className="font-semibold tracking-tight text-4xl md:text-5xl leading-tight mt-2">{p.name}</h1>

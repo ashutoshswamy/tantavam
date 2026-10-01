@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { db, slugify, type Order } from "@/lib/db";
+import { db, MAX_PRODUCT_IMAGES, slugify, type Order } from "@/lib/db";
 import { ORDER_STATUSES, SOLD, type OrderStatus } from "@/lib/orders";
 import { emailOrder } from "@/lib/email";
 import { requireSection, SECTIONS, type Section } from "@/lib/store";
@@ -63,6 +63,8 @@ export async function saveProduct(formData: FormData) {
   if (!name || !sizes.length) throw new Error("Name and sizes are required");
 
   const files = (formData.getAll("images") as File[]).filter((f) => f.size > 0);
+  const kept = formData.getAll("keep").map(String);
+  if (kept.length + files.length > MAX_PRODUCT_IMAGES) throw new Error(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
   const uploads = await Promise.all(files.map(uploadToCloudinary));
   const old = id ? (await db.from("products").select("stock").eq("id", id).single()).data : null;
 
@@ -73,7 +75,7 @@ export async function saveProduct(formData: FormData) {
     category: text(formData, "category"),
     sizes,
     stock: Object.fromEntries(sizes.map((s) => [s, old?.stock[s] ?? 0])),
-    images: [...formData.getAll("keep").map(String), ...uploads],
+    images: [...kept, ...uploads],
   };
   const { data, error } = id
     ? await db.from("products").update(fields).eq("id", id).select("id").single()
