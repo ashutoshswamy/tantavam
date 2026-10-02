@@ -56,7 +56,7 @@ export default async function Messages({ searchParams }: PageProps<"/admin/messa
                 </div>
                 <p className="whitespace-pre-line text-kajal/80">{m.body}</p>
                 <div className="flex flex-wrap gap-2">
-                  <a href={`mailto:${m.email}?subject=${encodeURIComponent("Re: your message to Tantavam")}`} className={btnGhost}>Reply</a>
+                  <a href={`mailto:${m.email}?subject=${encodeURIComponent("Re: your message to Tantvam")}`} className={btnGhost}>Reply</a>
                   <form action={setMessageRead}>
                     <input type="hidden" name="id" value={m.id} />
                     <input type="hidden" name="read" value={String(!m.read)} />

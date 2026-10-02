@@ -7,7 +7,7 @@ import "./globals.css";
 const dmSans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Tantavam — Ethnic Wear", template: "%s · Tantavam" },
+  title: { default: "Tantvam — Ethnic Wear", template: "%s · Tantvam" },
   description: "Ethnic wear for men and women, for weddings, festivals and every day between.",
 };
 

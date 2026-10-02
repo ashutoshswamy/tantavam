@@ -36,7 +36,7 @@ async function audit(section: Section | "staff", action: string, target = "") {
 
 async function uploadToCloudinary(file: File) {
   const timestamp = Math.floor(Date.now() / 1000);
-  const folder = "tantavam";
+  const folder = "tantvam";
   const signature = createHash("sha1")
     .update(`folder=${folder}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
     .digest("hex");

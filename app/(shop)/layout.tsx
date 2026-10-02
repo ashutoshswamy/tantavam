@@ -70,7 +70,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
         </div>
         <div className="border-t border-mallige/10">
           <div className="mx-auto max-w-6xl px-4 py-5 text-xs text-mallige/50">
-            <p>© {new Date().getFullYear()} Tantavam. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Tantvam. All rights reserved.</p>
           </div>
         </div>
       </footer>

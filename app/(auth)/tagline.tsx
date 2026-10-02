@@ -8,7 +8,7 @@ export function Tagline() {
   return (
     <>
       <p className="mt-10 max-w-[16rem] lg:max-w-xs text-3xl lg:text-4xl font-semibold tracking-tight leading-tight">
-        {signUp ? "Welcome to the Tantavam family." : "Welcome back. We saved your seat."}
+        {signUp ? "Welcome to the Tantvam family." : "Welcome back. We saved your seat."}
       </p>
       <p className="mt-4 max-w-[16rem] lg:max-w-xs text-sm text-kajal/70">
         {signUp

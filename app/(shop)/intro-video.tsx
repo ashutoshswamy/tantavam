@@ -99,7 +99,7 @@ export function IntroVideo() {
       <div
         ref={overlay}
         role="dialog"
-        aria-label="Tantavam intro"
+        aria-label="Tantvam intro"
         className={`intro fixed inset-0 z-[100] bg-kajal ${state === "closing" ? "pointer-events-none" : ""}`}
       >
         <video ref={video} src="/hero-video-updated.mp4" playsInline onEnded={close} onError={close} className="h-full w-full object-cover" />

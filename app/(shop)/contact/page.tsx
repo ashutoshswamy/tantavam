@@ -7,7 +7,7 @@ import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Questions about a piece, sizing or your order? Reach the Tantavam studio.",
+  description: "Questions about a piece, sizing or your order? Reach the Tantvam studio.",
 };
 
 const channels = [

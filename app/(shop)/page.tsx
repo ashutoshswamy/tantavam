@@ -78,7 +78,7 @@ export default async function Home() {
               <p className="uppercase tracking-[0.25em] text-xs text-rani">Our story</p>
               <h2 className="font-semibold tracking-tight text-4xl sm:text-5xl mt-3 leading-[1.1]">Made for the moments you remember.</h2>
               <p className="mt-6 max-w-lg text-kajal/75 leading-relaxed">
-                Tantavam began with a simple wish: ethnic wear that feels as good as it looks, from the first mehendi to the last
+                Tantvam began with a simple wish: ethnic wear that feels as good as it looks, from the first mehendi to the last
                 dance. We choose rich fabrics, colours drawn from temple borders and festival flowers, and cuts that move with you.
               </p>
               <p className="mt-4 max-w-lg text-kajal/75 leading-relaxed">

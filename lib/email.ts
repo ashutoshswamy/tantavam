@@ -16,11 +16,11 @@ export async function sendEmail(e: { to: string; subject: string; text: string; 
 
 const copy = {
   paid: {
-    subject: "Your Tantavam order is confirmed",
+    subject: "Your Tantvam order is confirmed",
     intro: "Thank you for your order! We've received your payment and are getting your pieces ready.",
   },
   shipped: {
-    subject: "Your Tantavam order is on its way",
+    subject: "Your Tantvam order is on its way",
     intro: "Good news: your order has shipped and is on its way to you.",
   },
 };
@@ -48,7 +48,7 @@ export async function emailOrder(kind: keyof typeof copy, o: Pick<Order, "user_i
     `Questions? Reply to this email or WhatsApp us at ${CONTACT.phone}.`,
     "",
     "With love,",
-    "Tantavam",
+    "Tantvam",
   ].join("\n");
   return sendEmail({ to, subject: copy[kind].subject, text });
 }

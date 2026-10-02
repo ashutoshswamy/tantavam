@@ -79,18 +79,18 @@ html:not([data-intro-seen]):has(.intro) {
 .introjs-helperNumberLayer {
   font-family: var(--font-dm-sans), sans-serif;
 }
-.tantavam-tour.introjs-tooltip {
+.tantvam-tour.introjs-tooltip {
   border-radius: 4px;
   font-family: var(--font-dm-sans);
   color: var(--color-kajal);
   background: var(--color-mallige);
   max-width: 320px;
 }
-.tantavam-tour .introjs-tooltip-title {
+.tantvam-tour .introjs-tooltip-title {
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.tantavam-tour .introjs-button {
+.tantvam-tour .introjs-button {
   border-radius: 2px;
   text-shadow: none;
   font-weight: 500;
@@ -98,16 +98,16 @@ html:not([data-intro-seen]):has(.intro) {
   background: white;
   color: var(--color-kajal);
 }
-.tantavam-tour .introjs-nextbutton,
-.tantavam-tour .introjs-donebutton {
+.tantvam-tour .introjs-nextbutton,
+.tantvam-tour .introjs-donebutton {
   background: var(--color-rani);
   border-color: var(--color-rani);
   color: var(--color-mallige);
 }
-.tantavam-tour .introjs-button:focus {
+.tantvam-tour .introjs-button:focus {
   box-shadow: 0 0 0 2px var(--color-gulabi);
 }
-.tantavam-tour .introjs-progressbar {
+.tantvam-tour .introjs-progressbar {
   background: var(--color-rani);
 }
 .introjs-helperLayer {

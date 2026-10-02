@@ -35,7 +35,7 @@ export function CheckoutForm({ addresses, coupon, total }: { addresses: Address[
         order_id: order.orderId,
         amount: order.amount,
         currency: "INR",
-        name: "Tantavam",
+        name: "Tantvam",
         prefill: { name: order.name, contact: order.phone },
         theme: { color: "#880d1e" },
         handler: (res: RazorpayResponse) => verifyPayment(res),
