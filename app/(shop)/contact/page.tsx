@@ -22,7 +22,7 @@ export default function Contact() {
   return (
     <>
       <section className="bg-gulabi/30 overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 grid md:grid-cols-[1fr_1.15fr] items-center gap-6">
+        <div className="mx-auto max-w-6xl px-4 grid md:grid-cols-2 items-center gap-6">
           <div className="pt-14 md:py-24">
             <p className="uppercase tracking-[0.25em] text-xs text-rani">We&apos;re here to help</p>
             <h1 className="font-semibold tracking-tight text-5xl sm:text-6xl mt-4 leading-[1.05]">Let&apos;s talk.</h1>
@@ -32,10 +32,10 @@ export default function Contact() {
           </div>
           <Image
             src={contactImage}
-            alt="A wine rotary telephone, sealed letters and a fabric-wrapped parcel on a carved wooden tray with jasmine"
+            alt="A blue rotary telephone, sealed letters and a fabric-wrapped parcel on a carved wooden tray with jasmine"
             priority
-            sizes="(min-width: 768px) 600px, 100vw"
-            className="w-full h-auto max-w-none md:w-[calc(100%+2.5rem)] lg:w-[calc(100%+5rem)]"
+            sizes="(min-width: 768px) 480px, 90vw"
+            className="w-full max-w-md lg:max-w-lg h-auto justify-self-center md:py-8"
           />
         </div>
       </section>

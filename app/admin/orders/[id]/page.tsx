@@ -99,7 +99,7 @@ export default async function OrderPage({ params }: PageProps<"/admin/orders/[id
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-kajal/60">Payment</dt>
-                <dd className="font-mono text-xs">{o.razorpay_payment_id ?? "—"}</dd>
+                <dd className="font-mono text-xs">{o.razorpay_payment_id ?? "-"}</dd>
               </div>
             </dl>
           </Card>

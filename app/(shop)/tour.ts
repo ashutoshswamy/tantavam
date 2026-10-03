@@ -19,7 +19,7 @@ export async function startTourOnce() {
   };
   const steps = [
     { title: "Welcome to Tantvam", intro: "Here's a quick look around. It takes about 20 seconds." },
-    { element: shown('[data-tour="categories"]'), title: "Shop by collection", intro: "Browse ethnic wear for women and for men." },
+    { element: shown('[data-tour="categories"]'), title: "Shop", intro: "Browse every piece, or filter by collection." },
     { element: shown('[data-tour="search"]'), title: "Search", intro: "Looking for something specific? Search any piece by name." },
     { element: shown('[data-tour="cart"]'), title: "Your cart", intro: "Pieces you add land here. It opens from the side, so you can keep browsing." },
     {

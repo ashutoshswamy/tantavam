@@ -315,7 +315,7 @@ function reviewTarget(r?: ReviewRow) {
 function couponFields(formData: FormData) {
   const kind = text(formData, "kind") === "flat" ? "flat" : "percent";
   const value = Number(formData.get("value"));
-  if (!(value > 0) || (kind === "percent" && value > 100)) throw new Error(kind === "percent" ? "Percent must be 1–100" : "Amount must be above 0");
+  if (!(value > 0) || (kind === "percent" && value > 100)) throw new Error(kind === "percent" ? "Percent must be 1-100" : "Amount must be above 0");
   const date = text(formData, "expires");
   const maxUses = Number(formData.get("max_uses"));
   return {
@@ -339,7 +339,7 @@ export async function saveFirstOrderDiscount(formData: FormData) {
 export async function createCoupon(formData: FormData) {
   await requireSection("coupons");
   const code = normalizeCode(formData.get("code"));
-  if (!/^[A-Z0-9_-]{3,40}$/.test(code)) throw new Error("Use 3–40 letters, numbers, - or _");
+  if (!/^[A-Z0-9_-]{3,40}$/.test(code)) throw new Error("Use 3-40 letters, numbers, - or _");
   const fields = couponFields(formData);
   const firstPurchaseOnly = formData.get("first_purchase_only") === "on";
   const { error } = await db.from("coupons").insert({ code, ...fields, first_purchase_only: firstPurchaseOnly });

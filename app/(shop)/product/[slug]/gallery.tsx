@@ -18,7 +18,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
           <div key={src} className="relative aspect-[3/4] w-full shrink-0 snap-start bg-line">
             <Image
               src={src}
-              alt={`${alt} — image ${i + 1} of ${images.length}`}
+              alt={`${alt} - image ${i + 1} of ${images.length}`}
               fill
               priority={i === 0}
               sizes="(min-width: 768px) 50vw, 100vw"

@@ -28,11 +28,11 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const access = await getAccess();
   if (!access) notFound();
   return (
-    <div className="min-h-screen bg-[#fbf8f9] lg:grid lg:grid-cols-[232px_1fr]">
+    <div className="min-h-screen bg-[#f7f2e9] lg:grid lg:grid-cols-[232px_1fr]">
       <aside className="bg-kajal text-mallige lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
         <div className="flex h-16 items-center justify-between px-5">
           <Link href="/admin" className="flex items-center gap-2">
-            <Logo className="h-11 w-auto" /> <span className="ml-1 align-middle text-[10px] font-medium uppercase tracking-[0.2em] text-mallige/50">Admin</span>
+            <Logo invert className="h-9 w-auto" /> <span className="ml-1 align-middle text-[10px] font-medium uppercase tracking-[0.2em] text-mallige/50">Admin</span>
           </Link>
           <div className="lg:hidden">
             <UserButton />

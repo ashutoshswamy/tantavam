@@ -19,8 +19,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
       <header>
         <nav className="mx-auto max-w-6xl px-4 py-4 sm:py-0 sm:h-20 grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-y-3 text-[15px]">
           <div data-tour="categories" className="flex gap-4 sm:gap-8">
-            <Link href="/shop?category=women" className="hover:text-rani">Women</Link>
-            <Link href="/shop?category=men" className="hover:text-rani">Men</Link>
+            <Link href="/shop" className="hover:text-rani">Shop</Link>
           </div>
           <Link href="/" id="site-logo" className="justify-self-center col-span-2 sm:col-span-1 order-first sm:order-none">
             <Logo priority className="h-14 sm:h-16 w-auto" />
@@ -53,12 +52,12 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
       <footer className="mt-24 bg-kajal text-mallige">
         <div className="mx-auto max-w-6xl px-4 py-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
-            <Link href="/" className="inline-block"><Logo className="h-20 w-auto" /></Link>
+            <Link href="/" className="inline-block"><Logo invert className="h-20 w-auto" /></Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-mallige/70">
-              Ethnic wear for men and women, for weddings, festivals and every day between.
+              Ethnic wear for women, for weddings, festivals and every day between.
             </p>
           </div>
-          <FooterLinks title="Shop" links={[["Women", "/shop?category=women"], ["Men", "/shop?category=men"], ["All pieces", "/shop"]]} />
+          <FooterLinks title="Shop" links={[["All pieces", "/shop"]]} />
           <FooterLinks title="Help" links={[["Contact us", "/contact"], ["Your orders", "/orders"]]} />
           <div>
             <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-gulabi">Get in touch</h2>

@@ -5,13 +5,13 @@ import aboutImage from "@/public/aboutus-image.png";
 import { db, type Product } from "@/lib/db";
 import fabricIcon from "@/public/aboutus-icon-1.png";
 import fitIcon from "@/public/aboutus-icon-2.png";
-import coupleIcon from "@/public/aboutus-icon-3.png";
+import heartIcon from "@/public/aboutus-icon-3.png";
 import { ProductGrid } from "./product-grid";
 
 const pillars = [
   { icon: fabricIcon, title: "Rich fabrics, lasting colour", body: "Picked for drape, comfort and colour that stays bright wash after wash." },
   { icon: fitIcon, title: "Fits that move with you", body: "Cut to sit right through the ceremony, the photos and the sangeet." },
-  { icon: coupleIcon, title: "For him and her", body: "Coordinated pieces so couples and families can dress as one." },
+  { icon: heartIcon, title: "Dressed for every ceremony", body: "From the mehendi to the reception, pieces for every day of the wedding week." },
 ];
 
 export default async function Home() {
@@ -19,36 +19,33 @@ export default async function Home() {
   return (
     <>
       <section className="relative flex flex-col md:block md:h-[min(56.25vw,calc(100svh-5rem))] md:min-h-[560px] bg-gulabi/30 text-kajal overflow-hidden">
-        {/* md+: the cut-out spans the full width, so fade it out behind the copy (#fcdce6 = gulabi/30 on mallige) */}
-        <div className="hidden md:block absolute inset-y-0 left-0 z-[5] w-[62%] lg:w-[55%] bg-gradient-to-r from-[#fcdce6] from-55% to-transparent" aria-hidden />
+        {/* md+: fade the cut-out's left edge behind the copy (#e2e2e6 = gulabi/30 on mallige) */}
+        <div className="hidden md:block absolute inset-y-0 left-0 z-[5] w-[62%] lg:w-[55%] bg-gradient-to-r from-[#e2e2e6] from-55% to-transparent" aria-hidden />
         <div className="relative z-10 mx-auto w-full max-w-6xl h-full flex items-center">
           <div className="px-4 pt-14 pb-8 md:py-0 md:max-w-[46%]">
-            <p className="uppercase tracking-[0.25em] text-xs text-rani">Ethnic wear for him & her</p>
+            <p className="uppercase tracking-[0.25em] text-xs text-rani">Ethnic wear for her</p>
             <h1 className="font-semibold tracking-tight text-[2.6rem] sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl mt-5 leading-[1.05]">
               Dressed for every celebration.
             </h1>
             <p className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
-              Anarkalis, kurtas and stoles for the wedding, the festival and the family dinner after.
+              Anarkalis, sarees and lehengas for the wedding, the festival and the family dinner after.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/shop?category=women" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">
-                Shop women
-              </Link>
-              <Link href="/shop?category=men" className="border border-rani text-rani px-7 py-3.5 text-sm font-medium hover:bg-rani hover:text-mallige">
-                Shop men
+              <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">
+                Shop now
               </Link>
             </div>
           </div>
         </div>
-        {/* transparent cut-out: phone = below the text; md+ = anchored bottom-right behind it */}
-        <div className="relative aspect-[4/3] md:absolute md:inset-0 md:aspect-auto">
+        {/* transparent cut-out: phone = below the text; md+ = right of the copy, anchored bottom-right */}
+        <div className="relative aspect-[3/2] md:absolute md:inset-y-0 md:right-0 md:left-[30%] md:aspect-auto">
           <Image
             src={hero}
-            alt="A woman in a wine anarkali and dupatta beside a man in an ivory kurta with a crimson stole"
+            alt="Three women in navy, ivory-and-green and yellow anarkalis with jasmine in their hair"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[75%_bottom] md:object-contain md:object-[right_bottom]"
+            className="object-contain object-bottom md:object-[right_bottom]"
           />
         </div>
       </section>
@@ -82,7 +79,7 @@ export default async function Home() {
                 dance. We choose rich fabrics, colours drawn from temple borders and festival flowers, and cuts that move with you.
               </p>
               <p className="mt-4 max-w-lg text-kajal/75 leading-relaxed">
-                Every piece is made to be worn, celebrated in and handed down, for him and for her.
+                Every piece is made to be worn, celebrated in and handed down.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">

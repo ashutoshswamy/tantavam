@@ -104,7 +104,7 @@ export default async function Coupons() {
                         )}
                       </td>
                       <td className={td}>{couponLabel(c)}</td>
-                      <td className={`${td} text-kajal/70`}>{c.min_order ? inr(c.min_order) : "—"}</td>
+                      <td className={`${td} text-kajal/70`}>{c.min_order ? inr(c.min_order) : "-"}</td>
                       <td className={`${td} text-right tabular-nums`}>
                         {s?.uses ?? 0}
                         {c.max_uses ? <span className="text-kajal/50"> / {c.max_uses}</span> : null}

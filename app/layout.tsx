@@ -7,15 +7,15 @@ import "./globals.css";
 const dmSans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Tantvam — Ethnic Wear", template: "%s · Tantvam" },
-  description: "Ethnic wear for men and women, for weddings, festivals and every day between.",
+  title: { default: "Tantvam - Ethnic Wear", template: "%s · Tantvam" },
+  description: "Ethnic wear for women, for weddings, festivals and every day between.",
 };
 
 const appearance = {
   variables: {
-    colorPrimary: "#880d1e",
-    colorForeground: "#3d0b14",
-    colorBackground: "#fff7f9",
+    colorPrimary: "#0a3497",
+    colorForeground: "#0b1638",
+    colorBackground: "#f4ede1",
     fontFamily: "var(--font-dm-sans)",
     borderRadius: "2px",
   },

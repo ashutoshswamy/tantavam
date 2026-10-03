@@ -76,7 +76,7 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
           className="text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-line file:px-3 file:py-2 file:text-sm"
         />
         <span className={`text-xs font-normal ${over ? "text-rani" : "text-kajal/50"}`}>
-          {kept + added} of {max} images{over && ` — remove ${kept + added - max}`}
+          {kept + added} of {max} images{over && ` - remove ${kept + added - max}`}
         </span>
       </label>
     </div>

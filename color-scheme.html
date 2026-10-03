@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tantvam Colours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Mirrors the tokens in app/globals.css */
+  :root {
+    --mallige: #f4ede1;
+    --white: #fbf8f2;
+    --kajal: #0b1638;
+    --rani: #0a3497;
+    --gulal: #2f5fd0;
+    --kamal: #6f8fe0;
+    --gulabi: #b9c8f0;
+    --line: #e6dccb;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: "DM Sans", system-ui, sans-serif; background: var(--mallige); color: var(--kajal); line-height: 1.5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 56px 16px 80px; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; }
+  h2 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; margin: 56px 0 20px; }
+  .lede { margin-top: 8px; max-width: 60ch; color: rgb(11 22 56 / 0.7); }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .swatch { background: var(--white); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+  .chip { height: 120px; border-bottom: 1px solid var(--line); }
+  .meta { padding: 14px 16px 16px; }
+  .name { font-weight: 600; }
+  .hex { font-family: ui-monospace, Menlo, monospace; font-size: 0.875rem; color: rgb(11 22 56 / 0.7); }
+  .token { font-family: ui-monospace, Menlo, monospace; font-size: 0.75rem; color: rgb(11 22 56 / 0.5); }
+  .use { margin-top: 8px; font-size: 0.875rem; color: rgb(11 22 56 / 0.75); }
+
+  table { width: 100%; border-collapse: collapse; background: var(--white); border: 1px solid var(--line); font-size: 0.9375rem; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  th { font-weight: 500; font-size: 0.8125rem; color: rgb(11 22 56 / 0.6); }
+  tr:last-child td { border-bottom: 0; }
+  .pair { display: inline-block; padding: 4px 10px; border-radius: 2px; font-weight: 500; }
+  .ok { color: #1f6b3a; } .warn { color: #8a5a00; }
+
+  .demo { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+  .panel { padding: 32px; border-radius: 2px; }
+  .hero { background: color-mix(in srgb, var(--gulabi) 30%, var(--mallige)); }
+  .eyebrow { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--rani); }
+  .hero h3 { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin-top: 12px; }
+  .hero p { margin-top: 10px; color: rgb(11 22 56 / 0.75); }
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .btn { padding: 12px 24px; font: 500 0.875rem "DM Sans", sans-serif; border-radius: 0; cursor: pointer; }
+  .btn-primary { background: var(--rani); color: var(--mallige); border: 1px solid var(--rani); }
+  .btn-primary:hover { background: rgb(10 52 151 / 0.85); }
+  .btn-ghost { background: transparent; color: var(--rani); border: 1px solid var(--rani); }
+  .btn-ghost:hover { background: var(--rani); color: var(--mallige); }
+  .btn:focus-visible { outline: 2px solid var(--gulal); outline-offset: 2px; }
+  .card { background: var(--white); border: 1px solid var(--line); }
+  .well { height: 140px; background: var(--line); margin-bottom: 16px; }
+  .price { color: var(--rani); font-weight: 600; margin-top: 4px; }
+  label { display: block; font-size: 0.8125rem; font-weight: 500; margin-top: 16px; }
+  input { width: 100%; margin-top: 6px; padding: 10px 12px; font: inherit; color: var(--kajal); background: var(--white); border: 1px solid rgb(11 22 56 / 0.3); border-radius: 0; }
+  input:focus { outline: 2px solid var(--gulal); outline-offset: 0; }
+  .footer { grid-column: 1 / -1; background: var(--kajal); color: rgb(244 237 225 / 0.7); }
+  .footer h4 { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gulabi); }
+  .footer p { margin-top: 10px; font-size: 0.875rem; }
+
+  @media (max-width: 720px) {
+    .demo { grid-template-columns: 1fr; }
+    th:nth-child(3), td:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tantvam colour scheme</h1>
+  <p class="lede">Cobalt from the logo mark, navy ink, warm beige ground. Values match <code>app/globals.css</code>; token names in grey are what the code uses.</p>
+
+  <h2>Palette</h2>
+  <div class="swatches">
+    <div class="swatch"><div class="chip" style="background:var(--rani)"></div><div class="meta"><div class="name">Cobalt</div><div class="hex">#0a3497</div><div class="token">rani</div><p class="use">Logo blue. Buttons, prices, links, accents.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--kajal)"></div><div class="meta"><div class="name">Navy ink</div><div class="hex">#0b1638</div><div class="token">kajal</div><p class="use">Body text, footer and admin sidebar.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--mallige)"></div><div class="meta"><div class="name">Beige</div><div class="hex">#f4ede1</div><div class="token">mallige</div><p class="use">Page background. Text on cobalt buttons.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--white)"></div><div class="meta"><div class="name">Light beige</div><div class="hex">#fbf8f2</div><div class="token">white</div><p class="use">Cards, inputs, panels.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--line)"></div><div class="meta"><div class="name">Sand</div><div class="hex">#e6dccb</div><div class="token">line</div><p class="use">Dividers, borders, empty image areas.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--gulabi)"></div><div class="meta"><div class="name">Pale blue</div><div class="hex">#b9c8f0</div><div class="token">gulabi</div><p class="use">Hero and banner tint (at 30%), footer headings.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--gulal)"></div><div class="meta"><div class="name">Bright cobalt</div><div class="hex">#2f5fd0</div><div class="token">gulal</div><p class="use">Focus rings on size and quantity pickers.</p></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--kamal)"></div><div class="meta"><div class="name">Periwinkle</div><div class="hex">#6f8fe0</div><div class="token">kamal</div><p class="use">Spare tint. Too light for text on beige.</p></div></div>
+  </div>
+
+  <h2>Contrast</h2>
+  <table>
+    <thead><tr><th>Pair</th><th>Ratio</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pair" style="background:var(--mallige);color:var(--kajal);border:1px solid var(--line)">Navy on beige</span></td><td class="ok">15.2 : 1</td><td>Body text</td></tr>
+      <tr><td><span class="pair" style="background:var(--rani);color:var(--mallige)">Beige on cobalt</span></td><td class="ok">9.3 : 1</td><td>Primary buttons</td></tr>
+      <tr><td><span class="pair" style="background:var(--mallige);color:var(--rani);border:1px solid var(--line)">Cobalt on beige</span></td><td class="ok">9.3 : 1</td><td>Links, prices</td></tr>
+      <tr><td><span class="pair" style="background:var(--kajal);color:var(--gulabi)">Pale blue on navy</span></td><td class="ok">10.6 : 1</td><td>Footer headings</td></tr>
+      <tr><td><span class="pair" style="background:var(--mallige);color:var(--gulal);border:1px solid var(--line)">Bright cobalt on beige</span></td><td class="ok">4.9 : 1</td><td>Focus rings</td></tr>
+      <tr><td><span class="pair" style="background:var(--mallige);color:var(--kamal);border:1px solid var(--line)">Periwinkle on beige</span></td><td class="warn">2.7 : 1</td><td>Decoration only, not text</td></tr>
+    </tbody>
+  </table>
+
+  <h2>In use</h2>
+  <div class="demo">
+    <div class="panel hero">
+      <div class="eyebrow">Ethnic wear for her</div>
+      <h3>Dressed for every celebration.</h3>
+      <p>Anarkalis, sarees and lehengas for the wedding, the festival and the family dinner after.</p>
+      <div class="btns"><button class="btn btn-primary">Shop now</button><button class="btn btn-ghost">Get in touch</button></div>
+    </div>
+    <div class="panel card">
+      <div class="well"></div>
+      <div>Chanderi Straight Kurta</div>
+      <div class="price">₹2,899</div>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="you@example.com">
+    </div>
+    <div class="panel footer">
+      <h4>Get in touch</h4>
+      <p>Ethnic wear for women, for weddings, festivals and every day between.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

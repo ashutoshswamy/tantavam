@@ -68,7 +68,6 @@ const P = (category: string, name: string, rupees: number, description: string, 
   stock: Object.fromEntries(sizes.map((s, i) => [s, stock[i] ?? 0])),
 });
 const W = ["XS", "S", "M", "L", "XL"];
-const M = ["S", "M", "L", "XL", "XXL"];
 const CATALOGUE = [
   P("women", "Rani Silk Anarkali Set", 8499, "Floor-length silk anarkali with a blush buta weave, matching churidar and a crimson dupatta with a floral border.", W, [2, 6, 8, 4, 1]),
   P("women", "Chanderi Straight Kurta", 2899, "Lightweight chanderi kurta with a pin-tucked yoke. Easy for day functions and office festivities.", W, [10, 12, 9, 7, 3]),
@@ -76,12 +75,6 @@ const CATALOGUE = [
   P("women", "Jasmine White Cotton Saree", 3499, "Soft cotton saree in jasmine white with a wine woven border and pallu. Blouse piece included.", ["Free"], [14]),
   P("women", "Gulabi Sharara Set", 5999, "Short kurta, flowing sharara and organza dupatta in rose pink with hand-finished gota edges.", W, [0, 3, 5, 2, 0]),
   P("women", "Banarasi Silk Dupatta", 2499, "Statement dupatta in pure Banarasi silk with a crimson body and floral border. Pairs with any plain kurta.", ["Free"], [3]),
-  P("men", "Ivory Silk Kurta", 3999, "Classic ivory silk kurta with a mandarin collar and self-weave. A wedding-season staple.", M, [6, 10, 12, 8, 4]),
-  P("men", "Wine Jodhpuri Bandhgala", 11999, "Structured bandhgala in deep wine with covered buttons and a subtle tonal motif.", M, [2, 4, 3, 1, 0]),
-  P("men", "Crimson Nehru Jacket", 3299, "Sleeveless Nehru jacket in crimson brocade. Layer over any kurta for an instant festive look.", M, [8, 9, 6, 5, 2]),
-  P("men", "Rose Brocade Sherwani", 18999, "Knee-length sherwani in rose brocade with an ivory churidar and matching stole.", ["M", "L", "XL"], [1, 1, 1]),
-  P("men", "Cotton Kurta Pyjama Set", 2199, "Breathable cotton kurta with straight pyjamas. Everyday comfort for pujas and family dinners.", M, [15, 20, 18, 12, 6]),
-  P("men", "Embroidered Stole", 1499, "Wine stole with a blush pink embroidered border, finished with tassels.", ["Free"], [0]),
 ];
 
 const NAMES = ["Ananya R.", "Rohan M.", "Priya S.", "Kavya N.", "Arjun P.", "Meera K.", "Vikram T.", "Isha D.", "Sneha G.", "Aditya V.", "Neha J.", "Rahul B.", "Diya A."];
@@ -104,7 +97,7 @@ const pick = <T,>(xs: T[], i: number) => xs[i % xs.length];
 const daysAgo = (n: number, hour = 12) => new Date(Date.now() - n * 864e5 - hour * 36e5).toISOString();
 
 async function seed() {
-  ok(await db.from("categories").upsert([{ slug: "women", name: "Women" }, { slug: "men", name: "Men" }], { onConflict: "slug" }), "categories");
+  ok(await db.from("categories").upsert([{ slug: "women", name: "Women" }], { onConflict: "slug" }), "categories");
 
   // products + art
   mkdirSync("public/demo", { recursive: true });
@@ -132,8 +125,8 @@ async function seed() {
     "collections",
   )!;
   const links = [
-    ...["anarkali", "lehenga", "bandhgala", "sherwani", "banarasi"].map((f) => ({ collection_id: cols[0].id, product_id: bySlug(f).id })),
-    ...["chanderi", "sharara", "nehru", "cotton-kurta", "saree"].map((f) => ({ collection_id: cols[1].id, product_id: bySlug(f).id })),
+    ...["anarkali", "lehenga", "banarasi"].map((f) => ({ collection_id: cols[0].id, product_id: bySlug(f).id })),
+    ...["chanderi", "sharara", "saree"].map((f) => ({ collection_id: cols[1].id, product_id: bySlug(f).id })),
   ];
   ok(await db.from("collection_products").insert(links), "collection links");
 
@@ -151,9 +144,9 @@ async function seed() {
   // reviews: 12 approved on the anarkali so its average shows (needs > 10), a few elsewhere, some waiting for approval
   const reviews = [
     ...Array.from({ length: 12 }, (_, i) => ({ product: "anarkali", rating: pick([5, 5, 4, 5, 4, 5, 3, 5], i), status: "approved" })),
-    ...Array.from({ length: 4 }, (_, i) => ({ product: "ivory-silk", rating: pick([5, 4, 5, 4], i), status: "approved" })),
+    ...Array.from({ length: 4 }, (_, i) => ({ product: "lehenga", rating: pick([5, 4, 5, 4], i), status: "approved" })),
     ...Array.from({ length: 3 }, (_, i) => ({ product: "chanderi", rating: pick([4, 5, 3], i), status: "pending" })),
-    { product: "nehru", rating: 2, status: "declined" },
+    { product: "sharara", rating: 2, status: "declined" },
   ].map((r, i) => ({
     product_id: bySlug(r.product).id,
     user_id: `demo_reviewer_${i}`,

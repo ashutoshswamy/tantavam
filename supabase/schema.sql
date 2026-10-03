@@ -5,7 +5,7 @@ create table categories (
   name text not null,
   created_at timestamptz not null default now()
 );
-insert into categories (slug, name) values ('women', 'Women'), ('men', 'Men');
+insert into categories (slug, name) values ('women', 'Women');
 
 create table products (
   id uuid primary key default gen_random_uuid(),

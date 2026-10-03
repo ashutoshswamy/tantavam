@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
-/* Rani palette, light: wine ink on jasmine-pink ground */
+/* Cobalt palette from the logo mark: navy ink on beige. Token names are legacy (kept to avoid churn). */
 @theme inline {
-  --color-mallige: #fff7f9; /* page */
-  --color-kajal: #3d0b14; /* ink */
-  --color-rani: #880d1e; /* deep wine: actions, prices, text accents */
-  --color-gulal: #dd2d4a; /* crimson: borders */
-  --color-kamal: #f26a8d; /* lotus pink */
-  --color-gulabi: #f49cbb; /* rose: hero, footer wash */
-  --color-line: #fadbe5; /* hairlines, image wells */
+  --color-mallige: #f4ede1; /* beige page */
+  --color-white: #fbf8f2; /* ponytail: remaps every bg-white (cards, inputs) to light beige */
+  --color-kajal: #0b1638; /* ink */
+  --color-rani: #0a3497; /* logo cobalt: actions, prices, text accents */
+  --color-gulal: #2f5fd0; /* bright cobalt: focus rings */
+  --color-kamal: #6f8fe0; /* periwinkle */
+  --color-gulabi: #b9c8f0; /* pale blue: hero wash, footer headings */
+  --color-line: #e6dccb; /* hairlines, image wells */
   --font-sans: var(--font-dm-sans);
 }
 
@@ -46,18 +47,18 @@ select {
   translate: 0 0;
 }
 .drawer::backdrop {
-  background: rgb(61 11 20 / 0);
+  background: rgb(11 22 56 / 0);
   transition: background 0.3s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
 }
 .drawer[open]::backdrop {
-  background: rgb(61 11 20 / 0.4);
+  background: rgb(11 22 56 / 0.4);
 }
 @starting-style {
   .drawer[open] {
     translate: 100% 0;
   }
   .drawer[open]::backdrop {
-    background: rgb(61 11 20 / 0);
+    background: rgb(11 22 56 / 0);
   }
 }
 html:has(.drawer[open]) {
@@ -95,7 +96,7 @@ html:not([data-intro-seen]):has(.intro) {
   text-shadow: none;
   font-weight: 500;
   border-color: var(--color-line);
-  background: white;
+  background: var(--color-white);
   color: var(--color-kajal);
 }
 .tantvam-tour .introjs-nextbutton,
@@ -112,7 +113,7 @@ html:not([data-intro-seen]):has(.intro) {
 }
 .introjs-helperLayer {
   border-radius: 4px;
-  box-shadow: rgb(61 11 20 / 0.6) 0 0 0 5000px !important;
+  box-shadow: rgb(11 22 56 / 0.6) 0 0 0 5000px !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
