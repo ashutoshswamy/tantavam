@@ -102,7 +102,7 @@ export function IntroVideo() {
         aria-label="Tantvam intro"
         className={`intro fixed inset-0 z-[100] bg-kajal ${state === "closing" ? "pointer-events-none" : ""}`}
       >
-        <video ref={video} src="/hero-video-updated.mp4" playsInline onEnded={close} onError={close} className="h-full w-full object-cover" />
+        <video ref={video} src="/hero-video-updated.mp4" poster="/hero-poster.jpg" preload="auto" playsInline onEnded={close} onError={close} className="h-full w-full object-cover" />
         <div className={`absolute bottom-6 right-6 flex gap-2 transition-opacity ${state === "closing" ? "opacity-0" : ""}`}>
           <button
             data-sound-toggle
