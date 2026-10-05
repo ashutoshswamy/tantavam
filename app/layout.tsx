@@ -28,11 +28,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <ClerkProvider appearance={appearance} signInUrl="/sign-in" signUpUrl="/sign-up">
       <html lang="en" suppressHydrationWarning className={`${dmSans.variable} h-full antialiased`}>
         <head>
-          {/* Runs before first paint: hides the intro overlay for returning / reduced-motion visitors. Lives here because the
+          {/* Runs before first paint: marks JS as on (motion pre-hide in globals.css) and hides the intro overlay for returning / reduced-motion visitors. Lives here because the
               root layout never re-renders on the client (React warns about <script> rendered by client components). */}
           <script
             dangerouslySetInnerHTML={{
-              __html: `try{if(sessionStorage.getItem("${INTRO_SEEN_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-intro-seen","")}catch(e){}`,
+              __html: `document.documentElement.setAttribute("data-js","");try{if(sessionStorage.getItem("${INTRO_SEEN_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-intro-seen","")}catch(e){}`,
             }}
           />
         </head>

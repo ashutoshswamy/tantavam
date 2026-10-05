@@ -116,6 +116,22 @@ html:not([data-intro-seen]):has(.intro) {
   box-shadow: rgb(11 22 56 / 0.6) 0 0 0 5000px !important;
 }
 
+/* Shop motion targets start hidden; SiteMotion reveals them. Only when JS is on and motion is allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-js] [data-reveal],
+  html[data-js] [data-hero-rise],
+  html[data-js] [data-auth-rise] {
+    visibility: hidden;
+  }
+}
+
+/* New arrivals row: content is doubled, so sliding by -50% lands exactly on the start */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

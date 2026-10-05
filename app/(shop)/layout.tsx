@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import footerArt from "@/public/footer.png";
 import { Logo } from "../logo";
 import { Show, SignInButton } from "@clerk/nextjs";
 import { AccountMenu } from "./account-menu";
@@ -7,6 +9,7 @@ import { getCartLines } from "@/lib/store";
 import { CartDrawer } from "./cart-drawer";
 import { CartContents } from "./cart-contents";
 import { IntroVideo } from "./intro-video";
+import { SiteMotion } from "./site-motion";
 import { Mail, Phone, User } from "lucide-react";
 import { CONTACT } from "@/lib/site";
 
@@ -16,6 +19,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <IntroVideo />
+      <SiteMotion />
       <header>
         <nav className="mx-auto max-w-6xl px-4 py-4 sm:py-0 sm:h-20 grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-y-3 text-[15px]">
           <div data-tour="categories" className="flex gap-4 sm:gap-8">
@@ -49,13 +53,14 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="mt-24 bg-kajal text-mallige">
-        <div className="mx-auto max-w-6xl px-4 py-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <footer className="mt-24 bg-kajal text-mallige overflow-hidden">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pt-16 pb-4 grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Link href="/" className="inline-block"><Logo invert className="h-20 w-auto" /></Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-mallige/70">
               Ethnic wear for women, for weddings, festivals and every day between.
             </p>
+            <p className="mt-6 text-xs text-mallige/50">© {new Date().getFullYear()} Tantvam. All rights reserved.</p>
           </div>
           <FooterLinks title="Shop" links={[["All pieces", "/shop"]]} />
           <FooterLinks title="Help" links={[["Contact us", "/contact"], ["Your orders", "/orders"]]} />
@@ -67,11 +72,9 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
             </ul>
           </div>
         </div>
-        <div className="border-t border-mallige/10">
-          <div className="mx-auto max-w-6xl px-4 py-5 text-xs text-mallige/50">
-            <p>© {new Date().getFullYear()} Tantvam. All rights reserved.</p>
-          </div>
-        </div>
+        {/* transparent loom-and-textiles frieze, edge to edge. Its top half is empty in the middle (vines only at the
+            corners), so it's pulled up under the links (z-10 above) instead of leaving a band of bare navy. */}
+        <Image data-grow src={footerArt} alt="" sizes="100vw" className="block w-full h-auto -mt-[12vw] pointer-events-none select-none" />
       </footer>
     </>
   );
