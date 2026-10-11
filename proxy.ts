@@ -25,6 +25,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
+    // Clerk serves clerk.browser.js via middleware at /__clerk; the .js exclusion below would skip it.
+    "/__clerk/(.*)",
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
