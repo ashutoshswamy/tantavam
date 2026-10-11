@@ -16,13 +16,13 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
     );
   return (
     <>
-      <ul className="flex-1 overflow-y-auto divide-y divide-line px-6">
+      <ul className="flex-1 overflow-y-auto divide-y divide-line px-4 sm:px-6">
         {lines.map((l) => (
-          <li key={l.id + l.size} className="flex gap-4 py-4">
+          <li key={l.id + l.size} className="flex gap-3 sm:gap-4 py-4">
             <div className="relative w-20 aspect-[3/4] bg-line shrink-0">
               {l.product.images[0] && <Image src={l.product.images[0]} alt="" fill sizes="80px" className="object-cover" />}
             </div>
-            <div className="flex-1 text-sm">
+            <div className="flex-1 min-w-0 text-sm break-words">
               <Link href={`/product/${l.product.slug}`} className="hover:text-rani">{l.product.name}</Link>
               <p className="text-kajal/60">Size {l.size}</p>
               <form action={setCartQty} className="mt-2 flex items-center gap-3">
@@ -40,11 +40,11 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
                 <Submit name="qty" value={0} className="text-xs underline hover:text-rani">Remove</Submit>
               </form>
             </div>
-            <p className="text-sm">{inr(l.product.price * l.qty)}</p>
+            <p className="text-sm shrink-0">{inr(l.product.price * l.qty)}</p>
           </li>
         ))}
       </ul>
-      <div className="border-t border-line px-6 py-5 shrink-0">
+      <div className="border-t border-line px-4 sm:px-6 py-5 shrink-0">
         <div className="flex justify-between">
           <span>Total</span>
           <span className="font-medium text-rani">{inr(total)}</span>

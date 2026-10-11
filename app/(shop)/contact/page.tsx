@@ -27,7 +27,7 @@ export default function Contact() {
         <div className="mx-auto max-w-6xl px-4 grid md:grid-cols-2 items-center gap-6">
           <div className="pt-14 md:py-24">
             <p className="uppercase tracking-[0.25em] text-xs text-rani">We&apos;re here to help</p>
-            <h1 className="font-semibold tracking-tight text-5xl sm:text-6xl mt-4 leading-[1.05]">Let&apos;s talk.</h1>
+            <h1 className="font-semibold tracking-tight text-4xl sm:text-6xl mt-4 leading-[1.05]">Let&apos;s talk.</h1>
             <p className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
               Call, message or write to us. A real person from the studio replies within one working day.
             </p>

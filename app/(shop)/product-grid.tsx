@@ -23,7 +23,7 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         aria-hidden={copy || undefined}
         data-reveal={row ? undefined : ""} // grid cards rise in; marquee rows already move
         tabIndex={copy ? -1 : undefined}
-        className={`group ${row ? "w-56 sm:w-80 shrink-0 pr-4 sm:pr-6" : ""}`}
+        className={`group min-w-0 ${row ? "w-48 min-[400px]:w-56 sm:w-72 lg:w-80 shrink-0 pr-4 sm:pr-6" : ""}`}
       >
         <div className="relative aspect-[3/4] bg-line overflow-hidden">
           {p.images[0] && (
@@ -31,13 +31,13 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
               src={p.images[0]}
               alt={p.name}
               fill
-              sizes={row ? "320px" : "(min-width: 768px) 33vw, 50vw"}
+              sizes={row ? "(min-width: 640px) 320px, 224px" : "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"}
               className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
             />
           )}
         </div>
-        <div className="mt-3">
-          <h3 className="text-[15px] leading-snug group-hover:text-rani">{p.name}</h3>
+        <div className="mt-3 min-w-0">
+          <h3 className="text-[15px] leading-snug break-words group-hover:text-rani">{p.name}</h3>
           <p className="mt-1 text-[15px] font-medium text-rani">{inr(p.price)}</p>
         </div>
       </Link>
@@ -54,5 +54,5 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         </div>
       </div>
     );
-  return <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-10">{cards}</div>;
+  return <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 min-[400px]:gap-x-4 sm:gap-x-6 gap-y-10">{cards}</div>;
 }

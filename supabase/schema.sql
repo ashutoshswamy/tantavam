@@ -16,7 +16,7 @@ create table if not exists products (
   description text not null default '',
   price integer not null check (price > 0), -- paise
   category text not null references categories (slug), -- delete blocked while in use
-  sizes text[] not null default '{S,M,L,XL}',
+  sizes text[] not null default '{XS,S,M,L,XL,XXL,XXXL}',
   stock jsonb not null default '{}',       -- {"S": 4, "M": 0}; missing size = 0
   images text[] not null default '{}',     -- Cloudinary secure_urls
   created_at timestamptz not null default now()

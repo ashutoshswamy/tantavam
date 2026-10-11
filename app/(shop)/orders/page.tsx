@@ -22,13 +22,13 @@ export default async function Orders() {
     .order("created_at", { ascending: false });
   const orders = (data ?? []) as Order[];
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="font-semibold tracking-tight text-5xl mb-8">Your orders</h1>
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+      <h1 className="font-semibold tracking-tight text-4xl sm:text-5xl mb-8">Your orders</h1>
       {!orders.length && <p className="text-kajal/70">No orders yet. Pieces you buy appear here.</p>}
       <ul className="grid gap-4">
         {orders.map((o) => (
           <li key={o.id} className="border border-line p-4 text-sm">
-            <div className="flex justify-between">
+            <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
               <span>
                 {new Date(o.created_at).toLocaleDateString("en-IN", { dateStyle: "medium" })}
                 <span className="ml-2 uppercase tracking-wider text-xs text-rani">{o.status === "paid" ? "confirmed" : o.status}</span>

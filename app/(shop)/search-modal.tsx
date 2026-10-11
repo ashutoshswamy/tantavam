@@ -48,13 +48,13 @@ export function SearchModal() {
       <dialog
         ref={ref}
         aria-label="Search"
-        className="mx-auto mt-[10vh] w-[min(640px,calc(100%-2rem))] max-h-[75vh] bg-mallige text-kajal shadow-2xl backdrop:bg-kajal/40 backdrop:backdrop-blur-sm"
+        className="mx-auto mt-[6dvh] sm:mt-[10vh] w-[min(640px,calc(100%-2rem))] max-h-[85dvh] sm:max-h-[75vh] bg-mallige text-kajal shadow-2xl backdrop:bg-kajal/40 backdrop:backdrop-blur-sm"
         onClick={(e) => {
           const t = e.target as HTMLElement;
           if (t === e.currentTarget || t.closest("a")) ref.current?.close();
         }}
       >
-        <form action="/shop" onSubmit={() => ref.current?.close()} className="flex items-center gap-3 border-b border-line px-5 h-16">
+        <form action="/shop" onSubmit={() => ref.current?.close()} className="flex items-center gap-3 border-b border-line px-4 sm:px-5 h-16">
           <Search size={20} strokeWidth={1.75} className="shrink-0 text-rani" aria-hidden />
           <input
             name="q"
@@ -67,14 +67,14 @@ export function SearchModal() {
             aria-label="Search products, categories and collections"
             autoFocus
             autoComplete="off"
-            className="flex-1 bg-transparent text-lg placeholder:text-kajal/40 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+            className="min-w-0 flex-1 bg-transparent text-base sm:text-lg placeholder:text-kajal/40 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
           />
           <button type="button" onClick={() => ref.current?.close()} aria-label="Close search" className="p-1 hover:text-rani">
             <X size={20} strokeWidth={1.75} />
           </button>
         </form>
 
-        <div className="overflow-y-auto max-h-[calc(75vh-4rem)] p-5 text-sm">
+        <div className="overflow-y-auto max-h-[calc(85dvh-4rem)] sm:max-h-[calc(75vh-4rem)] p-5 text-sm">
           {q.trim().length < 2 ? (
             <p className="text-kajal/50">Type to search pieces, categories and collections.</p>
           ) : none ? (
@@ -112,8 +112,8 @@ export function SearchModal() {
                           <span className="relative h-14 w-11 shrink-0 bg-line overflow-hidden">
                             {p.image && <Image src={p.image} alt="" fill sizes="44px" className="object-cover" />}
                           </span>
-                          <span className="flex-1">{p.name}</span>
-                          <span className="text-rani">{inr(p.price)}</span>
+                          <span className="flex-1 min-w-0 break-words">{p.name}</span>
+                          <span className="text-rani shrink-0">{inr(p.price)}</span>
                         </Link>
                       </li>
                     ))}

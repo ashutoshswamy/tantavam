@@ -21,7 +21,7 @@ export default async function Addresses() {
   const addresses = (data ?? []) as Address[];
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="font-semibold tracking-tight text-5xl mb-8">Your addresses</h1>
+      <h1 className="font-semibold tracking-tight text-4xl sm:text-5xl mb-8">Your addresses</h1>
       {!addresses.length && <p className="text-kajal/70 mb-8">No saved addresses yet. Saved ones appear at checkout.</p>}
       <ul className="grid gap-4 sm:grid-cols-2 mb-12">
         {addresses.map((a) => (

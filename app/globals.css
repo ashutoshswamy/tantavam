@@ -13,6 +13,11 @@
   --font-sans: var(--font-dm-sans);
 }
 
+html,
+body {
+  overflow-x: clip; /* safety net: nothing may widen the page on small screens */
+}
+
 body {
   background: var(--color-mallige);
   color: var(--color-kajal);

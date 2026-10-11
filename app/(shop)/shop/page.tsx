@@ -53,11 +53,11 @@ export default async function Shop({ searchParams }: PageProps<"/shop">) {
   ];
   const active = col ? `/shop?collection=${col.slug}` : cat ? `/shop?category=${cat.slug}` : "/shop";
   return (
-    <div className="mx-auto max-w-6xl px-4 py-14">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
       <p className="uppercase tracking-[0.25em] text-xs text-rani">{col ? "Collection" : "The collection"}</p>
-      <h1 className="font-semibold tracking-tight text-5xl mt-2">{search ? `Results for “${search}”` : (col?.name ?? cat?.name ?? "All pieces")}</h1>
+      <h1 className="font-semibold tracking-tight text-3xl sm:text-5xl mt-2 break-words">{search ? `Results for “${search}”` : (col?.name ?? cat?.name ?? "All pieces")}</h1>
       {col?.description && <p className="mt-3 max-w-xl text-kajal/70">{col.description}</p>}
-      <nav className="flex gap-6 overflow-x-auto text-[15px] mt-8 mb-10 border-b border-line">
+      <nav className="flex gap-5 sm:gap-6 overflow-x-auto text-[15px] mt-8 mb-10 border-b border-line">
         {tabs.map(([label, href]) => (
           <Link
             key={href}

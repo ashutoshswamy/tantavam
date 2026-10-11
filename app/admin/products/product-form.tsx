@@ -50,7 +50,7 @@ export async function ProductForm({ product }: { product?: Product }) {
                 ))}
               </select>
             </label>
-            <SizesField defaultValue={product?.sizes.join(", ") ?? "S, M, L, XL"} withStock={!product} className={field} />
+            <SizesField defaultValue={product?.sizes.join(", ") ?? "XS, S, M, L, XL, XXL, XXXL"} withStock={!product} className={field} />
           </div>
         </Card>
         <Card title="Collections">

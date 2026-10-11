@@ -18,10 +18,10 @@ export function MoodCarousel({ moods }: { moods: Mood[] }) {
   const products = mood.products.filter((p) => p.images[0]);
 
   return (
-    <section className="pt-20">
+    <section className="pt-14 sm:pt-20">
       <div data-reveal className="mx-auto max-w-6xl px-4">
         <p className="uppercase tracking-[0.25em] text-xs text-rani">Shop by mood</p>
-        <h2 className="font-semibold tracking-tight text-4xl mt-2">What’s the mood?</h2>
+        <h2 className="font-semibold tracking-tight text-3xl sm:text-4xl mt-2">What’s the mood?</h2>
         <div className="flex gap-2 overflow-x-auto mt-6 pb-1">
           {moods.map((m, i) => (
             <button

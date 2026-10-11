@@ -48,7 +48,7 @@ export default function Policies() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-14 sm:py-20">
       <p className="uppercase tracking-[0.25em] text-xs text-rani">Tantvam</p>
-      <h1 className="mt-4 font-semibold tracking-tight text-5xl sm:text-6xl leading-[1.05]">Policies</h1>
+      <h1 className="mt-4 font-semibold tracking-tight text-4xl sm:text-6xl leading-[1.05]">Policies</h1>
       <nav aria-label="Policies" className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
         {policies.map((p) => (
           <a key={p.id} href={`#${p.id}`} className="underline underline-offset-4 hover:text-rani">{p.title}</a>

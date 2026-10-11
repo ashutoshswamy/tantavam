@@ -25,11 +25,11 @@ export default async function Checkout({ searchParams }: PageProps<"/checkout">)
   const codeApplied = !!code && price.applied?.code === code;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-12">
+    <div className="mx-auto max-w-xl px-4 py-8 sm:py-12">
       {mode === "razorpay" && <Script src="https://checkout.razorpay.com/v1/checkout.js" />}
-      <h1 className="font-semibold tracking-tight text-5xl mb-8">Checkout</h1>
+      <h1 className="font-semibold tracking-tight text-4xl sm:text-5xl mb-8">Checkout</h1>
 
-      <section className="mb-8 border border-line bg-white p-5 text-sm">
+      <section className="mb-8 border border-line bg-white p-4 sm:p-5 text-sm">
         <dl className="grid gap-2">
           <div className="flex justify-between">
             <dt className="text-kajal/70">Subtotal · {lines.length} item(s)</dt>

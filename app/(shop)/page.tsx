@@ -63,11 +63,11 @@ export default async function Home() {
 
       {moods.length > 0 && <MoodCarousel moods={moods} />}
 
-      <section className="pt-20">
-        <div data-reveal className="mx-auto max-w-6xl px-4 flex items-end justify-between mb-10">
+      <section className="pt-14 sm:pt-20">
+        <div data-reveal className="mx-auto max-w-6xl px-4 flex items-end justify-between gap-4 mb-8 sm:mb-10">
           <div>
             <p className="uppercase tracking-[0.25em] text-xs text-rani">Just in</p>
-            <h2 className="font-semibold tracking-tight text-4xl mt-2">New arrivals</h2>
+            <h2 className="font-semibold tracking-tight text-3xl sm:text-4xl mt-2">New arrivals</h2>
           </div>
           <Link href="/shop" className="shrink-0 whitespace-nowrap text-sm underline underline-offset-4 hover:text-rani">See all pieces</Link>
         </div>
@@ -75,11 +75,11 @@ export default async function Home() {
       </section>
 
       {bestsellers.length > 0 && (
-        <section className="pt-20">
-          <div data-reveal className="mx-auto max-w-6xl px-4 flex items-end justify-between mb-10">
+        <section className="pt-14 sm:pt-20">
+          <div data-reveal className="mx-auto max-w-6xl px-4 flex items-end justify-between gap-4 mb-8 sm:mb-10">
             <div>
               <p className="uppercase tracking-[0.25em] text-xs text-rani">Most loved</p>
-              <h2 className="font-semibold tracking-tight text-4xl mt-2">Bestsellers</h2>
+              <h2 className="font-semibold tracking-tight text-3xl sm:text-4xl mt-2">Bestsellers</h2>
             </div>
             <Link href="/shop" className="shrink-0 whitespace-nowrap text-sm underline underline-offset-4 hover:text-rani">See all pieces</Link>
           </div>
@@ -88,11 +88,11 @@ export default async function Home() {
       )}
 
       {moods.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 pt-20">
-          <div data-reveal className="flex items-end justify-between mb-10">
+        <section className="mx-auto max-w-6xl px-4 pt-14 sm:pt-20">
+          <div data-reveal className="flex items-end justify-between gap-4 mb-8 sm:mb-10">
             <div>
               <p className="uppercase tracking-[0.25em] text-xs text-rani">Curated edits</p>
-              <h2 className="font-semibold tracking-tight text-4xl mt-2">Collections</h2>
+              <h2 className="font-semibold tracking-tight text-3xl sm:text-4xl mt-2">Collections</h2>
             </div>
             <Link href="/shop" className="shrink-0 whitespace-nowrap text-sm underline underline-offset-4 hover:text-rani">See all pieces</Link>
           </div>
@@ -110,7 +110,7 @@ export default async function Home() {
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-kajal/85 via-kajal/25 to-transparent" aria-hidden />
-                <div className="absolute inset-x-0 bottom-0 p-6 text-mallige">
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 text-mallige">
                   <p className="text-xs uppercase tracking-[0.25em] text-gulabi">
                     {c.products.length} {c.products.length === 1 ? "piece" : "pieces"}
                   </p>

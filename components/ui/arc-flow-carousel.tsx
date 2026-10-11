@@ -498,7 +498,7 @@ export default function ArcFlowCarousel({
               {(item.title || item.description) ? (
                 <div
                   className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out ${
-                    reduceMotion ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                    reduceMotion ? "opacity-100" : "opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                   }`}
                   style={{
                     background:
@@ -508,10 +508,10 @@ export default function ArcFlowCarousel({
               ) : null}
               {(item.title || item.description) ? (
                 <div
-                  className={`pointer-events-none absolute inset-x-0 bottom-0 p-4 text-white transition-all duration-300 ease-out ${
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 p-2 sm:p-4 text-white transition-all duration-300 ease-out ${
                     reduceMotion
                       ? "translate-y-0 opacity-100"
-                      : "translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                      : "translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100"
                   }`}
                   style={{
                     background:
@@ -519,12 +519,12 @@ export default function ArcFlowCarousel({
                   }}
                 >
                   {item.title ? (
-                    <p className="text-[1.4vw] font-medium uppercase  text-white/95">
+                    <p className="text-[clamp(11px,1.4vw,18px)] leading-tight font-medium uppercase text-white/95 line-clamp-2">
                       {item.title}
                     </p>
                   ) : null}
                   {item.description ? (
-                    <p className="mt-2 max-w-[22ch] text-[1.1vw] leading-[1.1] text-white/75">
+                    <p className="mt-1 sm:mt-2 max-w-[22ch] text-[clamp(11px,1.1vw,15px)] leading-[1.1] text-white/75">
                       {item.description}
                     </p>
                   ) : null}
