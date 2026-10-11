@@ -85,7 +85,7 @@ export async function saveProduct(formData: FormData) {
     .filter((u) => u.startsWith(`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/`));
   const kept = formData.getAll("keep").map(String).filter((u) => u.startsWith("https://"));
   if (kept.length + uploads.length > MAX_PRODUCT_IMAGES) throw new Error(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
-  const old = id ? (await db.from("products").select("stock, images").eq("id", id).single()).data : null;
+  const old = id ? (await db.from("products").select("name, stock, images").eq("id", id).single()).data : null;
 
   const fields = {
     name,
@@ -96,13 +96,11 @@ export async function saveProduct(formData: FormData) {
     stock: Object.fromEntries(sizes.map((s) => [s, old?.stock[s] ?? 0])),
     images: [...kept, ...uploads],
   };
+  // slug follows the name; the timestamp suffix keeps it unique. Unchanged name keeps its URL.
+  const slug = `${slugify(name)}-${Date.now().toString(36)}`;
   const { data, error } = id
-    ? await db.from("products").update(fields).eq("id", id).select("id").single()
-    : await db
-        .from("products")
-        .insert({ ...fields, slug: `${slugify(name)}-${Date.now().toString(36)}` })
-        .select("id")
-        .single();
+    ? await db.from("products").update(old?.name === name ? fields : { ...fields, slug }).eq("id", id).select("id").single()
+    : await db.from("products").insert({ ...fields, slug }).select("id").single();
   fail(error);
   await destroyFromCloudinary((old?.images ?? []).filter((u: string) => !kept.includes(u)));
 
