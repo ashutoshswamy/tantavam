@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import Image from "next/image";
+import { signUpload } from "./actions";
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 export function Nav({ items }: { items: { href: string; label: string; icon: ReactNode }[] }) {
@@ -111,5 +112,38 @@ export function SizesField({ defaultValue, withStock, className }: { defaultValu
         </fieldset>
       )}
     </>
+  );
+}
+
+// Form that uploads picked images straight to Cloudinary, then hands the action only their URLs.
+export function UploadForm({ action, ...rest }: { action: (f: FormData) => Promise<void> } & Omit<ComponentProps<"form">, "action">) {
+  return (
+    <form
+      {...rest}
+      action={async (fd) => {
+        const files = (fd.getAll("images") as File[]).filter((f) => f.size > 0);
+        fd.delete("images");
+        if (files.some((f) => !f.type.startsWith("image/") || f.size > 10 * 1024 * 1024)) throw new Error("Images only, up to 10 MB each");
+        if (files.length) {
+          const { signature, timestamp, folder, apiKey, cloud } = await signUpload();
+          const urls = await Promise.all(
+            files.map(async (file) => {
+              const body = new FormData();
+              body.append("file", file);
+              body.append("api_key", apiKey);
+              body.append("timestamp", String(timestamp));
+              body.append("folder", folder);
+              body.append("signature", signature);
+              const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, { method: "POST", body });
+              if (!res.ok) throw new Error("Image upload failed");
+              // f_auto,q_auto: Cloudinary serves the best format/quality per browser
+              return ((await res.json()) as { secure_url: string }).secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
+            }),
+          );
+          urls.forEach((u) => fd.append("uploaded", u));
+        }
+        await action(fd);
+      }}
+    />
   );
 }

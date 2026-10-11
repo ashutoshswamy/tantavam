@@ -38,25 +38,15 @@ async function audit(section: Section | "staff", action: string, target = "") {
 
 // ---------- products (Cloudinary upload) ----------
 
-async function uploadToCloudinary(file: File) {
+// Browser uploads straight to Cloudinary (host caps server-action bodies at ~4.5 MB); this signs that upload.
+export async function signUpload() {
+  await requireSection("products");
   const timestamp = Math.floor(Date.now() / 1000);
   const folder = "tantvam";
   const signature = createHash("sha1")
     .update(`folder=${folder}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
     .digest("hex");
-  const body = new FormData();
-  body.append("file", file);
-  body.append("api_key", process.env.CLOUDINARY_API_KEY!);
-  body.append("timestamp", String(timestamp));
-  body.append("folder", folder);
-  body.append("signature", signature);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, {
-    method: "POST",
-    body,
-  });
-  if (!res.ok) throw new Error("Image upload failed");
-  // f_auto,q_auto: Cloudinary serves the best format/quality per browser
-  return ((await res.json()) as { secure_url: string }).secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
+  return { signature, timestamp, folder, apiKey: process.env.CLOUDINARY_API_KEY!, cloud: process.env.CLOUDINARY_CLOUD_NAME! };
 }
 
 // Best-effort: only our own tantvam/ assets; a failed delete leaves an orphan, never blocks the save.
@@ -86,11 +76,13 @@ export async function saveProduct(formData: FormData) {
   const sizes = [...new Set(text(formData, "sizes").split(",").map((s) => s.trim().toUpperCase()).filter(Boolean))];
   if (!name || !sizes.length) throw new Error("Name and sizes are required");
 
-  const files = (formData.getAll("images") as File[]).filter((f) => f.size > 0);
-  if (files.some((f) => !f.type.startsWith("image/") || f.size > 10 * 1024 * 1024)) throw new Error("Images only, up to 10 MB each");
+  // URLs of files the browser already uploaded; only accept our own Cloudinary folder
+  const uploads = formData
+    .getAll("uploaded")
+    .map(String)
+    .filter((u) => u.startsWith(`https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/`));
   const kept = formData.getAll("keep").map(String).filter((u) => u.startsWith("https://"));
-  if (kept.length + files.length > MAX_PRODUCT_IMAGES) throw new Error(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
-  const uploads = await Promise.all(files.map(uploadToCloudinary));
+  if (kept.length + uploads.length > MAX_PRODUCT_IMAGES) throw new Error(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
   const old = id ? (await db.from("products").select("stock, images").eq("id", id).single()).data : null;
 
   const fields = {

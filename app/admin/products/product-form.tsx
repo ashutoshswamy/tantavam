@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db, MAX_PRODUCT_IMAGES, type Category, type Collection, type Product } from "@/lib/db";
 import { saveProduct } from "../actions";
-import { ImagesField, SizesField, Submit } from "../client";
+import { ImagesField, SizesField, Submit, UploadForm } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
 const label = "grid gap-1.5 text-sm font-medium";
@@ -15,7 +15,7 @@ export async function ProductForm({ product }: { product?: Product }) {
   const linked = new Set((links ?? []).map((l) => l.collection_id));
 
   return (
-    <form action={saveProduct} className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
+    <UploadForm action={saveProduct} className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
       {product && <input type="hidden" name="id" value={product.id} />}
       <div className="grid gap-6">
         <Card title="Details">
@@ -73,6 +73,6 @@ export async function ProductForm({ product }: { product?: Product }) {
           <Link href="/admin/products" className={btnGhost}>Cancel</Link>
         </div>
       </div>
-    </form>
+    </UploadForm>
   );
 }
