@@ -1,41 +1,57 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
-const arrow =
-  "absolute top-1/2 -translate-y-1/2 grid place-items-center size-10 rounded-full bg-mallige/80 text-kajal hover:bg-mallige";
+import { useEffect, useRef, useState } from "react";
 
 export function Gallery({ images, alt }: { images: string[]; alt: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  // ponytail: one slide = full width, so scroll by clientWidth; snap handles alignment
-  const go = (dir: number) => ref.current?.scrollBy({ left: dir * ref.current.clientWidth, behavior: "smooth" });
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const strip = useRef<HTMLDivElement>(null);
+
+  // auto-advance; paused while hovering / after manual pick
+  useEffect(() => {
+    if (paused || images.length < 2) return;
+    const t = setInterval(() => setActive((i) => (i + 1) % images.length), 3500);
+    return () => clearInterval(t);
+  }, [paused, images.length]);
+
+  // keep active thumb in view (scroll strip only, not the page)
+  useEffect(() => {
+    const el = strip.current?.children[active] as HTMLElement | undefined;
+    const s = strip.current;
+    if (el && s) s.scrollTo({ left: el.offsetLeft - (s.clientWidth - el.clientWidth) / 2, behavior: "smooth" });
+  }, [active]);
+
   return (
-    <div className="relative self-start">
-      <div ref={ref} className="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none]">
-        {images.map((src, i) => (
-          <div key={src} className="relative aspect-[3/4] w-full shrink-0 snap-start bg-line">
-            <Image
-              src={src}
-              alt={`${alt} - image ${i + 1} of ${images.length}`}
-              fill
-              priority={i === 0}
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-contain"
-            />
-          </div>
-        ))}
+    <div className="self-start" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div className="relative aspect-[3/4] w-full bg-line">
+        <Image
+          key={images[active]}
+          src={images[active]}
+          alt={`${alt} - image ${active + 1} of ${images.length}`}
+          fill
+          priority={active === 0}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-contain"
+        />
       </div>
       {images.length > 1 && (
-        <>
-          <button type="button" aria-label="Previous image" onClick={() => go(-1)} className={`${arrow} left-3`}>
-            <ChevronLeft size={20} />
-          </button>
-          <button type="button" aria-label="Next image" onClick={() => go(1)} className={`${arrow} right-3`}>
-            <ChevronRight size={20} />
-          </button>
-        </>
+        <div ref={strip} className="relative mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
+          {images.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              aria-label={`Show image ${i + 1}`}
+              aria-current={i === active}
+              onClick={() => setActive(i)}
+              className={`relative aspect-[3/4] w-20 shrink-0 bg-line border-2 ${
+                i === active ? "border-kajal" : "border-transparent opacity-70 hover:opacity-100"
+              }`}
+            >
+              <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
