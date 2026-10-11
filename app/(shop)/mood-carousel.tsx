@@ -42,9 +42,12 @@ export function MoodCarousel({ moods }: { moods: Mood[] }) {
         key={mood.slug}
         items={products.map((p) => ({ src: p.images[0], alt: p.name, title: p.name, description: inr(p.price) }))}
         onItemClick={(i) => router.push(`/product/${products[i].slug}`)}
+        cardRatio={0.3}
+        minCardWidth={190}
+        maxCardWidth={460}
         autoRotateSpeed={0.12}
         surfaceColor="#f4ede1" // --color-mallige
-        className="mt-6 h-[min(80svh,640px)]"
+        className="mt-6 h-[min(90svh,820px)]"
       />
     </section>
   );

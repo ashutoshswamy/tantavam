@@ -31,13 +31,41 @@ export function SiteMotion() {
         gsap.fromTo(blocks, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.06, clearProps: "transform" });
       }
 
-      // "top bottom": fires as soon as any part is on screen, so items at the very end of a short page still show
-      ScrollTrigger.batch("[data-reveal]", {
-        start: "top bottom",
-        once: true,
-        onEnter: (els) =>
-          gsap.fromTo(els, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08, overwrite: true }),
-      });
+      // The page streams in behind loading.tsx, so targets can arrive after this runs: bind each once, as it shows up.
+      const bound = new WeakSet<Element>();
+      const fresh = (sel: string) => gsap.utils.toArray<HTMLElement>(sel).filter((el) => !bound.has(el) && !!bound.add(el));
+      const html = document.documentElement;
+      const bind = () => {
+        // "top bottom": fires as soon as any part is on screen, so items at the very end of a short page still show
+        const reveals = fresh("[data-reveal]");
+        if (reveals.length)
+          ScrollTrigger.batch(reveals, {
+            start: "top bottom",
+            once: true,
+            onEnter: (els) =>
+              gsap.fromTo(els, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08, overwrite: true }),
+          });
+        const rise = fresh("[data-hero-rise]");
+        if (!rise.length) return;
+        const hero = gsap
+          .timeline({ paused: true, defaults: { ease: "power4.out" } })
+          .fromTo(rise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.12 })
+          .from("[data-hero-art]", { yPercent: 5, scale: 1.04, duration: 1.6, ease: "power3.out" }, 0);
+        if (html.hasAttribute("data-intro-seen")) return void hero.play();
+        // first visit: hold until the intro video has shrunk into the logo
+        const watch = new MutationObserver(() => {
+          if (!html.hasAttribute("data-intro-seen")) return;
+          watch.disconnect();
+          hero.play();
+        });
+        watch.observe(html, { attributes: true, attributeFilter: ["data-intro-seen"] });
+        stops.push(() => watch.disconnect());
+      };
+      const stops: (() => void)[] = [];
+      bind();
+      const arrivals = new MutationObserver(bind);
+      arrivals.observe(document.body, { childList: true, subtree: true });
+      stops.push(() => arrivals.disconnect());
 
       // tied to scroll: rises from below the screen and lands exactly when the page bottom is reached. The footer is
       // overflow-hidden, so the pushed-down art is clipped there instead of adding scroll height.
@@ -60,23 +88,7 @@ export function SiteMotion() {
           },
         );
 
-      const rise = gsap.utils.toArray<HTMLElement>("[data-hero-rise]");
-      if (!rise.length) return;
-      const hero = gsap
-        .timeline({ paused: true, defaults: { ease: "power4.out" } })
-        .fromTo(rise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.12 })
-        .from("[data-hero-art]", { yPercent: 5, scale: 1.04, duration: 1.6, ease: "power3.out" }, 0);
-
-      const html = document.documentElement;
-      if (html.hasAttribute("data-intro-seen")) return void hero.play();
-      // first visit: hold until the intro video has shrunk into the logo
-      const watch = new MutationObserver(() => {
-        if (!html.hasAttribute("data-intro-seen")) return;
-        watch.disconnect();
-        hero.play();
-      });
-      watch.observe(html, { attributes: true, attributeFilter: ["data-intro-seen"] });
-      return () => watch.disconnect();
+      return () => stops.forEach((stop) => stop());
     });
     return () => mm.revert();
   }, [pathname]);

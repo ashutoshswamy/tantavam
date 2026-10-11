@@ -47,6 +47,13 @@ export function Submit({ children, className, confirm, disabled, ...rest }: { ch
 // Keep checkboxes + file picker; blocks submit when kept + new images exceed max (server re-checks).
 export function ImagesField({ images, max }: { images: string[]; max: number }) {
   const [kept, setKept] = useState(images.length);
+  const [order, setOrder] = useState(images); // submitted "keep" values follow DOM order, which the server saves as-is
+  const move = (i: number, d: number) =>
+    setOrder((o) => {
+      const n = [...o];
+      [n[i], n[i + d]] = [n[i + d], n[i]];
+      return n;
+    });
   const [added, setAdded] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const over = kept + added > max;
@@ -55,11 +62,25 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
     <div className="grid gap-4 p-5">
       {!!images.length && (
         <div className="flex flex-wrap gap-3">
-          {images.map((src) => (
+          {order.map((src, i) => (
             <label key={src} className="group relative h-32 w-24 overflow-hidden rounded-md bg-line">
               <Image src={src} alt="" fill sizes="96px" className="object-cover group-has-[:not(:checked)]:opacity-30" />
               <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-kajal/70 px-1.5 py-1 text-xs text-mallige">
                 <input type="checkbox" name="keep" value={src} defaultChecked onChange={(e) => setKept((k) => k + (e.target.checked ? 1 : -1))} /> Keep
+              </span>
+              <span className="absolute inset-x-0 top-0 flex justify-between px-1 pt-1 text-xs">
+                {[-1, 1].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    aria-label={d < 0 ? "Move earlier" : "Move later"}
+                    disabled={i + d < 0 || i + d >= order.length}
+                    onClick={(e) => (e.preventDefault(), move(i, d))}
+                    className="rounded bg-kajal/70 px-1.5 py-0.5 text-mallige disabled:opacity-30"
+                  >
+                    {d < 0 ? "←" : "→"}
+                  </button>
+                ))}
               </span>
             </label>
           ))}
