@@ -4,10 +4,11 @@ import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { db, MAX_PRODUCT_IMAGES, slugify, type Order } from "@/lib/db";
-import { ORDER_STATUSES, SOLD, type OrderStatus } from "@/lib/orders";
+import { ADDRESS_FIELDS, db, inStock, MAX_PRODUCT_IMAGES, slugify, type Order, type Product } from "@/lib/db";
+import { ORDER_STATUSES, SOLD, WA_PREFIX, type OrderStatus } from "@/lib/orders";
 import { emailOrder } from "@/lib/email";
 import { requireSection, SECTIONS, type Section } from "@/lib/store";
+import { invalidate } from "@/lib/cache";
 import { couponLabel, normalizeCode } from "@/lib/pricing";
 
 const text = (f: FormData, key: string) => String(f.get(key) ?? "").trim();
@@ -15,7 +16,10 @@ const fail = (error: { message: string } | null) => {
   if (error) throw new Error(error.message);
 };
 // storefront reads all of these tables
-const refresh = () => revalidatePath("/", "layout");
+const refresh = async () => {
+  revalidatePath("/", "layout");
+  await invalidate();
+};
 
 // Audit trail for /admin/logs. Called after a change succeeds; a failed log never blocks the change.
 async function audit(section: Section | "staff", action: string, target = "") {
@@ -51,7 +55,27 @@ async function uploadToCloudinary(file: File) {
     body,
   });
   if (!res.ok) throw new Error("Image upload failed");
-  return ((await res.json()) as { secure_url: string }).secure_url;
+  // f_auto,q_auto: Cloudinary serves the best format/quality per browser
+  return ((await res.json()) as { secure_url: string }).secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
+}
+
+// Best-effort: only our own tantvam/ assets; a failed delete leaves an orphan, never blocks the save.
+async function destroyFromCloudinary(urls: string[]) {
+  const cloud = process.env.CLOUDINARY_CLOUD_NAME;
+  await Promise.all(
+    urls.map(async (url) => {
+      const id = url.match(new RegExp(`^https://res\\.cloudinary\\.com/${cloud}/image/upload/(?:f_auto,q_auto/)?(?:v\\d+/)?(tantvam/[^/]+)\\.\\w+$`))?.[1];
+      if (!id) return;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = createHash("sha1").update(`public_id=${id}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`).digest("hex");
+      const body = new FormData();
+      body.append("public_id", id);
+      body.append("api_key", process.env.CLOUDINARY_API_KEY!);
+      body.append("timestamp", String(timestamp));
+      body.append("signature", signature);
+      await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/destroy`, { method: "POST", body }).catch(() => {});
+    }),
+  );
 }
 
 // Create when no id, else update. Stock for kept sizes survives; new sizes start at 0.
@@ -63,10 +87,11 @@ export async function saveProduct(formData: FormData) {
   if (!name || !sizes.length) throw new Error("Name and sizes are required");
 
   const files = (formData.getAll("images") as File[]).filter((f) => f.size > 0);
-  const kept = formData.getAll("keep").map(String);
+  if (files.some((f) => !f.type.startsWith("image/") || f.size > 10 * 1024 * 1024)) throw new Error("Images only, up to 10 MB each");
+  const kept = formData.getAll("keep").map(String).filter((u) => u.startsWith("https://"));
   if (kept.length + files.length > MAX_PRODUCT_IMAGES) throw new Error(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
   const uploads = await Promise.all(files.map(uploadToCloudinary));
-  const old = id ? (await db.from("products").select("stock").eq("id", id).single()).data : null;
+  const old = id ? (await db.from("products").select("stock, images").eq("id", id).single()).data : null;
 
   const fields = {
     name,
@@ -85,6 +110,7 @@ export async function saveProduct(formData: FormData) {
         .select("id")
         .single();
   fail(error);
+  await destroyFromCloudinary((old?.images ?? []).filter((u: string) => !kept.includes(u)));
 
   // opening stock goes through set_stock so it shows up in the inventory history
   const opening = Object.fromEntries(sizes.map((s) => [s, Math.max(0, Math.floor(Number(formData.get(`stock:${s}`)) || 0))]));
@@ -96,16 +122,17 @@ export async function saveProduct(formData: FormData) {
   if (links.length) fail((await db.from("collection_products").insert(links)).error);
 
   await audit("products", id ? "Updated product" : "Created product", name);
-  refresh();
+  await refresh();
   redirect("/admin/products");
 }
 
 export async function deleteProduct(formData: FormData) {
   await requireSection("products");
-  const { data, error } = await db.from("products").delete().eq("id", text(formData, "id")).select("name");
+  const { data, error } = await db.from("products").delete().eq("id", text(formData, "id")).select("name, images");
   fail(error);
+  await destroyFromCloudinary(data?.flatMap((p) => p.images) ?? []);
   await audit("products", "Deleted product", data?.[0]?.name);
-  refresh();
+  await refresh();
   redirect("/admin/products");
 }
 
@@ -118,14 +145,14 @@ export async function createCategory(formData: FormData) {
   if (error?.code === "23505") throw new Error(`Category "${name}" already exists`);
   fail(error);
   await audit("categories", "Created category", name);
-  refresh();
+  await refresh();
 }
 
 export async function renameCategory(formData: FormData) {
   await requireSection("categories");
   fail((await db.from("categories").update({ name: text(formData, "name") }).eq("slug", text(formData, "slug"))).error);
   await audit("categories", "Renamed category", `${text(formData, "slug")} → ${text(formData, "name")}`);
-  refresh();
+  await refresh();
 }
 
 export async function deleteCategory(formData: FormData) {
@@ -134,7 +161,7 @@ export async function deleteCategory(formData: FormData) {
   if (error?.code === "23503") throw new Error("Move this category's products elsewhere first");
   fail(error);
   await audit("categories", "Deleted category", text(formData, "slug"));
-  refresh();
+  await refresh();
 }
 
 // ---------- collections ----------
@@ -152,7 +179,7 @@ export async function saveCollection(formData: FormData) {
     if (error?.code === "23505") throw new Error(`Collection "${fields.name}" already exists`);
     fail(error);
     await audit("collections", "Created collection", fields.name);
-    refresh();
+    await refresh();
     redirect(`/admin/collections/${data!.id}`);
   }
   fail((await db.from("collections").update(fields).eq("id", id)).error);
@@ -160,7 +187,7 @@ export async function saveCollection(formData: FormData) {
   const links = formData.getAll("products").map((p) => ({ collection_id: id, product_id: String(p) }));
   if (links.length) fail((await db.from("collection_products").insert(links)).error);
   await audit("collections", "Updated collection", `${fields.name} (${links.length} products)`);
-  refresh();
+  await refresh();
   redirect("/admin/collections");
 }
 
@@ -169,7 +196,7 @@ export async function deleteCollection(formData: FormData) {
   const { data, error } = await db.from("collections").delete().eq("id", text(formData, "id")).select("name");
   fail(error);
   await audit("collections", "Deleted collection", data?.[0]?.name);
-  refresh();
+  await refresh();
   redirect("/admin/collections");
 }
 
@@ -187,7 +214,7 @@ export async function updateStock(formData: FormData) {
   const user = await currentUser();
   fail((await db.rpc("set_stock", { p_id: id, p_stock: stock, p_reason: `Manual update by ${user?.fullName || user?.primaryEmailAddress?.emailAddress || "admin"}` })).error);
   await audit("inventory", "Updated stock", `${data!.name}: ${Object.entries(stock).map(([s, q]) => `${s} ${q}`).join(", ")}`);
-  refresh();
+  await refresh();
 }
 
 // ---------- orders ----------
@@ -213,8 +240,80 @@ export async function updateOrderStatus(formData: FormData) {
       p_reason: `${wasSold ? "Restocked" : "Taken"} · order #${id.slice(0, 8)} ${order.status} → ${next}`,
     });
   if (next === "shipped") await emailOrder("shipped", order);
+  // hand-entered orders saved as unpaid: this is where the customer gets their confirmation
+  if (next === "paid" && order.status === "pending") await emailOrder("paid", order);
   await audit("orders", "Changed order status", `#${id.slice(0, 8)}: ${order.status} → ${next}`);
+  await invalidate();
   revalidatePath("/admin", "layout");
+}
+
+// Order taken over WhatsApp, typed in by staff. Each "item" is "productId|size", paired by position with a "qty".
+export async function createManualOrder(formData: FormData) {
+  await requireSection("orders");
+  const qtys = formData.getAll("qty");
+  const wanted = formData
+    .getAll("item")
+    .map((v, i) => ({ key: String(v), qty: Math.floor(Number(qtys[i])) }))
+    .filter((l) => l.key);
+  if (!wanted.length) throw new Error("Add at least one piece");
+  if (wanted.some((l) => !(l.qty >= 1))) throw new Error("Every piece needs a quantity of 1 or more");
+  // one row per piece, so the stock check below sees the full quantity
+  if (new Set(wanted.map((l) => l.key)).size !== wanted.length) throw new Error("A piece is listed twice. Raise its quantity instead.");
+
+  const paid = text(formData, "status") !== "pending";
+  const { data: products, error } = await db.from("products").select("*").in("id", wanted.map((l) => l.key.split("|")[0]));
+  fail(error);
+  const items = wanted.map((l) => {
+    const [id, size] = l.key.split("|");
+    const p = (products as Product[]).find((x) => x.id === id);
+    if (!p || !p.sizes.includes(size)) throw new Error("Unknown product or size");
+    if (paid && inStock(p, size) < l.qty) throw new Error(`${p.name} (${size}) has only ${inStock(p, size)} left`);
+    return { id, name: p.name, size, qty: l.qty, price: p.price };
+  });
+
+  const address = Object.fromEntries(ADDRESS_FIELDS.map((k) => [k, text(formData, k).slice(0, 200)]));
+  if (Object.values(address).some((v) => !v)) throw new Error("Fill in the full address");
+
+  // linking the customer's account puts the order in their /orders page and sends them the emails
+  const email = text(formData, "email");
+  const account = email ? (await (await clerkClient()).users.getUserList({ emailAddress: [email] })).data[0] : null;
+  if (email && !account) throw new Error("No customer account with that email. Leave it blank to save the order without one.");
+
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount = Math.min(Math.max(Math.round(Number(formData.get("discount")) * 100) || 0, 0), subtotal);
+  const { data: order, error: saveError } = await db
+    .from("orders")
+    .insert({
+      user_id: account?.id ?? "whatsapp",
+      items,
+      subtotal,
+      discount,
+      amount: subtotal - discount,
+      address,
+      status: paid ? "paid" : "pending",
+      razorpay_order_id: WA_PREFIX + crypto.randomUUID().slice(0, 10),
+    })
+    .select("*")
+    .single<Order>();
+  fail(saveError);
+  if (paid)
+    await Promise.all([
+      db.rpc("adjust_stock", { p_items: items, p_sign: -1, p_reason: `Sold · order #${order!.id.slice(0, 8)}` }),
+      emailOrder("paid", order!),
+    ]);
+  await audit("orders", "Entered order", `#${order!.id.slice(0, 8)} · ${address.name}`);
+  await refresh();
+  redirect(`/admin/orders/${order!.id}`);
+}
+
+// ---------- settings (admin only) ----------
+
+export async function setCheckoutMode(formData: FormData) {
+  await requireSection("staff");
+  const mode = text(formData, "mode") === "whatsapp" ? "whatsapp" : "razorpay";
+  fail((await db.from("settings").upsert({ key: "checkout", value: mode })).error);
+  await audit("staff", "Changed checkout method", mode);
+  await refresh();
 }
 
 // ---------- staff (Clerk publicMetadata) ----------
@@ -291,7 +390,7 @@ export async function setReviewStatus(formData: FormData) {
   const { data, error } = await db.from("reviews").update({ status }).eq("id", text(formData, "id")).select("author, rating, products(name)");
   fail(error);
   await audit("reviews", status === "approved" ? "Approved review" : "Declined review", reviewTarget(data?.[0]));
-  refresh();
+  await refresh();
 }
 
 export async function deleteReview(formData: FormData) {
@@ -299,7 +398,7 @@ export async function deleteReview(formData: FormData) {
   const { data, error } = await db.from("reviews").delete().eq("id", text(formData, "id")).select("author, rating, products(name)");
   fail(error);
   await audit("reviews", "Deleted review", reviewTarget(data?.[0]));
-  refresh();
+  await refresh();
 }
 
 type ReviewRow = { author: string; rating: number; products: { name: string } | { name: string }[] | null };

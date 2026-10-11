@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { summarize } from "./orders.ts";
+import { isWhatsApp, summarize, waOrderUrl } from "./orders.ts";
 
 test("sales summary", () => {
   const now = new Date("2026-10-01T06:00:00Z"); // 11:30 IST
@@ -29,4 +29,21 @@ test("sales summary", () => {
   assert.deepEqual(r.categories, [{ slug: "", revenue: 2500 }, { slug: "women", revenue: 2000 }]);
   assert.equal(r.statuses.pending, 1);
   assert.equal(r.statuses.paid, 2);
+});
+
+test("whatsapp order link", () => {
+  const url = new URL(
+    waOrderUrl("919000000000", {
+      items: [{ id: "a", name: "Kurta & Set", size: "M", qty: 2, price: 150000 }],
+      discount: 50000,
+      coupon_code: "DIWALI",
+      amount: 250000,
+      address: { name: "Asha", phone: "9", line1: "1 MG Road", city: "Pune", state: "MH", pincode: "411001" },
+    }, "asha@example.com"),
+  );
+  assert.equal(url.origin + url.pathname, "https://wa.me/919000000000");
+  const text = url.searchParams.get("text")!; // round-trips, so "&" in a product name survived encoding
+  assert.ok(isWhatsApp({ razorpay_order_id: "wa_abc" }) && !isWhatsApp({ razorpay_order_id: "order_abc" }));
+  for (const part of ["Account: asha@example.com", "Kurta & Set (M) × 2 - ₹3,000", "Discount (DIWALI): -₹500", "Total: ₹2,500", "1 MG Road, Pune, MH 411001"])
+    assert.ok(text.includes(part), part);
 });

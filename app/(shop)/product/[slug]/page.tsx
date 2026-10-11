@@ -1,21 +1,26 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
-import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, type Product, type Review } from "@/lib/db";
+import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, type Review } from "@/lib/db";
+import { getApprovedReviews, getProductBySlug } from "@/lib/store";
+import { SITE_URL } from "@/lib/site";
 import { Stars } from "../../stars";
 import { ReviewForm } from "./review-form";
 import { Gallery } from "./gallery";
 import { AddToCartForm } from "../../cart-drawer";
 import { WishlistButton } from "../../wishlist-button";
 
-async function getProduct(slug: string) {
-  const { data } = await db.from("products").select("*").eq("slug", slug).maybeSingle();
-  return data as Product | null;
-}
+const getProduct = getProductBySlug;
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">) {
   const p = await getProduct((await params).slug);
-  return { title: p?.name, description: p?.description };
+  if (!p) return {};
+  const description = p.description.replace(/\s+/g, " ").slice(0, 160);
+  return {
+    title: p.name,
+    description,
+    openGraph: { title: p.name, description, url: `/product/${p.slug}`, siteName: "Tantvam", locale: "en_IN", images: p.images.slice(0, 1) },
+  };
 }
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
@@ -24,21 +29,39 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
   const firstInStock = p.sizes.find((s) => inStock(p, s) > 0);
   const { userId } = await auth();
   // ponytail: averages in JS over every approved rating; move to a SQL view if a product gets thousands
-  const [{ data: approvedData }, { data: mine }] = await Promise.all([
-    db
-      .from("reviews")
-      .select("*")
-      .eq("product_id", p.id)
-      .eq("status", "approved")
-      .order("created_at", { ascending: false }),
+  const [reviews, { data: mine }] = await Promise.all([
+    getApprovedReviews(p.id),
     userId ? db.from("reviews").select("*").eq("product_id", p.id).eq("user_id", userId).maybeSingle() : { data: null },
   ]);
-  const reviews = (approvedData ?? []) as Review[];
   const own = mine as Review | null;
   const showAverage = reviews.length > MIN_RATINGS_FOR_AVERAGE;
   const average = reviews.reduce((s, r) => s + r.rating, 0) / (reviews.length || 1);
+  const url = `${SITE_URL}/product/${p.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name,
+    description: p.description,
+    image: p.images.map((i) => new URL(i, SITE_URL).href),
+    category: p.category,
+    url,
+    brand: { "@type": "Brand", name: "Tantvam" },
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "INR",
+      price: p.price / 100,
+      availability: `https://schema.org/${firstInStock ? "InStock" : "OutOfStock"}`,
+    },
+    // same threshold as the visible average, so markup never claims a rating the page doesn't show
+    ...(showAverage && {
+      aggregateRating: { "@type": "AggregateRating", ratingValue: average.toFixed(1), reviewCount: reviews.length },
+    }),
+  };
   return (
     <>
+      {/* "<" escaped so product text can't close the script tag */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-2 gap-10">
         <Gallery images={p.images} alt={p.name} />
         <div className="md:sticky md:top-8 self-start">

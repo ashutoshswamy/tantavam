@@ -3,13 +3,24 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
-import { db, type CartItem, type Product } from "@/lib/db";
-import { SOLD } from "@/lib/orders";
+import { cached } from "@/lib/cache";
+import { db, type CartItem, type Category, type Collection, type Product, type Review } from "@/lib/db";
+import { daysAgo, SOLD, summarize } from "@/lib/orders";
 import { couponLabel, discountFor, rupees, type Coupon } from "@/lib/pricing";
 
 export async function getCart(): Promise<CartItem[]> {
   try {
-    return JSON.parse((await cookies()).get("cart")?.value ?? "[]");
+    // the cookie is client-controlled: coerce every field, cap qty, merge duplicate lines
+    const raw: unknown = JSON.parse((await cookies()).get("cart")?.value ?? "[]");
+    const out: CartItem[] = [];
+    for (const i of Array.isArray(raw) ? raw.slice(0, 50) : []) {
+      if (typeof i?.id !== "string" || typeof i?.size !== "string" || i.id.length > 40 || i.size.length > 20) continue;
+      const qty = Math.min(Math.max(Math.floor(Number(i.qty)) || 1, 1), 10);
+      const dup = out.find((o) => o.id === i.id && o.size === i.size);
+      if (dup) dup.qty = Math.min(dup.qty + qty, 10);
+      else out.push({ id: i.id, size: i.size, qty });
+    }
+    return out;
   } catch {
     return [];
   }
@@ -109,3 +120,58 @@ export async function gate(section: Section | "staff") {
   if (!allowed(access, section)) notFound();
   return access!;
 }
+
+// Admin-switchable in /admin/settings. Falls back to Razorpay when the row (or the table) is missing.
+export type CheckoutMode = "razorpay" | "whatsapp";
+export async function getCheckoutMode(): Promise<CheckoutMode> {
+  return cached("checkout-mode", 60, async () => {
+    const { data } = await db.from("settings").select("value").eq("key", "checkout").maybeSingle();
+    return data?.value === "whatsapp" ? "whatsapp" : "razorpay";
+  });
+}
+
+// Public storefront reads, cached in Upstash (lib/cache.ts); admin mutations call invalidate().
+// Never use these for stock checks at checkout or anything per-user.
+export const getProductBySlug = (slug: string) =>
+  cached(`product:${slug}`, 60, async () => ((await db.from("products").select("*").eq("slug", slug).maybeSingle()).data as Product | null) ?? null);
+
+export const getApprovedReviews = (productId: string) =>
+  cached(`reviews:${productId}`, 120, async () => {
+    const { data } = await db.from("reviews").select("*").eq("product_id", productId).eq("status", "approved").order("created_at", { ascending: false });
+    return (data ?? []) as Review[];
+  });
+
+export const getCategories = () =>
+  cached("categories", 300, async () => ((await db.from("categories").select("slug, name").order("name")).data ?? []) as Category[]);
+
+export const getCollections = () =>
+  cached("collections", 300, async () =>
+    ((await db.from("collections").select("slug, name, description").order("created_at", { ascending: false })).data ?? []) as Collection[],
+  );
+
+// no search term: those queries are open-ended, so they stay uncached
+export const getShopProducts = (filter: { collection?: string; category?: string }) =>
+  cached(`shop:${filter.collection ? `col:${filter.collection}` : filter.category ? `cat:${filter.category}` : "all"}`, 120, async () => {
+    let q = db
+      .from("products")
+      .select(filter.collection ? "*, collections!inner(slug)" : "*")
+      .order("created_at", { ascending: false });
+    if (filter.collection) q = q.eq("collections.slug", filter.collection);
+    else if (filter.category) q = q.eq("category", filter.category);
+    return ((await q).data ?? []) as unknown as Product[];
+  });
+
+export const getHomeData = () =>
+  cached("home", 120, async () => {
+    const [{ data }, { data: collections }, { data: orders }] = await Promise.all([
+      db.from("products").select("*").order("created_at", { ascending: false }).limit(8),
+      // moods = admin-managed collections, each with its pieces
+      db.from("collections").select("slug, name, description, products(*)").order("created_at").limit(24, { referencedTable: "products" }),
+      db.from("orders").select("amount, items, status, created_at").gte("created_at", daysAgo(90)),
+    ]);
+    // bestsellers: top 8 by revenue over the last 90 days, same maths as admin analytics
+    const topIds = summarize(orders ?? [], 90).topProducts.slice(0, 8).map((p) => p.id);
+    const { data: top } = topIds.length ? await db.from("products").select("*").in("id", topIds) : { data: [] };
+    const bestsellers = topIds.map((id) => (top as Product[]).find((p) => p.id === id)).filter((p) => p !== undefined); // deleted products drop out
+    return { products: (data ?? []) as Product[], collections: collections ?? [], bestsellers };
+  });

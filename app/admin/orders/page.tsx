@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { db, inr, type Order } from "@/lib/db";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/orders";
-import { gate } from "@/lib/store";
-import { Card, Empty, Header, StatusBadge, btnGhost, dateTime, field, statusLabel, td, th, tr } from "../ui";
+import { gate, getCheckoutMode } from "@/lib/store";
+import { Card, Empty, Header, StatusBadge, btn, btnGhost, dateTime, field, statusLabel, td, th, tr } from "../ui";
 
 export const metadata = { title: "Orders" };
 
@@ -19,8 +19,9 @@ export default async function Orders({ searchParams }: PageProps<"/admin/orders"
   let query = db.from("orders").select("*").order("created_at", { ascending: false }).limit(100);
   if (status !== "all") query = query.eq("status", status);
   if (q) query = query.or(`razorpay_order_id.ilike.*${q}*,address->>name.ilike.*${q}*,address->>phone.ilike.*${q}*`);
-  const [{ data }, ...counts] = await Promise.all([
+  const [{ data }, mode, ...counts] = await Promise.all([
     query,
+    getCheckoutMode(),
     ...ORDER_STATUSES.map((s) => db.from("orders").select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   const count = Object.fromEntries(ORDER_STATUSES.map((s, i) => [s, counts[i].count ?? 0]));
@@ -28,7 +29,15 @@ export default async function Orders({ searchParams }: PageProps<"/admin/orders"
 
   return (
     <>
-      <Header title="Orders" description="Latest 100 matching orders." />
+      <Header title="Orders" description="Latest 100 matching orders.">
+        <Link href="/admin/orders/new" className={btn}>New order</Link>
+      </Header>
+      {mode === "whatsapp" && (
+        <p role="status" className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-5 py-3.5 text-sm text-amber-900">
+          WhatsApp checkout is on, so orders reach you in WhatsApp and are not saved here. Enter each one with{" "}
+          <Link href="/admin/orders/new" className="font-medium underline underline-offset-2">New order</Link> once it&apos;s agreed.
+        </p>
+      )}
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-kajal/10 p-3">
           <nav className="flex flex-wrap gap-1 text-sm">

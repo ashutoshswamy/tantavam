@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { TicketPercent } from "lucide-react";
 import { db, inr, type Address } from "@/lib/db";
-import { getCartLines, priceOrder } from "@/lib/store";
+import { getCartLines, getCheckoutMode, priceOrder } from "@/lib/store";
 import { normalizeCode } from "@/lib/pricing";
+import { allow } from "@/lib/ratelimit";
 import { CheckoutForm } from "./checkout-form";
 
 export const metadata = { title: "Checkout" };
@@ -13,16 +14,19 @@ export const metadata = { title: "Checkout" };
 export default async function Checkout({ searchParams }: PageProps<"/checkout">) {
   const [{ lines, total }, { userId }, sp] = await Promise.all([getCartLines(), auth(), searchParams]);
   if (!lines.length) redirect("/shop");
-  const code = normalizeCode(sp.coupon);
-  const [{ data: addresses }, price] = await Promise.all([
+  // throttle coupon guessing; over the limit the code is simply ignored
+  const typed = normalizeCode(sp.coupon);
+  const code = typed && (await allow("coupon", 30, 600, userId!)) ? typed : "";
+  const [{ data: addresses }, price, mode] = await Promise.all([
     db.from("addresses").select("*").eq("user_id", userId!).order("created_at"),
     priceOrder(userId!, total, code),
+    getCheckoutMode(),
   ]);
   const codeApplied = !!code && price.applied?.code === code;
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      {mode === "razorpay" && <Script src="https://checkout.razorpay.com/v1/checkout.js" />}
       <h1 className="font-semibold tracking-tight text-5xl mb-8">Checkout</h1>
 
       <section className="mb-8 border border-line bg-white p-5 text-sm">
@@ -66,7 +70,7 @@ export default async function Checkout({ searchParams }: PageProps<"/checkout">)
         )}
       </section>
 
-      <CheckoutForm addresses={(addresses ?? []) as Address[]} coupon={price.couponError ? "" : code} total={inr(price.total)} />
+      <CheckoutForm addresses={(addresses ?? []) as Address[]} coupon={price.couponError ? "" : code} total={inr(price.total)} whatsapp={mode === "whatsapp"} />
     </div>
   );
 }

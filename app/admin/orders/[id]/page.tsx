@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { clerkClient } from "@clerk/nextjs/server";
 import { db, inr, type Order } from "@/lib/db";
-import { ORDER_STATUSES } from "@/lib/orders";
+import { isWhatsApp, ORDER_STATUSES } from "@/lib/orders";
 import { gate } from "@/lib/store";
 import { updateOrderStatus } from "../../actions";
 import { Submit } from "../../client";
@@ -76,7 +76,7 @@ export default async function OrderPage({ params }: PageProps<"/admin/orders/[id
                 ))}
               </select>
               <Submit className={btn}>Update status</Submit>
-              <p className="text-xs text-kajal/50">Cancelling a paid order restocks its pieces. Refund it in the Razorpay dashboard.</p>
+              <p className="text-xs text-kajal/50">{isWhatsApp(o) ? "Entered by hand from WhatsApp. If it is still Unpaid, mark it To ship once payment reaches you: that takes the stock and emails the customer." : "Cancelling a paid order restocks its pieces. Refund it in the Razorpay dashboard."}</p>
             </form>
           </Card>
           <Card title="Customer">
@@ -94,12 +94,12 @@ export default async function OrderPage({ params }: PageProps<"/admin/orders/[id
           <Card title="Payment">
             <dl className="grid gap-2 p-5 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-kajal/60">Razorpay order</dt>
+                <dt className="text-kajal/60">{isWhatsApp(o) ? "Order ref" : "Razorpay order"}</dt>
                 <dd className="font-mono text-xs">{o.razorpay_order_id}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-kajal/60">Payment</dt>
-                <dd className="font-mono text-xs">{o.razorpay_payment_id ?? "-"}</dd>
+                <dd className="font-mono text-xs">{isWhatsApp(o) ? "Collected over WhatsApp" : (o.razorpay_payment_id ?? "-")}</dd>
               </div>
             </dl>
           </Card>

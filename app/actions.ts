@@ -5,11 +5,14 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { ADDRESS_FIELDS, db, inStock, type CartItem, type Order } from "@/lib/db";
-import { getCart, getCartLines, priceOrder } from "@/lib/store";
+import { getCart, getCartLines, getCheckoutMode, priceOrder } from "@/lib/store";
+import { waOrderUrl } from "@/lib/orders";
+import { invalidate } from "@/lib/cache";
 import { normalizeCode } from "@/lib/pricing";
 import { validSignature } from "@/lib/razorpay";
 import { CONTACT } from "@/lib/site";
 import { emailOrder, sendEmail } from "@/lib/email";
+import { allow } from "@/lib/ratelimit";
 
 // ---------- cart (cookie) ----------
 
@@ -17,7 +20,7 @@ const MAX_QTY = 10;
 const clampQty = (n: unknown) => Math.min(Math.max(Math.floor(Number(n)) || 1, 1), MAX_QTY);
 
 async function saveCart(cart: CartItem[]) {
-  (await cookies()).set("cart", JSON.stringify(cart), { httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 30 });
+  (await cookies()).set("cart", JSON.stringify(cart), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 60 * 60 * 24 * 30 });
 }
 
 export async function addToCart(formData: FormData) {
@@ -60,11 +63,14 @@ export async function toggleWishlist(formData: FormData) {
 function addressFrom(formData: FormData) {
   const address = Object.fromEntries(ADDRESS_FIELDS.map((k) => [k, String(formData.get(k) ?? "").trim().slice(0, 200)]));
   if (Object.values(address).some((v) => !v)) throw new Error("Fill in the full address");
-  return address;
+  if (!/^\d{6}$/.test(address.pincode)) throw new Error("Enter a valid 6-digit pincode");
+  if (!/^[+\d][\d\s-]{6,17}$/.test(address.phone)) throw new Error("Enter a valid phone number");
+  return address as Order["address"];
 }
 
 export async function saveAddress(formData: FormData) {
   const user_id = await requireUser();
+  if (!(await allow("address", 20, 3600, user_id))) throw new Error("Too many requests. Try again later.");
   const { error } = await db.from("addresses").insert({ ...addressFrom(formData), user_id });
   if (error) throw new Error("Could not save address");
   revalidatePath("/addresses");
@@ -102,6 +108,7 @@ export type ContactState = { ok?: boolean; error?: string };
 export async function sendMessage(_: ContactState, formData: FormData): Promise<ContactState> {
   const f = (k: string) => String(formData.get(k) ?? "").trim();
   if (f("company")) return { ok: true }; // honeypot: hidden field only bots fill
+  if (!(await allow("contact", 5, 3600))) return { error: "Too many messages. Please try again later." };
   const msg = { name: f("name"), email: f("email"), phone: f("phone"), body: f("message") };
   if (!msg.name || !msg.body) return { error: "Please add your name and a message." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(msg.email)) return { error: "Please enter a valid email." };
@@ -127,6 +134,7 @@ export type ReviewState = { ok?: boolean; error?: string };
 export async function submitReview(_: ReviewState, formData: FormData): Promise<ReviewState> {
   const user = await currentUser();
   if (!user) return { error: "Sign in to leave a review." };
+  if (!(await allow("review", 10, 3600, user.id))) return { error: "Too many reviews. Please try again later." };
   const productId = String(formData.get("productId") ?? "");
   const rating = Number(formData.get("rating"));
   const body = String(formData.get("body") ?? "").trim();
@@ -147,11 +155,12 @@ export async function submitReview(_: ReviewState, formData: FormData): Promise<
   return { ok: true };
 }
 
-// ---------- checkout (Razorpay) ----------
+// ---------- checkout (Razorpay or WhatsApp, per /admin/settings) ----------
 
 export async function createOrder(formData: FormData) {
   const { userId } = await auth();
   if (!userId) throw new Error("Not signed in");
+  if (!(await allow("checkout", 20, 600, userId))) throw new Error("Too many attempts. Please wait a few minutes.");
 
   const { lines, total } = await getCartLines();
   if (!total) throw new Error("Cart is empty");
@@ -163,6 +172,25 @@ export async function createOrder(formData: FormData) {
   const code = normalizeCode(formData.get("coupon"));
   const price = await priceOrder(userId, total, code);
   if (code && price.couponError) throw new Error(price.couponError);
+
+  const row = {
+    user_id: userId,
+    items: lines.map((l) => ({ id: l.id, name: l.product.name, size: l.size, qty: l.qty, price: l.product.price })),
+    subtotal: price.subtotal,
+    discount: price.discount,
+    coupon_code: price.applied?.code ?? null,
+    amount: price.total,
+    address,
+  };
+
+  // mode is read here, never taken from the form: the client can't pick the unpaid path
+  if ((await getCheckoutMode()) === "whatsapp") {
+    // nothing is saved: the chat is the order, and staff enter it in /admin/orders/new once it's agreed
+    if (formData.get("save")) await db.from("addresses").insert({ ...address, user_id: userId });
+    const email = (await currentUser())?.primaryEmailAddress?.emailAddress;
+    await saveCart([]);
+    redirect(waOrderUrl(CONTACT.whatsapp, row, email));
+  }
 
   const res = await fetch("https://api.razorpay.com/v1/orders", {
     method: "POST",
@@ -176,16 +204,7 @@ export async function createOrder(formData: FormData) {
   if (!res.ok) throw new Error("Could not start payment");
   const rzp: { id: string } = await res.json();
 
-  const { error } = await db.from("orders").insert({
-    user_id: userId,
-    items: lines.map((l) => ({ id: l.id, name: l.product.name, size: l.size, qty: l.qty, price: l.product.price })),
-    subtotal: price.subtotal,
-    discount: price.discount,
-    coupon_code: price.applied?.code ?? null,
-    amount: price.total,
-    address,
-    razorpay_order_id: rzp.id,
-  });
+  const { error } = await db.from("orders").insert({ ...row, razorpay_order_id: rzp.id });
   if (error) throw new Error("Could not save order");
   if (formData.get("save")) await db.from("addresses").insert({ ...address, user_id: userId });
 
@@ -195,6 +214,8 @@ export async function createOrder(formData: FormData) {
 export async function verifyPayment(p: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Not signed in");
+  if (![p?.razorpay_order_id, p?.razorpay_payment_id, p?.razorpay_signature].every((v) => typeof v === "string" && v.length > 0 && v.length <= 100))
+    throw new Error("Payment verification failed");
   if (!validSignature(p.razorpay_order_id, p.razorpay_payment_id, p.razorpay_signature, process.env.RAZORPAY_KEY_SECRET!))
     throw new Error("Payment verification failed");
 
@@ -208,6 +229,7 @@ export async function verifyPayment(p: { razorpay_order_id: string; razorpay_pay
     .select("*")
     .maybeSingle<Order>();
   if (order) await Promise.all([db.rpc("adjust_stock", { p_items: order.items, p_sign: -1, p_reason: `Sold · order #${order.id.slice(0, 8)}` }), emailOrder("paid", order)]);
+  if (order) await invalidate(); // stock changed
   await saveCart([]);
   redirect("/orders");
 }

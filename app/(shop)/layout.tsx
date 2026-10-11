@@ -12,6 +12,7 @@ import { IntroVideo } from "./intro-video";
 import { SiteMotion } from "./site-motion";
 import { Mail, Phone, User } from "lucide-react";
 import { CONTACT } from "@/lib/site";
+import { Instagram } from "./instagram-icon";
 
 export default async function ShopLayout({ children }: LayoutProps<"/">) {
   const cart = await getCartLines();
@@ -69,6 +70,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
             <ul className="mt-4 grid gap-3 text-sm text-mallige/70">
               <li><a href={`mailto:${CONTACT.email}`} className="inline-flex items-center gap-2 hover:text-mallige"><Mail size={16} strokeWidth={1.75} /> {CONTACT.email}</a></li>
               <li><a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:text-mallige"><Phone size={16} strokeWidth={1.75} /> {CONTACT.phone}</a></li>
+              <li><a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-mallige"><Instagram size={16} /> @tantvam.official</a></li>
             </ul>
           </div>
         </div>

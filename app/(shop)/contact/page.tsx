@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowUpRight, Mail, MessageCircle, Phone } from "lucide-react";
 import { CONTACT } from "@/lib/site";
+import { Instagram } from "../instagram-icon";
 import contactImage from "@/public/contact-image.png";
 import { ContactForm } from "./contact-form";
 
@@ -14,6 +15,7 @@ const channels = [
   { icon: Phone, label: "Call us", value: CONTACT.phone, href: `tel:${CONTACT.phone.replace(/\s/g, "")}` },
   { icon: MessageCircle, label: "WhatsApp", value: "Chat with us", href: `https://wa.me/${CONTACT.whatsapp}` },
   { icon: Mail, label: "Email", value: CONTACT.email, href: `mailto:${CONTACT.email}` },
+  { icon: Instagram, label: "Instagram", value: "@tantvam.official", href: CONTACT.instagram },
 ];
 
 const topics = ["Finding the right size", "A custom fit or alteration", "Fabric and care", "An order you've placed"];

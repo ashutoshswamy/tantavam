@@ -1,35 +1,55 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { db, type Category, type Collection, type Product } from "@/lib/db";
+import { db, type Product } from "@/lib/db";
+import { getCategories, getCollections, getShopProducts } from "@/lib/store";
 import { ProductGrid } from "../product-grid";
 
-export const metadata: Metadata = { title: "Shop" };
+// category and collection views are their own indexable pages; search results are not
+export async function generateMetadata({ searchParams }: PageProps<"/shop">): Promise<Metadata> {
+  const { category, collection, q } = await searchParams;
+  if (q) return { title: "Search", robots: { index: false } };
+  const [table, param, slug] =
+    typeof collection === "string" ? ["collections", "collection", collection] : typeof category === "string" ? ["categories", "category", category] : [];
+  const { data } = table ? await db.from(table).select("*").eq("slug", slug).maybeSingle() : { data: null };
+  if (!data)
+    return {
+      title: "Shop",
+      description: "Shop every Tantvam piece: anarkalis, sarees and lehengas for weddings, festivals and every day between.",
+      alternates: { canonical: "/shop" },
+    };
+  return {
+    title: data.name,
+    description: data.description || `Shop ${data.name} at Tantvam. Ethnic wear for women, delivered across India.`,
+    alternates: { canonical: `/shop?${param}=${slug}` },
+  };
+}
 
 export default async function Shop({ searchParams }: PageProps<"/shop">) {
   const { category, collection, q: rawQ } = await searchParams;
   // strip PostgREST filter syntax out of the search term
   const search = typeof rawQ === "string" ? rawQ.replace(/[,()*%]/g, " ").trim().slice(0, 100) : "";
-  const [{ data: categories }, { data: collections }] = await Promise.all([
-    db.from("categories").select("slug, name").order("name"),
-    db.from("collections").select("slug, name, description").order("created_at", { ascending: false }),
-  ]);
-  const cat = (categories as Category[] | null)?.find((c) => c.slug === category);
-  const col = (collections as Collection[] | null)?.find((c) => c.slug === collection);
+  const [categories, collections] = await Promise.all([getCategories(), getCollections()]);
+  const cat = categories.find((c) => c.slug === category);
+  const col = collections.find((c) => c.slug === collection);
 
-  // !inner on the join turns the embed into a filter: only products in this collection
-  let q = db
-    .from("products")
-    .select(col ? "*, collections!inner(slug)" : "*")
-    .order("created_at", { ascending: false });
-  if (search) q = q.or(`name.ilike.*${search}*,description.ilike.*${search}*`);
-  if (col) q = q.eq("collections.slug", col.slug);
-  else if (cat) q = q.eq("category", cat.slug);
-  const { data } = await q;
+  let data: Product[];
+  if (search) {
+    // search is open-ended, so it bypasses the cache
+    // !inner on the join turns the embed into a filter: only products in this collection
+    let q = db
+      .from("products")
+      .select(col ? "*, collections!inner(slug)" : "*")
+      .order("created_at", { ascending: false })
+      .or(`name.ilike.*${search}*,description.ilike.*${search}*`);
+    if (col) q = q.eq("collections.slug", col.slug);
+    else if (cat) q = q.eq("category", cat.slug);
+    data = ((await q).data ?? []) as unknown as Product[];
+  } else data = await getShopProducts({ collection: col?.slug, category: cat?.slug });
 
   const tabs = [
     ["All pieces", "/shop"],
-    ...(categories ?? []).map((c) => [c.name, `/shop?category=${c.slug}`]),
-    ...(collections ?? []).map((c) => [c.name, `/shop?collection=${c.slug}`]),
+    ...categories.map((c) => [c.name, `/shop?category=${c.slug}`]),
+    ...collections.map((c) => [c.name, `/shop?collection=${c.slug}`]),
   ];
   const active = col ? `/shop?collection=${col.slug}` : cat ? `/shop?category=${cat.slug}` : "/shop";
   return (

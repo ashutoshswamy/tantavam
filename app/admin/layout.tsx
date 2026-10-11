@@ -5,7 +5,7 @@ import { UserButton } from "@clerk/nextjs";
 import { allowed, getAccess, type Section } from "@/lib/store";
 import { Nav } from "./client";
 import { Logo } from "../logo";
-import { ArrowUpRight, Boxes, ChartColumn, History, Layers, LayoutDashboard, Inbox, Package, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
+import { ArrowUpRight, Boxes, ChartColumn, History, Layers, LayoutDashboard, Inbox, Package, Settings, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
 
 export const metadata = { title: { default: "Dashboard · Admin", template: "%s · Admin" } };
 
@@ -22,6 +22,7 @@ const NAV: { href: string; label: string; icon: ReactNode; section?: Section | "
   { href: "/admin/reviews", label: "Reviews", icon: <Star size={16} />, section: "reviews" },
   { href: "/admin/staff", label: "Staff", icon: <Users size={16} />, section: "staff" },
   { href: "/admin/logs", label: "Staff logs", icon: <History size={16} />, section: "staff" },
+  { href: "/admin/settings", label: "Settings", icon: <Settings size={16} />, section: "staff" },
 ];
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {

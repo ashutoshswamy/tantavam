@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import hero from "@/public/hero-image.png";
 import aboutImage from "@/public/aboutus-image.png";
-import { db, type Product } from "@/lib/db";
 import fabricIcon from "@/public/aboutus-icon-1.png";
 import fitIcon from "@/public/aboutus-icon-2.png";
 import heartIcon from "@/public/aboutus-icon-3.png";
 import { ProductGrid } from "./product-grid";
 import { StoryMotion } from "./story-motion";
 import { MoodCarousel, type Mood } from "./mood-carousel";
-import { daysAgo, summarize } from "@/lib/orders";
+import { getHomeData } from "@/lib/store";
+import { CONTACT, SITE_URL } from "@/lib/site";
 
 const pillars = [
   { icon: fabricIcon, title: "Rich fabrics, lasting colour", body: "Picked for drape, comfort and colour that stays bright wash after wash." },
@@ -18,19 +18,17 @@ const pillars = [
 ];
 
 export default async function Home() {
-  const [{ data }, { data: collections }, { data: orders }] = await Promise.all([
-    db.from("products").select("*").order("created_at", { ascending: false }).limit(8),
-    // moods = admin-managed collections, each with its pieces
-    db.from("collections").select("slug, name, description, products(*)").order("created_at").limit(24, { referencedTable: "products" }),
-    db.from("orders").select("amount, items, status, created_at").gte("created_at", daysAgo(90)),
-  ]);
-  // bestsellers: top 8 by revenue over the last 90 days, same maths as admin analytics
-  const topIds = summarize(orders ?? [], 90).topProducts.slice(0, 8).map((p) => p.id);
-  const { data: top } = topIds.length ? await db.from("products").select("*").in("id", topIds) : { data: [] };
-  const bestsellers = topIds.map((id) => (top as Product[]).find((p) => p.id === id)).filter((p) => p !== undefined); // deleted products drop out
-  const moods = ((collections ?? []) as unknown as Mood[]).filter((m) => m.products.length);
+  const { products: latest, collections, bestsellers } = await getHomeData();
+  const moods = (collections as unknown as Mood[]).filter((m) => m.products.length);
   return (
     <>
+      {/* domain (thetantava.in) differs from the brand, so tell Google which name to show in results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "Tantvam", url: SITE_URL, sameAs: [CONTACT.instagram] }),
+        }}
+      />
       <section className="relative flex flex-col md:block md:h-[min(56.25vw,calc(100svh-5rem))] md:min-h-[560px] bg-gulabi/30 text-kajal overflow-hidden">
         {/* md+: fade the cut-out's left edge behind the copy (#e2e2e6 = gulabi/30 on mallige) */}
         <div className="hidden md:block absolute inset-y-0 left-0 z-[5] w-[62%] lg:w-[55%] bg-gradient-to-r from-[#e2e2e6] from-55% to-transparent" aria-hidden />
@@ -73,7 +71,7 @@ export default async function Home() {
           </div>
           <Link href="/shop" className="shrink-0 whitespace-nowrap text-sm underline underline-offset-4 hover:text-rani">See all pieces</Link>
         </div>
-        <ProductGrid row products={(data ?? []) as Product[]} />
+        <ProductGrid row products={latest} />
       </section>
 
       {bestsellers.length > 0 && (

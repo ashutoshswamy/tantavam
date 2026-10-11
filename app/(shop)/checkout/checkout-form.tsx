@@ -20,7 +20,7 @@ const fields = [
   ["pincode", "PIN code", "postal-code"],
 ] as const;
 
-export function CheckoutForm({ addresses, coupon, total }: { addresses: Address[]; coupon: string; total: string }) {
+export function CheckoutForm({ addresses, coupon, total, whatsapp }: { addresses: Address[]; coupon: string; total: string; whatsapp: boolean }) {
   const [picked, setPicked] = useState<Address | undefined>(addresses[0]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -29,7 +29,9 @@ export function CheckoutForm({ addresses, coupon, total }: { addresses: Address[
     setError("");
     setBusy(true);
     try {
+      // WhatsApp mode: the action redirects to the chat and never returns here
       const order = await createOrder(formData);
+      if (!window.Razorpay) throw new Error("Checkout has changed. Reload the page and try again.");
       new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         order_id: order.orderId,
@@ -82,8 +84,13 @@ export function CheckoutForm({ addresses, coupon, total }: { addresses: Address[
       </div>
       {error && <p role="alert" className="text-sm text-rani">{error}</p>}
       <button disabled={busy} className="mt-4 bg-rani text-mallige py-4 text-sm font-medium hover:bg-rani/85 disabled:opacity-60">
-        {busy ? "Processing…" : `Pay ${total}`}
+        {busy ? "Processing…" : whatsapp ? `Order on WhatsApp · ${total}` : `Pay ${total}`}
       </button>
+      {whatsapp && (
+        <p className="text-xs text-kajal/60">
+          This opens WhatsApp with your order typed out. Send it and we&apos;ll confirm and share payment details there.
+        </p>
+      )}
     </form>
   );
 }
