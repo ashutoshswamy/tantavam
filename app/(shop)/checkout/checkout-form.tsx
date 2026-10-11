@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createOrder, verifyPayment } from "@/app/actions";
 import type { Address } from "@/lib/db";
 
@@ -82,6 +83,12 @@ export function CheckoutForm({ addresses, coupon, total, whatsapp }: { addresses
           <input type="checkbox" name="save" disabled={!!picked} className="accent-rani" /> Save to my addresses
         </label>
       </div>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" required className="mt-1 accent-rani" />
+        <span>
+          I agree to the <Link href="/policies" target="_blank" className="underline underline-offset-4 hover:text-rani">store policies</Link>, including no returns or cash refunds, and exchange within 3 days for non-sale items only.
+        </span>
+      </label>
       {error && <p role="alert" className="text-sm text-rani">{error}</p>}
       <button disabled={busy} className="mt-4 bg-rani text-mallige py-4 text-sm font-medium hover:bg-rani/85 disabled:opacity-60">
         {busy ? "Processing…" : whatsapp ? `Order on WhatsApp · ${total}` : `Pay ${total}`}

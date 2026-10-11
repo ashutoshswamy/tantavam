@@ -64,7 +64,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
             <p className="mt-6 text-xs text-mallige/50">© {new Date().getFullYear()} Tantvam. All rights reserved.</p>
           </div>
           <FooterLinks title="Shop" links={[["All pieces", "/shop"]]} />
-          <FooterLinks title="Help" links={[["Contact us", "/contact"], ["Your orders", "/orders"]]} />
+          <FooterLinks title="Help" links={[["Contact us", "/contact"], ["Your orders", "/orders"], ["Policies", "/policies"]]} />
           <div>
             <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-gulabi">Get in touch</h2>
             <ul className="mt-4 grid gap-3 text-sm text-mallige/70">

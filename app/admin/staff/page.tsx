@@ -45,10 +45,10 @@ export default async function Staff() {
                       <form id={`staff-${u.id}`} action={updateStaff}>
                         <input type="hidden" name="id" value={u.id} />
                         <SectionBoxes checked={u.sections} />
+                        <Submit className={`${btnGhost} mt-3`}>Save</Submit>
                       </form>
                     </td>
                     <td className={`${td} whitespace-nowrap text-right`}>
-                      <button form={`staff-${u.id}`} className={btnGhost}>Save</button>
                       <form action={removeStaff} className="inline">
                         <input type="hidden" name="id" value={u.id} />
                         <Submit className={btnDanger} confirm={`Remove ${u.email} from staff?`}>Remove</Submit>
