@@ -5,6 +5,7 @@ import { UserButton } from "@clerk/nextjs";
 import { allowed, getAccess, type Section } from "@/lib/store";
 import { Nav } from "./client";
 import { Logo } from "../logo";
+import { Flash } from "@/components/flash";
 import { ArrowUpRight, Boxes, ChartColumn, History, Layers, LayoutDashboard, Inbox, Package, Settings, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
 
 export const metadata = { title: { default: "Dashboard · Admin", template: "%s · Admin" } };
@@ -48,6 +49,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <main className="min-w-0 px-4 py-8 sm:px-8 lg:px-10">
         <div className="mx-auto max-w-6xl">{children}</div>
       </main>
+      <Flash />
     </div>
   );
 }

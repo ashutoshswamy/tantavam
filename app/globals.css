@@ -156,3 +156,65 @@ button:not(:disabled) {
     transform: translateX(200%);
   }
 }
+
+/* ---------- micro-interactions (Clerk's own widgets are left alone) ---------- */
+a,
+button:not([class*="cl-"]),
+input:not([class*="cl-"]),
+textarea:not([class*="cl-"]),
+select:not([class*="cl-"]) {
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, scale 0.12s;
+}
+/* `scale` (not transform) so it never fights GSAP's transforms */
+button:not(:disabled, [class*="cl-"]):active {
+  scale: 0.96;
+}
+input:not([type="checkbox"], [type="radio"], [type="file"], [class*="cl-"]):focus,
+textarea:not([class*="cl-"]):focus,
+select:not([class*="cl-"]):focus {
+  border-color: var(--color-gulal);
+  box-shadow: 0 0 0 3px rgb(47 95 208 / 0.18);
+}
+
+/* Toast shown after an add / edit / delete (see lib/flash.ts) */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: min(90vw, 28rem);
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-kajal);
+  color: var(--color-mallige);
+  font-size: 0.875rem;
+  box-shadow: 0 8px 24px rgb(11 22 56 / 0.25);
+  animation: toast-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  transition: opacity 0.3s, translate 0.3s;
+}
+.toast[data-out] {
+  opacity: 0;
+  translate: -50% 0.5rem;
+  pointer-events: none;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    translate: -50% 1rem;
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes pop {
+  50% {
+    transform: scale(1.35);
+  }
+}

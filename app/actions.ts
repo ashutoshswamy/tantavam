@@ -13,6 +13,7 @@ import { validSignature } from "@/lib/razorpay";
 import { CONTACT } from "@/lib/site";
 import { emailOrder, sendEmail } from "@/lib/email";
 import { allow } from "@/lib/ratelimit";
+import { flash } from "@/lib/flash";
 
 // ---------- cart (cookie) ----------
 
@@ -32,6 +33,7 @@ export async function addToCart(formData: FormData) {
   if (line) line.qty = clampQty(line.qty + qty);
   else cart.push({ id, size, qty });
   await saveCart(cart);
+  await flash("Added to cart");
 }
 
 // qty 0 removes the line; stock is re-checked at checkout
@@ -42,6 +44,7 @@ export async function setCartQty(formData: FormData) {
   const cart = (await getCart()).filter((i) => qty > 0 || !(i.id === id && i.size === size));
   for (const i of cart) if (i.id === id && i.size === size) i.qty = clampQty(qty);
   await saveCart(cart);
+  await flash(qty > 0 ? "Cart updated" : "Removed from cart");
 }
 
 // ---------- account: wishlist + addresses ----------
@@ -57,6 +60,7 @@ export async function toggleWishlist(formData: FormData) {
   const product_id = String(formData.get("id"));
   const { data } = await db.from("wishlist").delete().match({ user_id, product_id }).select("product_id");
   if (!data?.length) await db.from("wishlist").insert({ user_id, product_id });
+  await flash(data?.length ? "Removed from wishlist" : "Saved to wishlist");
   revalidatePath("/", "layout");
 }
 
@@ -73,12 +77,14 @@ export async function saveAddress(formData: FormData) {
   if (!(await allow("address", 20, 3600, user_id))) throw new Error("Too many requests. Try again later.");
   const { error } = await db.from("addresses").insert({ ...addressFrom(formData), user_id });
   if (error) throw new Error("Could not save address");
+  await flash("Address saved");
   revalidatePath("/addresses");
 }
 
 export async function deleteAddress(formData: FormData) {
   const user_id = await requireUser();
   await db.from("addresses").delete().match({ id: String(formData.get("id")), user_id });
+  await flash("Address removed");
   revalidatePath("/addresses");
 }
 

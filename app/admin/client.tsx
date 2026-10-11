@@ -16,7 +16,7 @@ export function Nav({ items }: { items: { href: string; label: string; icon: Rea
           key={i.href}
           href={i.href}
           aria-current={(i.href === "/admin" ? path === i.href : path.startsWith(i.href)) ? "page" : undefined}
-          className="flex items-center gap-2.5 whitespace-nowrap rounded-md px-3 py-2 text-mallige/65 hover:bg-white/10 hover:text-mallige aria-[current=page]:bg-white/15 aria-[current=page]:font-medium aria-[current=page]:text-mallige"
+          className="flex items-center gap-2.5 whitespace-nowrap rounded-md px-3 py-2 transition-colors text-mallige/65 hover:bg-white/10 hover:text-mallige aria-[current=page]:bg-white/15 aria-[current=page]:font-medium aria-[current=page]:text-mallige"
         >
           {i.icon}
           {i.label}
@@ -37,7 +37,7 @@ export function Submit({ children, className, confirm, disabled, ...rest }: { ch
       onClick={(e) => {
         if (confirm && !window.confirm(confirm)) e.preventDefault();
       }}
-      className={className}
+      className={`${className} aria-busy:animate-pulse`}
     >
       {children}
     </button>

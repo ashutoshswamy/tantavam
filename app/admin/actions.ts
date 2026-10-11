@@ -9,6 +9,7 @@ import { ORDER_STATUSES, SOLD, WA_PREFIX, type OrderStatus } from "@/lib/orders"
 import { emailOrder } from "@/lib/email";
 import { requireSection, SECTIONS, type Section } from "@/lib/store";
 import { invalidate } from "@/lib/cache";
+import { flash } from "@/lib/flash";
 import { couponLabel, normalizeCode } from "@/lib/pricing";
 
 const text = (f: FormData, key: string) => String(f.get(key) ?? "").trim();
@@ -23,6 +24,7 @@ const refresh = async () => {
 
 // Audit trail for /admin/logs. Called after a change succeeds; a failed log never blocks the change.
 async function audit(section: Section | "staff", action: string, target = "") {
+  await flash(target ? `${action}: ${target}` : action);
   const user = await currentUser();
   if (!user) return;
   const { error } = await db.from("audit_logs").insert({

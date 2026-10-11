@@ -11,7 +11,7 @@ export const btnDanger =
   "inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-40 disabled:hover:bg-transparent";
 export const th = "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-kajal/50";
 export const td = "px-4 py-3 align-middle";
-export const tr = "border-t border-kajal/10";
+export const tr = "border-t border-kajal/10 transition-colors hover:bg-mallige/50";
 
 export function Header({ title, description, children }: { title: string; description?: ReactNode; children?: ReactNode }) {
   return (
@@ -41,7 +41,7 @@ export function Card({ title, action, children, className = "" }: { title?: stri
 
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
   return (
-    <Card className="p-5">
+    <Card className="p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <p className="text-xs font-medium uppercase tracking-wider text-kajal/50">{label}</p>
       <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums">{value}</p>
       {hint && <p className="mt-1 text-xs text-kajal/60">{hint}</p>}

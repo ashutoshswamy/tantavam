@@ -21,7 +21,7 @@ export async function WishlistButton({ productId }: { productId: string }) {
     <form action={toggleWishlist}>
       <input type="hidden" name="id" value={productId} />
       <Submit className={cls} aria-pressed={saved}>
-        <Heart size={18} strokeWidth={1.75} className={saved ? "fill-rani text-rani" : ""} />
+        <Heart size={18} strokeWidth={1.75} className={saved ? "fill-rani text-rani animate-[pop_0.4s_ease-out]" : ""} />
         {saved ? "Saved to wishlist" : "Save to wishlist"}
       </Submit>
     </form>

@@ -13,6 +13,7 @@ import { SiteMotion } from "./site-motion";
 import { Mail, Phone, User } from "lucide-react";
 import { CONTACT } from "@/lib/site";
 import { Instagram } from "./instagram-icon";
+import { Flash } from "@/components/flash";
 
 export default async function ShopLayout({ children }: LayoutProps<"/">) {
   const cart = await getCartLines();
@@ -20,6 +21,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <IntroVideo />
+      <Flash />
       <SiteMotion />
       <header>
         <nav className="mx-auto max-w-6xl px-4 py-4 sm:py-0 sm:h-20 grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-y-3 text-[15px]">
