@@ -4,7 +4,7 @@ import { inr, type Product } from "@/lib/db";
 
 // row: one endlessly scrolling line. The list is repeated until one pass is wider than any screen,
 // then drawn twice and slid by half its width, so the loop is seamless with no gap at the end.
-const MIN_ROW_CARDS = 12; // ponytail: 12 × 224px ≈ 2700px pass, widen if screens get bigger than that
+const MIN_ROW_CARDS = 12; // ponytail: 12 × 320px ≈ 3800px pass, widen if screens get bigger than that
 // reverse: same loop, sliding the other way
 export function ProductGrid({ products, row = false, reverse = false }: { products: Product[]; row?: boolean; reverse?: boolean }) {
   if (!products.length)
@@ -23,7 +23,7 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         aria-hidden={copy || undefined}
         data-reveal={row ? undefined : ""} // grid cards rise in; marquee rows already move
         tabIndex={copy ? -1 : undefined}
-        className={`group ${row ? "w-44 sm:w-56 shrink-0 pr-4 sm:pr-6" : ""}`}
+        className={`group ${row ? "w-56 sm:w-80 shrink-0 pr-4 sm:pr-6" : ""}`}
       >
         <div className="relative aspect-[3/4] bg-line overflow-hidden">
           {p.images[0] && (
@@ -31,8 +31,8 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
               src={p.images[0]}
               alt={p.name}
               fill
-              sizes="(min-width: 768px) 25vw, 50vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              sizes={row ? "320px" : "(min-width: 768px) 33vw, 50vw"}
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
             />
           )}
         </div>
@@ -54,5 +54,5 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         </div>
       </div>
     );
-  return <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-10">{cards}</div>;
+  return <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-10">{cards}</div>;
 }
