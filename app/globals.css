@@ -144,3 +144,15 @@ html:not([data-intro-seen]):has(.intro) {
 button:not(:disabled) {
   cursor: pointer;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(200%);
+  }
+}

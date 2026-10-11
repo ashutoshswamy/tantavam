@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import Image from "next/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 export function Nav({ items }: { items: { href: string; label: string; icon: ReactNode }[] }) {
   const path = usePathname();
@@ -26,10 +26,11 @@ export function Nav({ items }: { items: { href: string; label: string; icon: Rea
 }
 
 // Submit button that disables while its form's action runs; optional confirm() for destructive actions.
-export function Submit({ children, className, confirm, disabled }: { children: ReactNode; className: string; confirm?: string; disabled?: boolean }) {
+export function Submit({ children, className, confirm, disabled, ...rest }: { children: ReactNode; className: string; confirm?: string; disabled?: boolean } & Omit<ComponentProps<"button">, "children" | "className" | "disabled">) {
   const { pending } = useFormStatus();
   return (
     <button
+      {...rest}
       disabled={pending || disabled}
       aria-busy={pending}
       onClick={(e) => {

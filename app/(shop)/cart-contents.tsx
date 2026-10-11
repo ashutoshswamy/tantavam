@@ -1,3 +1,4 @@
+import { Submit } from "@/app/admin/client";
 import Image from "next/image";
 import Link from "next/link";
 import { inr } from "@/lib/db";
@@ -28,15 +29,15 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
                 <input type="hidden" name="id" value={l.id} />
                 <input type="hidden" name="size" value={l.size} />
                 <span className="inline-flex items-center border border-kajal/30">
-                  <button name="qty" value={l.qty - 1} aria-label="Decrease quantity" className="px-2 py-1 hover:text-rani">
+                  <Submit name="qty" value={l.qty - 1} aria-label="Decrease quantity" className="px-2 py-1 hover:text-rani">
                     <Minus size={14} />
-                  </button>
+                  </Submit>
                   <span className="w-6 text-center tabular-nums" aria-label="Quantity">{l.qty}</span>
-                  <button name="qty" value={l.qty + 1} disabled={l.qty >= 10} aria-label="Increase quantity" className="px-2 py-1 hover:text-rani disabled:opacity-30">
+                  <Submit name="qty" value={l.qty + 1} disabled={l.qty >= 10} aria-label="Increase quantity" className="px-2 py-1 hover:text-rani disabled:opacity-30">
                     <Plus size={14} />
-                  </button>
+                  </Submit>
                 </span>
-                <button name="qty" value={0} className="text-xs underline hover:text-rani">Remove</button>
+                <Submit name="qty" value={0} className="text-xs underline hover:text-rani">Remove</Submit>
               </form>
             </div>
             <p className="text-sm">{inr(l.product.price * l.qty)}</p>

@@ -1,3 +1,4 @@
+import { Submit } from "@/app/admin/client";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
@@ -110,12 +111,12 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
                 className="w-20 border border-kajal/30 bg-transparent px-3 py-2 text-center tabular-nums focus-visible:outline-2 outline-gulal"
               />
             </label>
-            <button
+            <Submit
               disabled={!firstInStock}
               className="mt-8 w-full bg-rani text-mallige py-4 text-sm font-medium hover:bg-rani/85 disabled:opacity-50"
             >
               {firstInStock ? "Add to cart" : "Sold out"}
-            </button>
+            </Submit>
           </AddToCartForm>
           <div className="mt-5 flex justify-center">
             <WishlistButton productId={p.id} />

@@ -1,3 +1,4 @@
+import { Submit } from "@/app/admin/client";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
 import { Heart } from "lucide-react";
@@ -19,10 +20,10 @@ export async function WishlistButton({ productId }: { productId: string }) {
   return (
     <form action={toggleWishlist}>
       <input type="hidden" name="id" value={productId} />
-      <button className={cls} aria-pressed={saved}>
+      <Submit className={cls} aria-pressed={saved}>
         <Heart size={18} strokeWidth={1.75} className={saved ? "fill-rani text-rani" : ""} />
         {saved ? "Saved to wishlist" : "Save to wishlist"}
-      </button>
+      </Submit>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { Submit } from "@/app/admin/client";
 import { auth } from "@clerk/nextjs/server";
 import { db, type Address } from "@/lib/db";
 import { deleteAddress, saveAddress } from "@/app/actions";
@@ -30,7 +31,7 @@ export default async function Addresses() {
             <p className="mt-2 text-kajal/70">{a.line1}, {a.city}, {a.state} {a.pincode}</p>
             <form action={deleteAddress} className="mt-3">
               <input type="hidden" name="id" value={a.id} />
-              <button className="text-xs underline text-rani">Remove</button>
+              <Submit className="text-xs underline text-rani">Remove</Submit>
             </form>
           </li>
         ))}
@@ -43,7 +44,7 @@ export default async function Addresses() {
             <input name={name} required maxLength={200} autoComplete={autoComplete} className={input} />
           </label>
         ))}
-        <button className="sm:col-span-2 mt-2 bg-rani text-mallige py-3.5 text-sm font-medium hover:bg-rani/85">Save address</button>
+        <Submit className="sm:col-span-2 mt-2 bg-rani text-mallige py-3.5 text-sm font-medium hover:bg-rani/85 disabled:opacity-60">Save address</Submit>
       </form>
     </div>
   );
