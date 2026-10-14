@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "./logo";
-import illustration from "@/public/404-image.png";
+import illustration from "@/public/404-image.webp";
 
 export const metadata = { title: "Page not found" };
 
@@ -20,7 +20,7 @@ export default function NotFound() {
         <Image
           src={illustration}
           alt="A wooden loom whose wine-red dupatta has slipped off and is floating away, trailing a loose thread"
-          priority
+          preload
           sizes="(min-width: 768px) 55vw, 90vw"
           className="w-full max-w-sm mx-auto md:max-w-none md:order-last"
         />

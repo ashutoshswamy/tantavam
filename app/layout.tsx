@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <ClerkProvider appearance={appearance} signInUrl="/sign-in" signUpUrl="/sign-up">
-      <html lang="en" suppressHydrationWarning className={`${dmSans.variable} h-full antialiased`}>
+      <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${dmSans.variable} h-full antialiased`}>
         <head>
           {/* Runs before first paint: marks JS as on (motion pre-hide in globals.css) and hides the intro overlay for returning / reduced-motion visitors. Lives here because the
               root layout never re-renders on the client (React warns about <script> rendered by client components). */}

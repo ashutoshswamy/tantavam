@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import footerArt from "@/public/footer.png";
+import footerArt from "@/public/footer.webp";
 import { Logo } from "../logo";
 import { Show, SignInButton } from "@clerk/nextjs";
 import { AccountMenu } from "./account-menu";

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ArrowUpRight, Mail, MessageCircle, Phone } from "lucide-react";
 import { CONTACT } from "@/lib/site";
 import { Instagram } from "../instagram-icon";
-import contactImage from "@/public/contact-image.png";
+import contactImage from "@/public/contact-image.webp";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function Contact() {
           <Image
             src={contactImage}
             alt="A blue rotary telephone, sealed letters and a fabric-wrapped parcel on a carved wooden tray with jasmine"
-            priority
+            preload
             sizes="(min-width: 768px) 480px, 90vw"
             className="w-full max-w-md lg:max-w-lg h-auto justify-self-center md:py-8"
           />

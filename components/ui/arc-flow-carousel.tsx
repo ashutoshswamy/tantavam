@@ -5,6 +5,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { gsap } from "gsap";
+import { cld } from "@/lib/img";
 
 function usePrefersReducedMotion() {
   return useSyncExternalStore(
@@ -490,7 +491,8 @@ export default function ArcFlowCarousel({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={item.src}
+                src={cld(item.src, 800)}
+                decoding="async"
                 alt={item.alt ?? `Slide ${(i % total) + 1}`}
                 draggable={false}
                 className="pointer-events-none block h-full w-full object-cover select-none"

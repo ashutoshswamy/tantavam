@@ -28,7 +28,8 @@ export function SiteMotion() {
       const main = document.querySelector("main");
       if (navigated && main && !document.querySelector("[data-hero-rise]")) {
         const blocks = main.children.length === 1 ? main.children[0].children : main.children;
-        gsap.fromTo(blocks, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.06, clearProps: "transform" });
+        // opacity (not autoAlpha): the page stays clickable while it fades in
+        gsap.fromTo(blocks, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", stagger: 0.03, clearProps: "transform,opacity" });
       }
 
       // The page streams in behind loading.tsx, so targets can arrive after this runs: bind each once, as it shows up.
@@ -43,13 +44,13 @@ export function SiteMotion() {
             start: "top bottom",
             once: true,
             onEnter: (els) =>
-              gsap.fromTo(els, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08, overwrite: true }),
+              gsap.fromTo(els, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.06, overwrite: true, clearProps: "transform" }),
           });
         const rise = fresh("[data-hero-rise]");
         if (!rise.length) return;
         const hero = gsap
           .timeline({ paused: true, defaults: { ease: "power4.out" } })
-          .fromTo(rise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.12 })
+          .fromTo(rise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09 })
           .from("[data-hero-art]", { yPercent: 5, scale: 1.04, duration: 1.6, ease: "power3.out" }, 0);
         if (html.hasAttribute("data-intro-seen")) return void hero.play();
         // first visit: hold until the intro video has shrunk into the logo

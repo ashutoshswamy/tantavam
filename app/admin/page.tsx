@@ -59,7 +59,7 @@ export default async function Dashboard() {
             {!recent.data?.length ? (
               <Empty>No orders yet.</Empty>
             ) : (
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full text-sm">
                 <tbody>
                   {(recent.data as Order[]).map((o) => (
                     <tr key={o.id} className={`${tr} first:border-0 hover:bg-mallige/60`}>
@@ -72,7 +72,7 @@ export default async function Dashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </Card>
         )}

@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers }];
   },
   images: {
+    // Cloudinary resizes + converts at its CDN (lib/image-loader.ts); static imports are pre-compressed webp
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
   },
   // admin product form uploads images through a server action

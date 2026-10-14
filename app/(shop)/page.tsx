@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import hero from "@/public/hero-image.png";
-import aboutImage from "@/public/aboutus-image.png";
-import fabricIcon from "@/public/aboutus-icon-1.png";
-import fitIcon from "@/public/aboutus-icon-2.png";
-import heartIcon from "@/public/aboutus-icon-3.png";
+import hero from "@/public/hero-image.webp";
+import aboutImage from "@/public/aboutus-image.webp";
+import fabricIcon from "@/public/aboutus-icon-1.webp";
+import fitIcon from "@/public/aboutus-icon-2.webp";
+import heartIcon from "@/public/aboutus-icon-3.webp";
 import { ProductGrid } from "./product-grid";
 import { StoryMotion } from "./story-motion";
 import { MoodCarousel, type Mood } from "./mood-carousel";
@@ -54,7 +54,7 @@ export default async function Home() {
             src={hero}
             alt="Three women in navy, ivory-and-green and yellow anarkalis with jasmine in their hair"
             fill
-            priority
+            preload
             sizes="100vw"
             className="object-contain object-bottom md:object-[right_bottom]"
           />

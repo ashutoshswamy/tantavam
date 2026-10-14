@@ -77,7 +77,7 @@ export default async function Analytics({ searchParams }: PageProps<"/admin/anal
           {!r.topProducts.length ? (
             <Empty>No sales in this period.</Empty>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto"><table className="w-full text-sm">
               <thead>
                 <tr>
                   <th className={th}>Product</th>
@@ -94,7 +94,7 @@ export default async function Analytics({ searchParams }: PageProps<"/admin/anal
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </Card>
 

@@ -30,7 +30,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
           src={images[active]}
           alt={`${alt} - image ${active + 1} of ${images.length}`}
           fill
-          priority={active === 0}
+          preload={active === 0}
           sizes="(min-width: 768px) 50vw, 100vw"
           className="object-contain"
         />

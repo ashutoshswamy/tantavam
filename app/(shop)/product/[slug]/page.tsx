@@ -25,10 +25,9 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
 }
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
-  const p = await getProduct((await params).slug);
+  const [p, { userId }] = await Promise.all([getProduct((await params).slug), auth()]);
   if (!p) notFound();
   const firstInStock = p.sizes.find((s) => inStock(p, s) > 0);
-  const { userId } = await auth();
   // ponytail: averages in JS over every approved rating; move to a SQL view if a product gets thousands
   const [reviews, { data: mine }] = await Promise.all([
     getApprovedReviews(p.id),

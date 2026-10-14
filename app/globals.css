@@ -150,6 +150,18 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
+/* taps register at once: no double-tap-to-zoom wait, no grey flash */
+a,
+button,
+input,
+select,
+textarea,
+label,
+summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
