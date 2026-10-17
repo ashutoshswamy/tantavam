@@ -8,7 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 // Shop-wide motion, driven by data attributes so pages stay server components:
-//   [data-hero-rise] home hero copy, rises in order once the intro video has gone (html[data-intro-seen])
 //   [data-hero-art]  home hero image, settles into place alongside (transform only, so LCP isn't delayed)
 //   [data-reveal]    anything else, rises in as it scrolls into view
 //   page enter       on client navigation, the new page's top-level blocks rise in (every shop route, no markup needed)
@@ -26,7 +25,7 @@ export function SiteMotion() {
       // Page enter: the page's own top-level blocks (a lone wrapper is looked through), staggered. Home skips it, its hero
       // has its own entrance. Runs in a layout effect, before the new page paints, so there is no flash.
       const main = document.querySelector("main");
-      if (navigated && main && !document.querySelector("[data-hero-rise]")) {
+      if (navigated && main) {
         const blocks = main.children.length === 1 ? main.children[0].children : main.children;
         // opacity (not autoAlpha): the page stays clickable while it fades in
         gsap.fromTo(blocks, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", stagger: 0.03, clearProps: "transform,opacity" });
@@ -35,7 +34,6 @@ export function SiteMotion() {
       // The page streams in behind loading.tsx, so targets can arrive after this runs: bind each once, as it shows up.
       const bound = new WeakSet<Element>();
       const fresh = (sel: string) => gsap.utils.toArray<HTMLElement>(sel).filter((el) => !bound.has(el) && !!bound.add(el));
-      const html = document.documentElement;
       const bind = () => {
         // "top bottom": fires as soon as any part is on screen, so items at the very end of a short page still show
         const reveals = fresh("[data-reveal]");
@@ -46,21 +44,8 @@ export function SiteMotion() {
             onEnter: (els) =>
               gsap.fromTo(els, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.06, overwrite: true, clearProps: "transform" }),
           });
-        const rise = fresh("[data-hero-rise]");
-        if (!rise.length) return;
-        const hero = gsap
-          .timeline({ paused: true, defaults: { ease: "power4.out" } })
-          .fromTo(rise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09 })
-          .from("[data-hero-art]", { yPercent: 5, scale: 1.04, duration: 1.6, ease: "power3.out" }, 0);
-        if (html.hasAttribute("data-intro-seen")) return void hero.play();
-        // first visit: hold until the intro video has shrunk into the logo
-        const watch = new MutationObserver(() => {
-          if (!html.hasAttribute("data-intro-seen")) return;
-          watch.disconnect();
-          hero.play();
-        });
-        watch.observe(html, { attributes: true, attributeFilter: ["data-intro-seen"] });
-        stops.push(() => watch.disconnect());
+        const heroArt = fresh("[data-hero-art]");
+        if (heroArt.length) gsap.from(heroArt, { yPercent: 5, scale: 1.04, duration: 1.6, ease: "power3.out" });
       };
       const stops: (() => void)[] = [];
       bind();

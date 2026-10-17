@@ -34,14 +34,14 @@ export default async function Home() {
         <div className="hidden md:block absolute inset-y-0 left-0 z-[5] w-[62%] lg:w-[55%] bg-gradient-to-r from-[#e2e2e6] from-55% to-transparent" aria-hidden />
         <div className="relative z-10 mx-auto w-full max-w-6xl h-full flex items-center">
           <div className="px-4 pt-14 pb-8 md:py-0 md:max-w-[46%]">
-            <p data-hero-rise className="uppercase tracking-[0.25em] text-xs text-rani">Ethnic wear for her</p>
-            <h1 data-hero-rise className="font-semibold tracking-tight text-[2.6rem] sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl mt-5 leading-[1.05]">
+            <p className="uppercase tracking-[0.25em] text-xs text-rani">Ethnic wear for her</p>
+            <h1 className="font-semibold tracking-tight text-[2.6rem] sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl mt-5 leading-[1.05]">
               Dressed for every celebration.
             </h1>
-            <p data-hero-rise className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
+            <p className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
               Anarkalis, sarees and lehengas for the wedding, the festival and the family dinner after.
             </p>
-            <div data-hero-rise className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">
                 Shop now
               </Link>
