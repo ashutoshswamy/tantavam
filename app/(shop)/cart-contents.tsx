@@ -20,7 +20,7 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
         {lines.map((l) => (
           <li key={l.id + l.size} className="flex gap-3 sm:gap-4 py-4">
             <div className="relative w-20 aspect-[3/4] bg-line shrink-0">
-              {l.product.images[0] && <Image src={l.product.images[0]} alt="" fill sizes="80px" className="object-cover" />}
+              {l.product.images[0] && <Image src={l.product.images[0]} alt="" fill sizes="80px" className="object-contain" />}
             </div>
             <div className="flex-1 min-w-0 text-sm break-words">
               <Link href={`/product/${l.product.slug}`} className="hover:text-rani">{l.product.name}</Link>

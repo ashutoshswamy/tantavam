@@ -57,9 +57,9 @@ export default function Contact() {
                   <span className="grid size-11 shrink-0 place-content-center rounded-full bg-gulabi/30 text-rani">
                     <Icon size={20} strokeWidth={1.75} />
                   </span>
-                  <span className="flex-1">
+                  <span className="min-w-0 flex-1">
                     <span className="block text-xs uppercase tracking-[0.2em] text-kajal/60">{label}</span>
-                    <span className="block font-medium group-hover:text-rani">{value}</span>
+                    <span className="block break-words font-medium group-hover:text-rani">{value}</span>
                   </span>
                   <ArrowUpRight size={18} strokeWidth={1.75} className="text-kajal/40 group-hover:text-rani" />
                 </a>

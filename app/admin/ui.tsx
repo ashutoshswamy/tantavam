@@ -16,20 +16,20 @@ export const tr = "border-t border-kajal/10 transition-colors hover:bg-mallige/5
 export function Header({ title, description, children }: { title: string; description?: ReactNode; children?: ReactNode }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
+      <div className="min-w-0">
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {description && <p className="mt-1 text-sm text-kajal/60">{description}</p>}
       </div>
-      {children && <div className="flex flex-wrap gap-2">{children}</div>}
+      {children && <div className="flex max-w-full flex-wrap gap-2">{children}</div>}
     </div>
   );
 }
 
 export function Card({ title, action, children, className = "" }: { title?: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-xl border border-kajal/10 bg-white shadow-sm ${className}`}>
+    <section className={`min-w-0 rounded-xl border border-kajal/10 bg-white shadow-sm ${className}`}>
       {title && (
-        <div className="flex items-center justify-between gap-4 border-b border-kajal/10 px-5 py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-kajal/10 px-5 py-3.5">
           <h2 className="text-sm font-semibold">{title}</h2>
           {action}
         </div>

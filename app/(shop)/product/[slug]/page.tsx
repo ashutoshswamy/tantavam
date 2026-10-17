@@ -62,11 +62,11 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
     <>
       {/* "<" escaped so product text can't close the script tag */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <div className="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-2 gap-10">
+      <div className="mx-auto max-w-6xl min-w-0 px-4 py-8 sm:py-12 grid md:grid-cols-2 gap-8 sm:gap-10">
         <Gallery images={p.images} alt={p.name} />
-        <div className="md:sticky md:top-8 self-start">
+        <div className="min-w-0 md:sticky md:top-8 self-start">
           <p className="uppercase tracking-[0.25em] text-xs text-rani">{p.category}</p>
-          <h1 className="font-semibold tracking-tight text-4xl md:text-5xl leading-tight mt-2">{p.name}</h1>
+          <h1 className="break-words font-semibold tracking-tight text-3xl sm:text-4xl md:text-5xl leading-tight mt-2">{p.name}</h1>
           <p className="text-xl text-rani mt-4">{inr(p.price)}</p>
           {showAverage && (
             <a href="#reviews" className="mt-3 inline-flex items-center gap-2 text-sm hover:text-rani">
@@ -123,7 +123,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
         </div>
       </div>
 
-      <section id="reviews" className="mx-auto max-w-6xl px-4 pt-8 grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
+      <section id="reviews" className="mx-auto max-w-6xl min-w-0 px-4 pt-8 grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight">Reviews</h2>
           {showAverage && (

@@ -52,7 +52,7 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                     <td className={td}>
                       <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 font-medium hover:text-rani">
                         <span className="relative h-12 w-9 shrink-0 overflow-hidden rounded bg-line">
-                          {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="36px" className="object-cover" />}
+                          {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="36px" className="object-contain" />}
                         </span>
                         {p.name}
                       </Link>

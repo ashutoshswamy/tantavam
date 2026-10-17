@@ -31,19 +31,19 @@ export default async function Checkout({ searchParams }: PageProps<"/checkout">)
 
       <section className="mb-8 border border-line bg-white p-4 sm:p-5 text-sm">
         <dl className="grid gap-2">
-          <div className="flex justify-between">
-            <dt className="text-kajal/70">Subtotal · {lines.length} item(s)</dt>
-            <dd className="tabular-nums">{inr(price.subtotal)}</dd>
+          <div className="flex justify-between gap-3">
+            <dt className="min-w-0 break-words text-kajal/70">Subtotal · {lines.length} item(s)</dt>
+            <dd className="shrink-0 tabular-nums">{inr(price.subtotal)}</dd>
           </div>
           {price.applied && (
-            <div className="flex justify-between text-emerald-700">
-              <dt className="inline-flex items-center gap-1.5">
+            <div className="flex justify-between gap-3 text-emerald-700">
+              <dt className="min-w-0 break-words inline-flex items-center gap-1.5">
                 <TicketPercent size={16} strokeWidth={1.75} /> {price.applied.label}
               </dt>
-              <dd className="tabular-nums">−{inr(price.discount)}</dd>
+              <dd className="shrink-0 tabular-nums">−{inr(price.discount)}</dd>
             </div>
           )}
-          <div className="flex justify-between border-t border-line pt-2 text-base font-semibold">
+          <div className="flex justify-between gap-3 border-t border-line pt-2 text-base font-semibold">
             <dt>Total</dt>
             <dd className="tabular-nums text-rani">{inr(price.total)}</dd>
           </div>

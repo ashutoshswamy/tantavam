@@ -23,7 +23,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
   }, [active]);
 
   return (
-    <div className="self-start" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    <div className="min-w-0 self-start" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <div className="relative aspect-[3/4] w-full bg-line">
         <Image
           key={images[active]}
@@ -48,7 +48,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
                 i === active ? "border-kajal" : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
-              <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+              <Image src={src} alt="" fill sizes="80px" className="object-contain" />
             </button>
           ))}
         </div>

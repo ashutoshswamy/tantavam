@@ -63,8 +63,8 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
       {!!images.length && (
         <div className="flex flex-wrap gap-3">
           {order.map((src, i) => (
-            <label key={src} className="group relative h-32 w-24 overflow-hidden rounded-md bg-line">
-              <Image src={src} alt="" fill sizes="96px" className="object-cover group-has-[:not(:checked)]:opacity-30" />
+            <label key={src} className="group relative h-32 w-24 rounded-md bg-line">
+              <Image src={src} alt="" fill sizes="96px" className="object-contain group-has-[:not(:checked)]:opacity-30" />
               <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-kajal/70 px-1.5 py-1 text-xs text-mallige">
                 <input type="checkbox" name="keep" value={src} defaultChecked onChange={(e) => setKept((k) => k + (e.target.checked ? 1 : -1))} /> Keep
               </span>

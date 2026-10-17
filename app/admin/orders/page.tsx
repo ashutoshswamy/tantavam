@@ -55,7 +55,7 @@ export default async function Orders({ searchParams }: PageProps<"/admin/orders"
           </nav>
           <form className="flex gap-2">
             <input type="hidden" name="status" value={status} />
-            <input name="q" type="search" defaultValue={q} placeholder="Name, phone or order id" className={`${field} w-56`} />
+            <input name="q" type="search" defaultValue={q} placeholder="Name, phone or order id" className={`${field} w-56 max-w-full`} />
             <button className={btnGhost}>Search</button>
           </form>
         </div>

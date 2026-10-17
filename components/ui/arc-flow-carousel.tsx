@@ -495,7 +495,7 @@ export default function ArcFlowCarousel({
                 decoding="async"
                 alt={item.alt ?? `Slide ${(i % total) + 1}`}
                 draggable={false}
-                className="pointer-events-none block h-full w-full object-cover select-none"
+                className="pointer-events-none block h-full w-full object-contain select-none"
               />
               {(item.title || item.description) ? (
                 <div
