@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db, inStock, LOW_STOCK, lowSizes, type Product } from "@/lib/db";
 import { gate } from "@/lib/store";
-import { updateStock } from "../actions";
+import { resetStock, updateStock } from "../actions";
 import { Submit } from "../client";
 import { Card, Empty, Header, btnGhost, dateTime, td, th, tr } from "../ui";
 
@@ -41,6 +41,11 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
               {label}
             </Link>
           ))}
+          <form action={resetStock} className="ml-auto">
+            <Submit className={btnGhost} confirm="Set stock to 0 for every size of every product? This cannot be undone (history keeps the old values).">
+              Reset all
+            </Submit>
+          </form>
         </nav>
         {!products.length ? (
           <Empty>Nothing here.</Empty>
