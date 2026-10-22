@@ -207,3 +207,21 @@ select:not([class*="cl-"]):focus {
     transform: scale(1.35);
   }
 }
+
+/* Admin invoice generator: print only the invoice sheet */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #invoice,
+  #invoice * {
+    visibility: visible;
+  }
+  #invoice {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+  @page {
+    margin: 14mm;
+  }
+}

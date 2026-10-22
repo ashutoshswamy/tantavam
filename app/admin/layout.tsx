@@ -6,7 +6,7 @@ import { allowed, getAccess, type Section } from "@/lib/store";
 import { Nav } from "./client";
 import { Logo } from "../logo";
 import { Flash } from "@/components/flash";
-import { ArrowUpRight, Boxes, ChartColumn, History, Layers, LayoutDashboard, Inbox, Package, Settings, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
+import { ArrowUpRight, Boxes, ChartColumn, FileText, History, Layers, LayoutDashboard, Inbox, Package, Settings, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
 
 export const metadata = { title: { default: "Dashboard · Admin", template: "%s · Admin" } };
 
@@ -14,6 +14,7 @@ const NAV: { href: string; label: string; icon: ReactNode; section?: Section | "
   { href: "/admin", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
   { href: "/admin/analytics", label: "Analytics", icon: <ChartColumn size={16} />, section: "analytics" },
   { href: "/admin/orders", label: "Orders", icon: <Package size={16} />, section: "orders" },
+  { href: "/admin/invoices", label: "Invoices", icon: <FileText size={16} />, section: "orders" },
   { href: "/admin/products", label: "Products", icon: <Shirt size={16} />, section: "products" },
   { href: "/admin/categories", label: "Categories", icon: <Tags size={16} />, section: "categories" },
   { href: "/admin/collections", label: "Collections", icon: <Layers size={16} />, section: "collections" },
