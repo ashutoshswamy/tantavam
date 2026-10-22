@@ -19,7 +19,7 @@ export function CartContents({ lines, total }: Awaited<ReturnType<typeof getCart
       <ul className="flex-1 overflow-y-auto divide-y divide-line px-4 sm:px-6">
         {lines.map((l) => (
           <li key={l.id + l.size} className="flex gap-3 sm:gap-4 py-4">
-            <div className="relative w-20 aspect-[3/4] bg-line shrink-0">
+            <div className="relative w-20 aspect-[4/5] bg-line shrink-0">
               {l.product.images[0] && <Image src={l.product.images[0]} alt="" fill sizes="80px" className="object-contain" />}
             </div>
             <div className="flex-1 min-w-0 text-sm break-words">

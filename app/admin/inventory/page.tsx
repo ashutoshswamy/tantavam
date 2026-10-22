@@ -69,7 +69,7 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
                     )}
                     <td className={`${td} font-medium`}>
                       <div className="flex items-center gap-3">
-                        <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-line">
+                        <span className="relative aspect-[4/5] w-12 shrink-0 overflow-hidden rounded bg-line">
                           {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
                         </span>
                         <span>

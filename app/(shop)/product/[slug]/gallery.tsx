@@ -24,7 +24,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
 
   return (
     <div className="min-w-0 self-start" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      <div className="relative aspect-[3/4] w-full bg-line">
+      <div className="relative aspect-[4/5] w-full bg-line">
         <Image
           key={images[active]}
           src={images[active]}
@@ -44,7 +44,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               aria-label={`Show image ${i + 1}`}
               aria-current={i === active}
               onClick={() => setActive(i)}
-              className={`relative aspect-[3/4] w-20 shrink-0 bg-line border-2 ${
+              className={`relative aspect-[4/5] w-20 shrink-0 bg-line border-2 ${
                 i === active ? "border-kajal" : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >

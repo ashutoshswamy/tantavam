@@ -51,7 +51,7 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                   <tr key={p.id} className={`${tr} hover:bg-mallige/60`}>
                     <td className={td}>
                       <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 font-medium hover:text-rani">
-                        <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-line">
+                        <span className="relative aspect-[4/5] w-12 shrink-0 overflow-hidden rounded bg-line">
                           {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
                         </span>
                         {p.name}

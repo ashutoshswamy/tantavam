@@ -25,7 +25,7 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         tabIndex={copy ? -1 : undefined}
         className={`group min-w-0 ${row ? "w-48 min-[400px]:w-56 sm:w-72 lg:w-80 shrink-0 pr-4 sm:pr-6" : ""}`}
       >
-        <div className="relative aspect-[3/4] bg-line">
+        <div className="relative aspect-[4/5] bg-line">
           {p.images[0] && (
             <Image
               src={p.images[0]}

@@ -109,7 +109,7 @@ export function SearchModal() {
                     {shown.products.map((p) => (
                       <li key={p.slug}>
                         <Link href={`/product/${p.slug}`} className="flex items-center gap-3 p-2 -mx-2 hover:bg-white hover:text-rani">
-                          <span className="relative h-14 w-11 shrink-0 bg-line overflow-hidden">
+                          <span className="relative aspect-[4/5] w-11 shrink-0 bg-line overflow-hidden">
                             {p.image && <Image src={p.image} alt="" fill sizes="44px" className="object-contain" />}
                           </span>
                           <span className="flex-1 min-w-0 break-words">{p.name}</span>

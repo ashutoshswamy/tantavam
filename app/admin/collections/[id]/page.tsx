@@ -47,7 +47,7 @@ export default async function EditCollection({ params }: PageProps<"/admin/colle
             {((products ?? []) as Pick<Product, "id" | "name" | "price" | "images">[]).map((p) => (
               <label key={p.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-kajal/10 p-2 text-sm has-checked:border-rani has-checked:bg-mallige">
                 <input type="checkbox" name="products" value={p.id} defaultChecked={linked.has(p.id)} className="accent-rani" />
-                <span className="relative h-12 w-9 shrink-0 rounded bg-line">
+                <span className="relative aspect-[4/5] w-9 shrink-0 rounded bg-line">
                   {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="36px" className="object-contain" />}
                 </span>
                 <span className="min-w-0">
