@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import Image from "next/image";
 import { signUpload } from "./actions";
+import { CROP_H, CROP_W, CropDialog } from "./image-cropper";
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 export function Nav({ items }: { items: { href: string; label: string; icon: ReactNode }[] }) {
@@ -86,8 +87,27 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
       [n[i], n[i + d]] = [n[i + d], n[i]];
       return n;
     });
-  const [added, setAdded] = useState(0);
+  // new photos are cropped to 1080x1350 one at a time before they join the file input
+  const [queue, setQueue] = useState<File[]>([]);
+  const [cropped, setCropped] = useState<{ file: File; url: string }[]>([]);
+  const added = cropped.length;
   const input = useRef<HTMLInputElement>(null);
+  const sync = (list: { file: File }[]) => {
+    const dt = new DataTransfer();
+    list.forEach((c) => dt.items.add(c.file));
+    if (input.current) input.current.files = dt.files;
+  };
+  const finish = (file?: File) => {
+    if (file) setCropped((c) => (sync([...c, { file }]), [...c, { file, url: URL.createObjectURL(file) }]));
+    setQueue((q) => q.slice(1));
+  };
+  const drop = (i: number) =>
+    setCropped((c) => {
+      URL.revokeObjectURL(c[i].url);
+      const n = c.filter((_, j) => j !== i);
+      sync(n);
+      return n;
+    });
   const over = kept + added > max;
   useEffect(() => input.current?.setCustomValidity(over ? `Max ${max} images. Remove ${kept + added - max}.` : ""), [over, kept, added, max]);
   return (
@@ -118,6 +138,18 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
           ))}
         </div>
       )}
+      {!!cropped.length && (
+        <div className="flex flex-wrap gap-3">
+          {cropped.map((c, i) => (
+            <div key={c.url} className="relative aspect-[4/5] w-24 rounded-md bg-line">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview */}
+              <img src={c.url} alt="" className="size-full rounded-md object-cover" />
+              <button type="button" aria-label="Remove image" onClick={() => drop(i)} className="absolute right-1 top-1 rounded bg-kajal/70 px-1.5 py-0.5 text-xs text-mallige">✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {queue[0] && <CropDialog key={queue[0].name + queue.length} file={queue[0]} onDone={finish} onCancel={() => finish()} />}
       <label className="grid gap-1.5 text-sm font-medium">
         {images.length ? "Add images" : "Upload images"}
         <input
@@ -127,11 +159,16 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
           accept="image/*"
           multiple
           required={!images.length}
-          onChange={(e) => setAdded(e.target.files?.length ?? 0)}
+          onChange={(e) => {
+            // the picker replaces input.files; restore the already-cropped set, then crop the new picks
+            const picked = [...(e.target.files ?? [])].filter((f) => f.type.startsWith("image/"));
+            sync(cropped);
+            setQueue((q) => [...q, ...picked]);
+          }}
           className="text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-line file:px-3 file:py-2 file:text-sm"
         />
         <span className={`text-xs font-normal ${over ? "text-rani" : "text-kajal/50"}`}>
-          {kept + added} of {max} images (best at 1080 × 1350){over && ` - remove ${kept + added - max}`}
+          {kept + added} of {max} images (cropped to {CROP_W} × {CROP_H}){over && ` - remove ${kept + added - max}`}
         </span>
       </label>
     </div>
