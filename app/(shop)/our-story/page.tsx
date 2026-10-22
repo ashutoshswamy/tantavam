@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Ruler, Scissors, Sparkles, Tag } from "lucide-react";
 import aboutImage from "@/public/aboutus-image.webp";
+import doorImage from "@/public/auth-image.webp";
 import { CONTACT } from "@/lib/site";
 import { StoryMotion } from "../story-motion";
 import { OurStoryMotion } from "./our-story-motion";
@@ -78,13 +79,13 @@ export default function OurStory() {
         </div>
       </StoryMotion>
 
-      {/* chapter one: big title, copy staggered underneath and to the right */}
-      <section className="mx-auto max-w-6xl px-4 pt-20 sm:pt-28 pb-16 sm:pb-24">
-        <h2 data-reveal className={`${h2} md:text-5xl md:max-w-xl`}>
-          It began with an outfit I couldn&apos;t find
-        </h2>
-        <div className="mt-10 md:mt-14 grid md:grid-cols-12">
-          <div className="md:col-start-6 md:col-span-7 grid gap-6">
+      {/* chapter one: copy stacked under its title, the boutique door on the other side so neither column is left empty */}
+      <section className="mx-auto max-w-6xl px-4 pt-20 sm:pt-28 pb-16 sm:pb-24 grid gap-12 md:grid-cols-12 md:items-center">
+        <div className="md:col-span-7 lg:pr-8">
+          <h2 data-reveal className={`${h2} md:text-5xl md:max-w-lg`}>
+            It began with an outfit I couldn&apos;t find
+          </h2>
+          <div className="mt-8 md:mt-10 grid gap-6 max-w-xl">
             <p data-reveal className="text-xl sm:text-2xl leading-snug tracking-tight">
               A wedding was coming up, and I wanted one simple thing: something that fit me well and felt like <em>me</em>.
             </p>
@@ -97,6 +98,15 @@ export default function OurStory() {
               being told, once again, to settle.
             </p>
           </div>
+        </div>
+        <div data-reveal className="md:col-span-5 relative w-full max-w-sm md:max-w-none mx-auto">
+          <div aria-hidden className="absolute inset-0 translate-x-3 translate-y-3 border-2 border-dashed border-rani/40" />
+          <Image
+            src={doorImage}
+            alt="The Tantvam boutique doorway at golden hour, with a carved wooden door open onto a rail of blue and green outfits"
+            sizes="(min-width: 768px) 40vw, 90vw"
+            className="relative w-full h-auto aspect-[4/5] object-cover"
+          />
         </div>
       </section>
 
