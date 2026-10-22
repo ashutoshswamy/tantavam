@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { db, inStock, LOW_STOCK, lowSizes, type Product } from "@/lib/db";
-import { gate } from "@/lib/store";
-import { resetProductStock, updateStock } from "../actions";
-import { Submit } from "../client";
+import { allowed, gate } from "@/lib/store";
+import { deleteProducts, resetProductStock, updateStock } from "../actions";
+import { BulkDelete, SelectAll, Submit } from "../client";
 import { Card, Empty, Header, btnGhost, dateTime, td, th, tr } from "../ui";
 
 export const metadata = { title: "Inventory" };
@@ -15,7 +15,8 @@ const FILTERS = [
 ] as const;
 
 export default async function Inventory({ searchParams }: PageProps<"/admin/inventory">) {
-  await gate("inventory");
+  const access = await gate("inventory");
+  const canDelete = allowed(access, "products");
   const { filter: param, product } = await searchParams;
   const filter = FILTERS.find(([f]) => f === param)?.[0] ?? "all";
   const productId = typeof product === "string" ? product : "";
@@ -42,6 +43,7 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
               {label}
             </Link>
           ))}
+          {canDelete && <BulkDelete action={deleteProducts} />}
         </nav>
         {!products.length ? (
           <Empty>Nothing here.</Empty>
@@ -50,6 +52,7 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
             <table className="w-full text-sm">
               <thead>
                 <tr>
+                  {canDelete && <th className={`${th} w-10`}><SelectAll /></th>}
                   <th className={th}>Product</th>
                   <th className={th}>Stock by size</th>
                   <th className={`${th} text-right`}>Total</th>
@@ -59,6 +62,11 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id} className={tr}>
+                    {canDelete && (
+                      <td className={td}>
+                        <input type="checkbox" form="bulk" name="ids" value={p.id} aria-label={`Select ${p.name}`} />
+                      </td>
+                    )}
                     <td className={`${td} font-medium`}>
                       <div className="flex items-center gap-3">
                         <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-line">

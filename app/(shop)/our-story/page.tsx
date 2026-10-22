@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { CONTACT } from "@/lib/site";
-import aboutImage from "@/public/aboutus-image.webp";
 
 export const metadata: Metadata = {
   title: "Our story",
@@ -11,10 +9,10 @@ export const metadata: Metadata = {
 };
 
 const promise = [
-  "Designer-level clothes with real craftsmanship",
-  "Sizes XS to XXXL",
-  "Prices that respect you",
-  "Pieces made to be remembered",
+  "Real craftsmanship, sourced from specialist artisans",
+  "Designer-level style without the boutique price tag",
+  "Every size, XS to XXXL",
+  "Pieces made to be remembered, for festivals, work and everyday life",
 ];
 
 const h2 = "text-2xl sm:text-3xl font-semibold tracking-tight";
@@ -31,51 +29,62 @@ export default function OurStory() {
               Designer-level clothes. Every size. Honest prices.
             </h1>
             <p className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
-              Handcrafted ethnic, indo-western and casual wear for women who want to look good and feel like themselves.
+              Handcrafted ethnic, indo-western and casual wear for women who want to look beautiful and feel like themselves.
             </p>
           </div>
-          <Image
-            src={aboutImage}
-            alt="A carved wooden handloom with wine silk, folded fabrics, thread spools, block-print stamps and brass scissors"
-            preload
-            sizes="(min-width: 768px) 480px, 90vw"
-            className="w-full max-w-md lg:max-w-lg h-auto justify-self-center md:py-8"
+          <video
+            src="/manasi-story.mp4"
+            poster="/manasi-story-poster.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls
+            preload="metadata"
+            aria-label="Manasi Gurav, founder of Tantvam"
+            className="w-full max-w-[18rem] sm:max-w-xs aspect-[9/16] object-cover justify-self-center my-10 md:my-12 rounded-lg bg-kajal"
           />
         </div>
       </section>
 
       <article className="mx-auto max-w-2xl px-4 py-16 sm:py-24">
         <section data-reveal>
-          <h2 className={h2}>It started with an outfit I couldn&apos;t find</h2>
+          <h2 className={h2}>It began with an outfit I couldn&apos;t find</h2>
           <p className={p}>
-            I wanted one simple thing: an outfit that fit well and felt like <em>me</em>. I searched shop after shop. The affordable pieces
-            were forgettable, the same design on every rack, and the sizes never worked. The beautiful ones sat in boutiques, priced far
-            beyond what felt sensible.
+            A wedding was coming up, and I wanted one simple thing: something that fit me well and felt like <em>me</em>.
           </p>
           <p className={p}>
-            I went home with &ldquo;close enough&rdquo;, and a quiet ache that had nothing to do with clothes. It was the feeling of being
-            told, once again, to settle.
+            I searched everywhere. The affordable pieces were forgettable, the same design on every rack, and the sizes never quite
+            worked. The beautiful ones waited in boutiques, priced far beyond what felt fair.
+          </p>
+          <p className={p}>
+            I went home with &ldquo;close enough.&rdquo; And I felt a quiet ache that had nothing to do with clothes. It was the feeling of
+            being told, once again, to settle.
           </p>
         </section>
 
         <section data-reveal className="mt-14">
-          <h2 className={h2}>I wasn&apos;t the only one</h2>
+          <h2 className={h2}>And I wasn&apos;t the only one</h2>
           <p className={p}>
-            When I spoke to other women, I heard the same story everywhere: the size that was never in stock, the outfit bought at great
-            cost and worn once, the wish to simply feel good on an ordinary day.
+            When I spoke to other women, I heard the same story: the size that was never in stock, the outfit bought at great cost and worn
+            once, the simple wish to feel good on an ordinary day.
           </p>
-          <p className={p}>We had all been quietly settling.</p>
+          <p className={p}>We had all been quietly settling. I decided we shouldn&apos;t have to.</p>
         </section>
 
         <section data-reveal className="mt-14">
-          <h2 className={h2}>So I decided to fix it</h2>
+          <h2 className={h2}>So Tantvam was born</h2>
           <p className={p}>
-            In March 2026, <strong className="font-semibold text-kajal">Tantvam</strong> was born.
+            In March 2026, I started <strong className="font-semibold text-kajal">Tantvam</strong> with one belief: every woman deserves
+            clothes that fit her body, her budget and her story.
           </p>
           <p className={p}>
-            I went looking for the people who make the clothes we love: craftsmen in Jaipur creating handblock cotton, weavers of pure
-            Chanderi, makers of designer pieces. I made sure we stock <strong className="font-semibold text-kajal">XS to XXXL</strong>,
-            because no woman should be an afterthought. And I kept prices honest, because beautiful should never feel out of reach.
+            We work with skilled craftsmen: handblock cotton suits from Jaipur, pure Chanderi, and designer pieces made with care. We stock
+            sizes <strong className="font-semibold text-kajal">XS to XXXL</strong>, because no woman should ever feel like an afterthought.
+            And we keep our prices honest, because beautiful should never feel out of reach.
+          </p>
+          <p className={p}>
+            From our first exhibitions in Pune to the website you&apos;re on today, every step has been guided by the women who wear us.
           </p>
         </section>
 
@@ -95,15 +104,17 @@ export default function OurStory() {
             What <em>Tantvam</em> means
           </h2>
           <p className={p}>
-            <em>Tantvam</em> comes from the Sanskrit word for <strong className="font-semibold text-kajal">essence</strong>. Every piece
-            carries the hands that made it and the stories of the women who wear it: the wedding you danced through, the festival that felt
+            <em>Tantvam</em> comes from the Sanskrit word for <strong className="font-semibold text-kajal">essence</strong>.
+          </p>
+          <p className={p}>
+            Every piece carries the hands that made it, and the stories of the women who wear it: the wedding you danced through, the festival that felt
             like home, the ordinary Tuesday you walked in feeling unstoppable.
           </p>
           <p className={p}>Clothes hold our memories. They should be worthy of them.</p>
         </section>
 
         <section data-reveal className="mt-14">
-          <h2 className={h2}>Our promise</h2>
+          <h2 className={h2}>Our promise to you</h2>
           <ul className="mt-6 divide-y divide-line border-y border-line">
             {promise.map((t) => (
               <li key={t} className="flex items-center gap-4 py-4">
@@ -124,11 +135,6 @@ export default function OurStory() {
             <span className="font-medium text-kajal">Manasi Gurav</span>, Founder
           </footer>
         </blockquote>
-
-        <p data-reveal className="mt-16 text-center">
-          <span className="block text-xl font-semibold tracking-tight">Ek Dhaaga, Hazaar Kahaniyan.</span>
-          <span className="block mt-1 text-sm italic text-kajal/60">One thread, a thousand stories.</span>
-        </p>
 
         <div data-reveal className="mt-10 flex flex-wrap justify-center gap-3">
           <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">

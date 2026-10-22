@@ -129,6 +129,18 @@ export async function deleteProduct(formData: FormData) {
   redirect("/admin/products");
 }
 
+// Inventory multi-select. Same rule as deleteProduct: needs the products section, not just inventory.
+export async function deleteProducts(formData: FormData) {
+  await requireSection("products");
+  const ids = formData.getAll("ids").map(String);
+  if (!ids.length) return;
+  const { data, error } = await db.from("products").delete().in("id", ids).select("name, images");
+  fail(error);
+  await destroyFromCloudinary(data?.flatMap((p) => p.images) ?? []);
+  await audit("products", "Deleted products", (data ?? []).map((p) => p.name).join(", "));
+  await refresh();
+}
+
 // ---------- categories ----------
 
 export async function createCategory(formData: FormData) {

@@ -44,6 +44,38 @@ export function Submit({ children, className, confirm, disabled, ...rest }: { ch
   );
 }
 
+// Bulk-delete bar for a table of `ids` checkboxes (they join this form by id="bulk"). Tracks the ticked count via bubbling change events.
+export function BulkDelete({ action }: { action: (f: FormData) => Promise<void> }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const count = () => setN(document.querySelectorAll('input[name="ids"]:checked').length);
+    document.addEventListener("change", count);
+    return () => document.removeEventListener("change", count);
+  }, []);
+  return (
+    <form id="bulk" action={action} className="ml-auto flex items-center gap-3">
+      {n > 0 && <span className="text-xs text-kajal/60">{n} selected</span>}
+      <Submit
+        disabled={!n}
+        confirm="Permanently delete the selected products, with their images, reviews and wishlist entries? This cannot be undone."
+        className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-40 disabled:hover:bg-transparent"
+      >
+        Delete selected
+      </Submit>
+    </form>
+  );
+}
+
+export function SelectAll() {
+  return (
+    <input
+      type="checkbox"
+      aria-label="Select all"
+      onChange={(e) => document.querySelectorAll<HTMLInputElement>('input[name="ids"]').forEach((c) => (c.checked = e.target.checked))}
+    />
+  );
+}
+
 // Keep checkboxes + file picker; blocks submit when kept + new images exceed max (server re-checks).
 export function ImagesField({ images, max }: { images: string[]; max: number }) {
   const [kept, setKept] = useState(images.length);
