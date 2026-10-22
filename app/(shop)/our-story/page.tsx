@@ -89,17 +89,6 @@ export default function OurStory() {
         </section>
 
         <section data-reveal className="mt-14">
-          <h2 className={h2}>Watch our story</h2>
-          <iframe
-            src="https://www.instagram.com/reel/DeWDtF6s33p/embed"
-            title="Tantvam's story, an Instagram reel"
-            loading="lazy"
-            allowFullScreen
-            className="mt-6 mx-auto block w-full max-w-[400px] h-[640px] rounded-lg border border-line bg-white"
-          />
-        </section>
-
-        <section data-reveal className="mt-14">
           <h2 className={h2}>
             What <em>Tantvam</em> means
           </h2>
