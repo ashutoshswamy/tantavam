@@ -210,17 +210,16 @@ export async function updateStock(formData: FormData) {
   await refresh();
 }
 
-export async function resetStock() {
+export async function resetProductStock(formData: FormData) {
   await requireSection("inventory");
-  const { data, error } = await db.from("products").select("id, sizes");
+  const id = text(formData, "id");
+  const { data, error } = await db.from("products").select("name, sizes").eq("id", id).single();
   fail(error);
   const user = await currentUser();
   const by = user?.fullName || user?.primaryEmailAddress?.emailAddress || "admin";
-  for (const p of data ?? []) {
-    const stock = Object.fromEntries((p.sizes as string[]).map((s) => [s, 0]));
-    fail((await db.rpc("set_stock", { p_id: p.id, p_stock: stock, p_reason: `Inventory reset by ${by}` })).error);
-  }
-  await audit("inventory", "Reset inventory", `${data?.length ?? 0} products set to 0`);
+  const stock = Object.fromEntries((data!.sizes as string[]).map((s) => [s, 0]));
+  fail((await db.rpc("set_stock", { p_id: id, p_stock: stock, p_reason: `Stock reset by ${by}` })).error);
+  await audit("inventory", "Reset stock", `${data!.name} set to 0`);
   await refresh();
 }
 

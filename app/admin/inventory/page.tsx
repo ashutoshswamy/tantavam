@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { db, inStock, LOW_STOCK, lowSizes, type Product } from "@/lib/db";
 import { gate } from "@/lib/store";
-import { resetStock, updateStock } from "../actions";
+import { resetProductStock, updateStock } from "../actions";
 import { Submit } from "../client";
 import { Card, Empty, Header, btnGhost, dateTime, td, th, tr } from "../ui";
 
@@ -42,11 +42,6 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
               {label}
             </Link>
           ))}
-          <form action={resetStock} className="ml-auto">
-            <Submit className={btnGhost} confirm="Set stock to 0 for every size of every product? This cannot be undone (history keeps the old values).">
-              Reset all
-            </Submit>
-          </form>
         </nav>
         {!products.length ? (
           <Empty>Nothing here.</Empty>
@@ -101,10 +96,16 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
                     </td>
                     <td className={`${td} text-right tabular-nums`}>{p.sizes.reduce((n, s) => n + inStock(p, s), 0)}</td>
                     <td className={`${td} text-right`}>
-                      <form id={`stock-${p.id}`} action={updateStock}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <Submit className={btnGhost}>Save</Submit>
-                      </form>
+                      <div className="flex justify-end gap-2">
+                        <form id={`stock-${p.id}`} action={updateStock}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <Submit className={btnGhost}>Save</Submit>
+                        </form>
+                        <form action={resetProductStock}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <Submit className={btnGhost} confirm={`Set every size of ${p.name} to 0? History keeps the old values.`}>Reset</Submit>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}
