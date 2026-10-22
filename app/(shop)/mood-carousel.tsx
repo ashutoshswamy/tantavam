@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ArcFlowCarousel from "@/components/ui/arc-flow-carousel";
 import type { Collection, Product } from "@/lib/db";
+import { CollectionSlides } from "./collection-slides";
 
 export type Mood = Pick<Collection, "slug" | "name" | "description"> & { products: Product[] };
 
@@ -49,6 +50,8 @@ export function MoodCarousel({ moods }: { moods: Mood[] }) {
         surfaceColor="#f4ede1" // --color-mallige
         className="mt-6 h-[min(90svh,820px)]"
       />
+
+      <CollectionSlides moods={moods} />
     </section>
   );
 }

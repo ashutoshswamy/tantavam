@@ -157,6 +157,15 @@ html:not([data-intro-seen]):has(.intro) {
 }
 
 /* New arrivals row: content is doubled, so sliding by -50% lands exactly on the start */
+@keyframes slide-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @keyframes marquee {
   to {
     transform: translateX(-50%);

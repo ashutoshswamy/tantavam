@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db, MAX_PRODUCT_IMAGES, type Category, type Collection, type Product } from "@/lib/db";
 import { saveProduct } from "../actions";
+import { ChangeBar } from "../change-bar";
 import { ImagesField, SizesField, Submit, UploadForm } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
@@ -91,8 +92,8 @@ export async function ProductForm({ product }: { product?: Product }) {
           )}
         </Card>
         <div className="flex gap-2">
-          <Submit className={`${btn} flex-1`}>{product ? "Save changes" : "Create product"}</Submit>
-          <Link href="/admin/products" className={btnGhost}>Cancel</Link>
+          {product ? <ChangeBar /> : <Submit className={`${btn} flex-1`}>Create product</Submit>}
+          <Link href="/admin/products" className={product ? `${btnGhost} flex-1 text-center` : btnGhost}>{product ? "Back to products" : "Cancel"}</Link>
         </div>
       </div>
     </UploadForm>

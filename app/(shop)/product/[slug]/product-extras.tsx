@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { Check, Copy, Link2, MessageCircle, Share2 } from "lucide-react";
+import { Check, Copy, Link2, Share2 } from "lucide-react";
+import { WhatsApp } from "../../social-icons";
 
 const chip = "inline-flex items-center gap-1.5 border border-kajal/25 px-3 py-2 text-xs hover:border-rani hover:text-rani cursor-pointer";
 
@@ -44,7 +45,7 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm mr-1">Share</span>
       <a href={`https://wa.me/?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer" className={chip}>
-        <MessageCircle size={14} strokeWidth={1.75} /> WhatsApp
+        <WhatsApp size={14} /> WhatsApp
       </a>
       <button type="button" onClick={() => copy(url)} className={chip}>
         {done ? <Check size={14} strokeWidth={1.75} /> : <Link2 size={14} strokeWidth={1.75} />} {done ? "Copied" : "Copy link"}

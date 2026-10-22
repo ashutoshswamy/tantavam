@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Plus, Printer, Save, X } from "lucide-react";
+import { Plus, Printer, Save, X } from "lucide-react";
+import { WhatsApp } from "@/app/(shop)/social-icons";
 import { Logo } from "../../logo";
 import { CONTACT } from "@/lib/site";
 import { invoiceNo, invoiceTotals, type Invoice } from "@/lib/invoice";
@@ -174,7 +175,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
         <div className="flex flex-wrap items-center justify-end gap-2 print:hidden">
           {error && <p role="alert" className="mr-auto text-sm text-red-700">{error}</p>}
           <button type="button" onClick={save} disabled={saving || !rows.length} aria-busy={saving} className={btn}><Save size={16} /> {initial ? "Save changes" : "Save invoice"}</button>
-          <button type="button" onClick={shareOnWhatsApp} disabled={!rows.length} className={btnGhost}><MessageCircle size={16} /> Share on WhatsApp</button>
+          <button type="button" onClick={shareOnWhatsApp} disabled={!rows.length} className={btnGhost}><WhatsApp size={16} /> Share on WhatsApp</button>
           <button type="button" onClick={() => window.print()} disabled={!rows.length} className={btnGhost}><Printer size={16} /> Print / save PDF</button>
         </div>
         <section id="invoice" className="rounded-xl border border-kajal/10 bg-white p-6 text-sm shadow-sm sm:p-8 print:rounded-none print:border-0 print:p-0 print:shadow-none">

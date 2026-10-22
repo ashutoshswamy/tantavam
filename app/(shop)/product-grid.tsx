@@ -40,14 +40,10 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         <div className="mt-3 min-w-0">
           <h3 className="text-[15px] leading-snug break-words group-hover:text-rani">{p.name}</h3>
           <p className="mt-1 text-[15px] font-medium text-rani">{inr(p.price)}</p>
-          {!!p.sizes.length && (
-            <ul aria-label="Sizes" className="mt-2 flex flex-wrap gap-1">
-              {p.sizes.map((s) => (
-                <li
-                  key={s}
-                  title={inStock(p, s) > 0 ? undefined : "Sold out"}
-                  className={`border px-1.5 py-0.5 text-[11px] leading-none ${inStock(p, s) > 0 ? "border-kajal/30 text-kajal/80" : "border-line text-kajal/35 line-through"}`}
-                >
+          {p.sizes.some((s) => inStock(p, s) > 0) && (
+            <ul aria-label="Available sizes" className="mt-2 flex flex-wrap gap-1">
+              {p.sizes.filter((s) => inStock(p, s) > 0).map((s) => (
+                <li key={s} className="border border-kajal/30 px-1.5 py-0.5 text-[11px] leading-none text-kajal/80">
                   {s}
                 </li>
               ))}

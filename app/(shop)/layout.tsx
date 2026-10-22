@@ -12,7 +12,7 @@ import { IntroVideo } from "./intro-video";
 import { SiteMotion } from "./site-motion";
 import { Mail, Phone, User } from "lucide-react";
 import { CONTACT } from "@/lib/site";
-import { Instagram } from "./instagram-icon";
+import { Instagram } from "./social-icons";
 import { Flash } from "@/components/flash";
 
 export default async function ShopLayout({ children }: LayoutProps<"/">) {

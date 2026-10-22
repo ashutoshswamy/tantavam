@@ -3,7 +3,7 @@
 export const INTRO_SEEN_KEY = "tantvam:intro-seen";
 
 export const CONTACT = {
-  email: "business.tantvam@gmail.com",
+  email: "tantavafashion@gmail.com",
   phone: "+91 755 878 6317",
   instagram: "https://www.instagram.com/tantvam.official/",
   whatsapp: "917558786317", // digits only, for wa.me
