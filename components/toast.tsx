@@ -1,21 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Check } from "lucide-react";
+import { sileo, Toaster } from "sileo";
+import "sileo/styles.css";
 
-// message is "<timestamp>|<text>", so every flash is a fresh key and replays the entrance.
+// message is "<timestamp>|<text>", so every flash is unique; the ref stops dev double-effects from showing it twice.
 export function Toast({ message }: { message?: string }) {
-  const el = useRef<HTMLDivElement>(null);
+  const shown = useRef("");
   useEffect(() => {
-    if (!message) return;
+    if (!message || shown.current === message) return;
+    shown.current = message;
     document.cookie = "flash=; Max-Age=0; path=/";
-    const t = setTimeout(() => el.current?.setAttribute("data-out", ""), 3500);
-    return () => clearTimeout(t);
+    sileo.success({ title: message.slice(message.indexOf("|") + 1), fill: "#0b1638" });
   }, [message]);
-  if (!message) return null;
-  return (
-    <div key={message} ref={el} role="status" className="toast">
-      <Check size={16} className="shrink-0" /> {message.slice(message.indexOf("|") + 1)}
-    </div>
-  );
+  return <Toaster position="bottom-center" />;
 }
