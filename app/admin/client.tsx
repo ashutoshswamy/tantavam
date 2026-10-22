@@ -88,7 +88,10 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
       return n;
     });
   // new photos are cropped to 1080x1350 one at a time before they join the file input
-  const [queue, setQueue] = useState<File[]>([]);
+  // `replace` = an existing image being re-cropped: its stored copy is dropped once the new crop is accepted
+  const [queue, setQueue] = useState<{ file: File; replace?: string }[]>([]);
+  const [err, setErr] = useState("");
+  const box = useRef<HTMLDivElement>(null);
   const [cropped, setCropped] = useState<{ file: File; url: string }[]>([]);
   const added = cropped.length;
   const input = useRef<HTMLInputElement>(null);
@@ -97,7 +100,25 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
     list.forEach((c) => dt.items.add(c.file));
     if (input.current) input.current.files = dt.files;
   };
+  const recrop = async (src: string) => {
+    setErr("");
+    try {
+      // the stored URL carries f_auto,q_auto; strip it so the crop starts from the original upload
+      const res = await fetch(src.replace("/upload/f_auto,q_auto/", "/upload/"));
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      setQueue((q) => [...q, { file: new File([blob], src.split("/").pop()!.replace(/\.\w+$/, "") + ".jpg", { type: blob.type }), replace: src }]);
+    } catch {
+      setErr("Couldn't load that image to crop. Try again.");
+    }
+  };
   const finish = (file?: File) => {
+    const { replace } = queue[0];
+    if (file && replace) {
+      const wasKept = box.current?.querySelector<HTMLInputElement>(`input[name="keep"][value="${CSS.escape(replace)}"]`)?.checked;
+      setOrder((o) => o.filter((x) => x !== replace));
+      if (wasKept) setKept((k) => k - 1);
+    }
     if (file) setCropped((c) => (sync([...c, { file }]), [...c, { file, url: URL.createObjectURL(file) }]));
     setQueue((q) => q.slice(1));
   };
@@ -111,7 +132,7 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
   const over = kept + added > max;
   useEffect(() => input.current?.setCustomValidity(over ? `Max ${max} images. Remove ${kept + added - max}.` : ""), [over, kept, added, max]);
   return (
-    <div className="grid gap-4 p-5">
+    <div ref={box} className="grid gap-4 p-5">
       {!!images.length && (
         <div className="flex flex-wrap gap-3">
           {order.map((src, i) => (
@@ -121,7 +142,11 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
                 <input type="checkbox" name="keep" value={src} defaultChecked onChange={(e) => setKept((k) => k + (e.target.checked ? 1 : -1))} /> Keep
               </span>
               <span className="absolute inset-x-0 top-0 flex justify-between px-1 pt-1 text-xs">
-                {[-1, 1].map((d) => (
+                {[-1, 0, 1].map((d) => d === 0 ? (
+                  <button key={d} type="button" onClick={(e) => (e.preventDefault(), recrop(src))} className="rounded bg-kajal/70 px-1.5 py-0.5 text-mallige">
+                    Crop
+                  </button>
+                ) : (
                   <button
                     key={d}
                     type="button"
@@ -149,7 +174,8 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
           ))}
         </div>
       )}
-      {queue[0] && <CropDialog key={queue[0].name + queue.length} file={queue[0]} onDone={finish} onCancel={() => finish()} />}
+      {queue[0] && <CropDialog key={queue[0].file.name + queue.length} file={queue[0].file} onDone={finish} onCancel={() => finish()} />}
+      {err && <p className="text-xs text-rani">{err}</p>}
       <label className="grid gap-1.5 text-sm font-medium">
         {images.length ? "Add images" : "Upload images"}
         <input
@@ -163,7 +189,7 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
             // the picker replaces input.files; restore the already-cropped set, then crop the new picks
             const picked = [...(e.target.files ?? [])].filter((f) => f.type.startsWith("image/"));
             sync(cropped);
-            setQueue((q) => [...q, ...picked]);
+            setQueue((q) => [...q, ...picked.map((file) => ({ file }))]);
           }}
           className="text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-line file:px-3 file:py-2 file:text-sm"
         />

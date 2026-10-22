@@ -69,6 +69,10 @@ export default async function Coupons() {
             <input type="checkbox" name="first_purchase_only" className="size-4 accent-rani" />
             First purchase only <span className="text-kajal/50">(works only for customers with no paid orders yet)</span>
           </label>
+          <label className="flex items-center gap-2 sm:col-span-3 lg:col-span-7">
+            <input type="checkbox" name="public" className="size-4 accent-rani" />
+            Show on product pages <span className="text-kajal/50">(customers see the code under every product while it is live)</span>
+          </label>
         </form>
         <p className="border-t border-kajal/10 px-5 py-3 text-xs text-kajal/60">Each customer can use a code once.</p>
       </Card>
@@ -99,6 +103,9 @@ export default async function Coupons() {
                     <tr key={c.code} className={tr}>
                       <td className={`${td} font-mono font-medium`}>
                         {c.code}
+                        {c.public && (
+                          <span className="ml-2 rounded-full bg-stone-100 px-2 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wider text-stone-700">On products</span>
+                        )}
                         {c.first_purchase_only && (
                           <span className="ml-2 rounded-full bg-gulabi/40 px-2 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wider text-rani">First purchase</span>
                         )}

@@ -130,6 +130,57 @@ export async function getCheckoutMode(): Promise<CheckoutMode> {
   });
 }
 
+// Top-of-site band (sale, shipping notice, ...), edited in /admin/settings. Stored as JSON in settings.announcement.
+export type Announcement = { on: boolean; text: string; link: string };
+export const getAnnouncement = () =>
+  cached("announcement", 60, async (): Promise<Announcement | null> => {
+    const { data } = await db.from("settings").select("value").eq("key", "announcement").maybeSingle();
+    try {
+      const a = JSON.parse(data?.value ?? "") as Announcement;
+      return a.on && a.text ? a : null;
+    } catch {
+      return null;
+    }
+  });
+export async function getAnnouncementDraft(): Promise<Announcement> {
+  const { data } = await db.from("settings").select("value").eq("key", "announcement").maybeSingle();
+  try {
+    return { on: false, text: "", link: "", ...JSON.parse(data?.value ?? "") };
+  } catch {
+    return { on: false, text: "", link: "" };
+  }
+}
+
+// Offers shown under a product: the automatic first-order discount plus coupons the admin marked "Show on product pages".
+export type Offer = Pick<Coupon, "code" | "kind" | "value" | "min_order" | "first_order" | "first_purchase_only">;
+export const getOffers = () =>
+  cached("offers", 60, async (): Promise<Offer[]> => {
+    const { data } = await db
+      .from("coupons")
+      .select("code, kind, value, min_order, first_order, first_purchase_only, max_uses, expires_at")
+      .eq("active", true)
+      .or("first_order.eq.true,public.eq.true")
+      .order("first_order", { ascending: false });
+    const live = (data ?? []).filter((c) => !c.expires_at || new Date(c.expires_at) > new Date());
+    return live.map((c) => ({ code: c.code, kind: c.kind, value: c.value, min_order: c.min_order, first_order: c.first_order, first_purchase_only: c.first_purchase_only }));
+  });
+
+// Fit guide table, edited in /admin/settings. First line is the header, then one size per line, comma separated (inches).
+// ponytail: starting values are a generic women's chart; the admin should overwrite them with the brand's own measurements.
+export const DEFAULT_SIZE_CHART = `Size, Bust, Waist, Hip
+XS, 32, 26, 35
+S, 34, 28, 37
+M, 36, 30, 39
+L, 38, 32, 41
+XL, 40, 34, 43
+XXL, 42, 36, 45
+XXXL, 44, 38, 47`;
+export const getSizeChart = () =>
+  cached<string>("size-chart", 300, async () => {
+    const { data } = await db.from("settings").select("value").eq("key", "size_chart").maybeSingle();
+    return data?.value?.trim() || DEFAULT_SIZE_CHART;
+  });
+
 // Public storefront reads, cached in Upstash (lib/cache.ts); admin mutations call invalidate().
 // Never use these for stock checks at checkout or anything per-user.
 export const getProductBySlug = (slug: string) =>

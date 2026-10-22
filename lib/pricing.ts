@@ -10,6 +10,7 @@ export type Coupon = {
   active: boolean;
   first_order: boolean;
   first_purchase_only: boolean;
+  public: boolean;
   created_at: string;
 };
 

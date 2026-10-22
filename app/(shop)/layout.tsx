@@ -5,7 +5,7 @@ import { Logo } from "../logo";
 import { Show, SignInButton } from "@clerk/nextjs";
 import { AccountMenu } from "./account-menu";
 import { SearchModal } from "./search-modal";
-import { getCartLines } from "@/lib/store";
+import { getAnnouncement, getCartLines } from "@/lib/store";
 import { CartDrawer } from "./cart-drawer";
 import { CartContents } from "./cart-contents";
 import { IntroVideo } from "./intro-video";
@@ -16,13 +16,22 @@ import { Instagram } from "./instagram-icon";
 import { Flash } from "@/components/flash";
 
 export default async function ShopLayout({ children }: LayoutProps<"/">) {
-  const cart = await getCartLines();
+  const [cart, band] = await Promise.all([getCartLines(), getAnnouncement()]);
   const count = cart.lines.reduce((s, l) => s + l.qty, 0);
   return (
     <>
       <IntroVideo />
       <Flash />
       <SiteMotion />
+      {band && (
+        <div className="bg-rani text-mallige text-center text-[13px] sm:text-sm">
+          {band.link ? (
+            <Link href={band.link} className="block px-4 py-2.5 hover:underline underline-offset-4">{band.text}</Link>
+          ) : (
+            <p className="px-4 py-2.5">{band.text}</p>
+          )}
+        </div>
+      )}
       <header>
         <nav className="mx-auto max-w-6xl px-4 py-4 sm:py-0 sm:h-20 grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-y-3 text-[15px]">
           <div data-tour="categories" className="flex gap-4 sm:gap-8">

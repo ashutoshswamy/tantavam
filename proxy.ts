@@ -13,7 +13,7 @@ export default clerkMiddleware(async (auth, req) => {
     directives: {
       "script-src": ["https://checkout.razorpay.com"],
       "frame-src": ["https://api.razorpay.com", "https://checkout.razorpay.com"],
-      "connect-src": ["https://*.clerk.com", "https://api.cloudinary.com", "https://api.razorpay.com", "https://lumberjack.razorpay.com"],
+      "connect-src": ["https://*.clerk.com", "https://api.cloudinary.com", "https://res.cloudinary.com", "https://api.razorpay.com", "https://lumberjack.razorpay.com"],
       "img-src": ["https://res.cloudinary.com", "data:", "blob:"],
       "media-src": ["self"],
       "object-src": ["none"],

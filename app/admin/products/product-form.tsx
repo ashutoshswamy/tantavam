@@ -4,6 +4,7 @@ import { saveProduct } from "../actions";
 import { ImagesField, SizesField, Submit, UploadForm } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
+const BADGES = ["Best seller", "Fast selling", "New arrival", "Trending", "Limited stock", "Back in stock", "Customer favourite"];
 const label = "grid gap-1.5 text-sm font-medium";
 
 export async function ProductForm({ product }: { product?: Product }) {
@@ -49,6 +50,24 @@ export async function ProductForm({ product }: { product?: Product }) {
                   <option key={c.slug} value={c.slug}>{c.name}</option>
                 ))}
               </select>
+            </label>
+            <label className={label}>
+              Label (optional)
+              <input name="badge" list="badge-presets" maxLength={24} placeholder="e.g. Best seller" defaultValue={product?.badge ?? ""} className={field} />
+              <datalist id="badge-presets">
+                {BADGES.map((b) => <option key={b} value={b} />)}
+              </datalist>
+              <span className="text-xs font-normal text-kajal/50">Shown on the product card and page. Pick one or type your own.</span>
+            </label>
+            <label className={label}>
+              Key highlights (optional)
+              <textarea name="highlights" rows={5} maxLength={400} placeholder={"Craft: Rogan\nFabric: 100% cotton flex\nFit: Easy\nColour: Red"} defaultValue={product?.highlights ?? ""} className={field} />
+              <span className="text-xs font-normal text-kajal/50">One &quot;Label: value&quot; per line, up to 4 recommended. Shown over the product&apos;s second photo (first if it has only one).</span>
+            </label>
+            <label className={label}>
+              Wash care (optional)
+              <textarea name="care" rows={4} maxLength={600} placeholder={"Dry clean recommended.\nHand wash cold with mild detergent.\nDo not wring. Dry in shade."} defaultValue={product?.care ?? ""} className={field} />
+              <span className="text-xs font-normal text-kajal/50">One instruction per line. Hidden on the product page when empty.</span>
             </label>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" name="hidden" defaultChecked={product?.hidden} /> Hide from the store (customers can&apos;t see or buy it)

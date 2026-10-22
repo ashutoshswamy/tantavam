@@ -20,9 +20,16 @@ create table if not exists products (
   stock jsonb not null default '{}',       -- {"S": 4, "M": 0}; missing size = 0
   images text[] not null default '{}',     -- Cloudinary secure_urls
   hidden boolean not null default false,   -- true = invisible and unbuyable on the storefront
+  badge text,                              -- optional label on cards and the product page ("Best seller")
+  highlights text,                         -- "Craft: Rogan" lines, overlaid on the product photo; empty = none
+  care text,                               -- wash care shown on the product page; empty = hidden
   created_at timestamptz not null default now()
 );
 -- existing DBs: alter table products add column if not exists hidden boolean not null default false;
+-- existing DBs: alter table products add column if not exists badge text;
+-- existing DBs: alter table products add column if not exists care text;
+-- existing DBs: alter table products add column if not exists highlights text;
+-- existing DBs: alter table coupons add column if not exists public boolean not null default false;
 
 create table if not exists collections (
   id uuid primary key default gen_random_uuid(),
@@ -66,6 +73,7 @@ create table if not exists coupons (
   active boolean not null default true,
   first_order boolean not null default false,    -- the automatic first-purchase discount; can't be typed in as a code
   first_purchase_only boolean not null default false, -- typed code that only works on a customer's first paid order
+  public boolean not null default false,         -- advertised under products on the storefront
   created_at timestamptz not null default now(),
   check (kind <> 'percent' or value <= 100)
 );

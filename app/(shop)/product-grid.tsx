@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { inr, type Product } from "@/lib/db";
+import { inr, inStock, type Product } from "@/lib/db";
 
 // row: one endlessly scrolling line. The list is repeated until one pass is wider than any screen,
 // then drawn twice and slid by half its width, so the loop is seamless with no gap at the end.
@@ -26,6 +26,7 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         className={`group min-w-0 ${row ? "w-48 min-[400px]:w-56 sm:w-72 lg:w-80 shrink-0 pr-4 sm:pr-6" : ""}`}
       >
         <div className="relative aspect-[4/5] bg-line">
+          {p.badge && <span className="absolute left-0 top-3 z-[1] bg-rani px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-mallige">{p.badge}</span>}
           {p.images[0] && (
             <Image
               src={p.images[0]}
@@ -39,6 +40,19 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         <div className="mt-3 min-w-0">
           <h3 className="text-[15px] leading-snug break-words group-hover:text-rani">{p.name}</h3>
           <p className="mt-1 text-[15px] font-medium text-rani">{inr(p.price)}</p>
+          {!!p.sizes.length && (
+            <ul aria-label="Sizes" className="mt-2 flex flex-wrap gap-1">
+              {p.sizes.map((s) => (
+                <li
+                  key={s}
+                  title={inStock(p, s) > 0 ? undefined : "Sold out"}
+                  className={`border px-1.5 py-0.5 text-[11px] leading-none ${inStock(p, s) > 0 ? "border-kajal/30 text-kajal/80" : "border-line text-kajal/35 line-through"}`}
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </Link>
     );

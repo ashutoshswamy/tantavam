@@ -14,7 +14,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/shop">): Pr
   if (!data)
     return {
       title: "Shop",
-      description: "Shop every Tantvam piece: anarkalis, sarees and lehengas for weddings, festivals and every day between.",
+      description: "Shop every Tantvam piece: anarkalis and kurtas for weddings, festivals and every day between.",
       alternates: { canonical: "/shop" },
     };
   return {

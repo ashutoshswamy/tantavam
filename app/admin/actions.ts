@@ -97,6 +97,9 @@ export async function saveProduct(formData: FormData) {
     stock: Object.fromEntries(sizes.map((s) => [s, old?.stock[s] ?? 0])),
     images: [...kept, ...uploads],
     hidden: formData.get("hidden") === "on",
+    badge: text(formData, "badge").slice(0, 24) || null,
+    care: text(formData, "care").slice(0, 600) || null,
+    highlights: text(formData, "highlights").slice(0, 400) || null,
   };
   // slug follows the name; the timestamp suffix keeps it unique. Unchanged name keeps its URL.
   const slug = `${slugify(name)}-${Date.now().toString(36)}`;
@@ -384,6 +387,24 @@ export async function setCheckoutMode(formData: FormData) {
   await refresh();
 }
 
+export async function setAnnouncement(formData: FormData) {
+  await requireSection("staff");
+  const link = text(formData, "link");
+  if (link && !/^(\/(?!\/)|https:\/\/)/.test(link)) throw new Error("Link must start with / or https://");
+  const value = JSON.stringify({ on: formData.get("on") === "on", text: text(formData, "text").slice(0, 140), link });
+  fail((await db.from("settings").upsert({ key: "announcement", value })).error);
+  await audit("staff", "Changed announcement band", text(formData, "text").slice(0, 60));
+  await refresh();
+}
+
+export async function setSizeChart(formData: FormData) {
+  await requireSection("staff");
+  const chart = text(formData, "chart").slice(0, 2000);
+  fail((await db.from("settings").upsert({ key: "size_chart", value: chart })).error);
+  await audit("staff", "Changed size chart", "");
+  await refresh();
+}
+
 // ---------- staff (Clerk publicMetadata) ----------
 
 function sectionsFrom(formData: FormData) {
@@ -509,7 +530,7 @@ export async function createCoupon(formData: FormData) {
   if (!/^[A-Z0-9_-]{3,40}$/.test(code)) throw new Error("Use 3-40 letters, numbers, - or _");
   const fields = couponFields(formData);
   const firstPurchaseOnly = formData.get("first_purchase_only") === "on";
-  const { error } = await db.from("coupons").insert({ code, ...fields, first_purchase_only: firstPurchaseOnly });
+  const { error } = await db.from("coupons").insert({ code, ...fields, first_purchase_only: firstPurchaseOnly, public: formData.get("public") === "on" });
   if (error?.code === "23505") throw new Error(`${code} already exists`);
   fail(error);
   await audit("coupons", "Created coupon", `${code} (${couponLabel(fields)}${firstPurchaseOnly ? ", first purchase only" : ""})`);

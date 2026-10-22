@@ -63,7 +63,7 @@ export function SearchModal() {
             onChange={(e) => setQ(e.target.value)}
             // type=search eats the first Esc to clear itself; close in one press instead
             onKeyDown={(e) => e.key === "Escape" && ref.current?.close()}
-            placeholder="Search sarees, kurtas, collections…"
+            placeholder="Search anarkalis, kurtas, collections…"
             aria-label="Search products, categories and collections"
             autoFocus
             autoComplete="off"

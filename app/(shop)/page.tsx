@@ -39,7 +39,7 @@ export default async function Home() {
               Dressed for every celebration.
             </h1>
             <p className="mt-5 max-w-md text-base sm:text-lg text-kajal/75">
-              Anarkalis, sarees and lehengas for the wedding, the festival and the family dinner after.
+              Anarkalis and kurtas for the wedding, the festival and the family dinner after.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">

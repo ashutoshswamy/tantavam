@@ -55,6 +55,7 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                           {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
                         </span>
                         {p.name}
+                        {p.badge && <span className="rounded bg-rani/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-rani">{p.badge}</span>}
                         {p.hidden && <span className="rounded bg-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-kajal/60">Hidden</span>}
                       </Link>
                     </td>

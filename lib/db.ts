@@ -18,6 +18,9 @@ export type Product = {
   stock: Record<string, number>;
   images: string[];
   hidden: boolean;
+  badge: string | null;
+  care: string | null;
+  highlights: string | null;
   created_at: string;
 };
 

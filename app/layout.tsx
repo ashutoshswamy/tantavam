@@ -12,7 +12,7 @@ const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "Tantvam - Ethnic Wear for Women", template: "%s · Tantvam" },
-  description: "Anarkalis, sarees and lehengas for women. Ethnic wear for weddings, festivals and every day between, delivered across India.",
+  description: "Anarkalis and kurtas for women. Ethnic wear for weddings, festivals and every day between, delivered across India.",
   // "./" resolves against each route's own path, so every page is self-canonical without repeating this
   alternates: { canonical: "./" },
   manifest: "/site.webmanifest",
