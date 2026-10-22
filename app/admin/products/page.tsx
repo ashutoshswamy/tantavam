@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { db, inr, inStock, percentOff, type Category, type Product } from "@/lib/db";
 import { gate } from "@/lib/store";
-import { deleteProduct, setProductBadge, setProductHidden } from "../actions";
+import { deleteProduct, deleteProducts, setProductBadge, setProductHidden } from "../actions";
 import { BADGES } from "../badges";
-import { BadgeSelect, Submit } from "../client";
+import { BadgeSelect, BulkDelete, SelectAll, Submit } from "../client";
 import { Card, Empty, Header, StockBadge, btn, btnDanger, btnGhost, field, td, th, tr } from "../ui";
 
 export const metadata = { title: "Products" };
@@ -26,7 +26,8 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
       </Header>
 
       <Card>
-        <form className="flex flex-wrap gap-3 border-b border-kajal/10 p-4">
+        <div className="flex flex-wrap items-center gap-3 border-b border-kajal/10 p-4">
+        <form className="flex flex-wrap gap-3">
           <input name="q" type="search" defaultValue={q} placeholder="Search products" className={`${field} max-w-xs`} />
           <select name="category" defaultValue={category} className={`${field} w-auto`}>
             <option value="">All categories</option>
@@ -36,6 +37,8 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
           </select>
           <button className={btnGhost}>Filter</button>
         </form>
+        <BulkDelete action={deleteProducts} />
+        </div>
         {!products.length ? (
           <Empty>No products match.</Empty>
         ) : (
@@ -43,6 +46,7 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
             <table className="w-full text-sm">
               <thead>
                 <tr>
+                  <th className={`${th} w-10`}><SelectAll /></th>
                   <th className={th}>Product</th>
                   <th className={th}>Category</th>
                   <th className={`${th} text-right`}>Price</th>
@@ -54,6 +58,9 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id} className={`${tr} hover:bg-mallige/60`}>
+                    <td className={td}>
+                      <input type="checkbox" form="bulk" name="ids" value={p.id} aria-label={`Select ${p.name}`} />
+                    </td>
                     <td className={td}>
                       <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 font-medium hover:text-rani">
                         <span className="relative aspect-[4/5] w-12 shrink-0 overflow-hidden rounded bg-line">

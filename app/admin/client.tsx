@@ -45,7 +45,6 @@ export function Submit({ children, className, confirm, disabled, ...rest }: { ch
   );
 }
 
-// Bulk-delete bar for a table of `ids` checkboxes (they join this form by id="bulk"). Tracks the ticked count via bubbling change events.
 // Label dropdown for the products list: picking an option saves it straight away.
 export function BadgeSelect({ id, badge, options, action }: { id: string; badge: string | null; options: string[]; action: (f: FormData) => Promise<void> }) {
   const all = badge && !options.includes(badge) ? [...options, badge] : options; // keep a custom label selectable
@@ -68,6 +67,7 @@ export function BadgeSelect({ id, badge, options, action }: { id: string; badge:
   );
 }
 
+// Bulk-delete bar for a table of `ids` checkboxes (they join this form by id="bulk"). Tracks the ticked count via bubbling change events.
 export function BulkDelete({ action }: { action: (f: FormData) => Promise<void> }) {
   const [n, setN] = useState(0);
   useEffect(() => {
