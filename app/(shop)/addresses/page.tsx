@@ -1,9 +1,10 @@
 import { Submit } from "@/app/admin/client";
+import { noindex } from "@/lib/seo";
 import { auth } from "@clerk/nextjs/server";
 import { db, type Address } from "@/lib/db";
 import { deleteAddress, saveAddress } from "@/app/actions";
 
-export const metadata = { title: "Addresses" };
+export const metadata = noindex("Addresses");
 
 const input = "border border-kajal/30 bg-white px-3 py-2";
 const addressInputs = [

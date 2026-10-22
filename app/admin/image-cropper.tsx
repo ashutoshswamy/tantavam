@@ -9,6 +9,8 @@ export const CROP_H = 1350;
 const VIEW_W = 288; // on-screen frame, same 4:5 ratio as the output
 const VIEW_H = (VIEW_W * CROP_H) / CROP_W;
 const MAX_ZOOM = 4;
+const HEAD_TOP = 5; // % of frame height: headroom above the head
+const HEAD_LEN = 12; // % of frame height: ideal head length for a full-length shot
 
 // Fixed 1080x1350 crop: the frame never changes shape, the admin only pans and zooms the photo behind it.
 export function CropDialog({ file, onDone, onCancel }: { file: File; onDone: (cropped: File) => void; onCancel: () => void }) {
@@ -89,7 +91,13 @@ export function CropDialog({ file, onDone, onCancel }: { file: File; onDone: (cr
         />
         {/* thirds grid so composition is easy to judge */}
         <div aria-hidden className="pointer-events-none absolute inset-0 border border-white/70 [background:linear-gradient(to_right,transparent_33%,rgb(255_255_255/.35)_33%,rgb(255_255_255/.35)_calc(33%+1px),transparent_calc(33%+1px),transparent_66%,rgb(255_255_255/.35)_66%,rgb(255_255_255/.35)_calc(66%+1px),transparent_calc(66%+1px)),linear-gradient(to_bottom,transparent_33%,rgb(255_255_255/.35)_33%,rgb(255_255_255/.35)_calc(33%+1px),transparent_calc(33%+1px),transparent_66%,rgb(255_255_255/.35)_66%,rgb(255_255_255/.35)_calc(66%+1px),transparent_calc(66%+1px))]" />
+        {/* head-size guide: a full-length look fills about 90% of the frame, so the head is roughly 1/8 of that, with a little headroom above */}
+        <div aria-hidden className="pointer-events-none absolute left-2 flex items-center gap-1.5" style={{ top: `${HEAD_TOP}%`, height: `${HEAD_LEN}%` }}>
+          <span className="h-full w-2 border-y-2 border-l-2 border-white/90" />
+          <span className="rounded-sm bg-kajal/60 px-1 py-0.5 text-[10px] leading-none text-white">Head</span>
+        </div>
       </div>
+      <p className="mt-2 text-center text-[11px] text-kajal/50">Line up the head with the bracket for a full-length look.</p>
       <label className="mt-4 flex items-center gap-3 text-xs">
         Zoom
         <input type="range" min={1} max={MAX_ZOOM} step={0.01} value={zoom} onChange={(e) => changeZoom(+e.target.value)} className="flex-1" />

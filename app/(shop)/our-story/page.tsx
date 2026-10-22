@@ -5,13 +5,16 @@ import { ArrowRight, Ruler, Scissors, Sparkles, Tag } from "lucide-react";
 import aboutImage from "@/public/aboutus-image.webp";
 import doorImage from "@/public/auth-image.webp";
 import { CONTACT } from "@/lib/site";
+import { pageMeta } from "@/lib/seo";
 import { StoryMotion } from "../story-motion";
 import { OurStoryMotion } from "./our-story-motion";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Our story",
   description: "Tantvam began with one outfit Manasi couldn't find. Designer-level ethnic, indo-western and casual wear, in every size from XS to XXXL, at honest prices.",
-};
+  path: "/our-story",
+  images: ["/aboutus-image.webp"],
+});
 
 const promise = [
   { icon: Scissors, text: "Real craftsmanship, sourced from specialist artisans" },
@@ -73,7 +76,7 @@ export default function OurStory() {
               controls
               preload="metadata"
               aria-label="Manasi Gurav, founder of Tantvam"
-              className="relative w-full aspect-[9/16] object-cover bg-kajal"
+              className="relative w-full aspect-[9/16] object-cover bg-kajal [&:fullscreen]:object-contain [&:-webkit-full-screen]:object-contain"
             />
           </div>
         </div>

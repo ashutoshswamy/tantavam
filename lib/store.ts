@@ -213,12 +213,20 @@ export const getShopProducts = (filter: { collection?: string; category?: string
     return ((await q).data ?? []) as unknown as Product[];
   });
 
+// "cover" arrived with a migration; until it has run, ask without it so the home page keeps its collections instead of erroring out
+async function moodsQuery() {
+  const q = (cols: string) =>
+    db.from("collections").select(cols).eq("products.hidden", false).order("created_at").limit(24, { referencedTable: "products" });
+  const withCover = await q("slug, name, description, cover, products(*)");
+  return withCover.error ? q("slug, name, description, products(*)") : withCover;
+}
+
 export const getHomeData = () =>
   cached("home", 120, async () => {
     const [{ data }, { data: collections }, { data: orders }] = await Promise.all([
       db.from("products").select("*").eq("hidden", false).order("created_at", { ascending: false }).limit(8),
       // moods = admin-managed collections, each with its pieces
-      db.from("collections").select("slug, name, description, products(*)").eq("products.hidden", false).order("created_at").limit(24, { referencedTable: "products" }),
+      moodsQuery(),
       db.from("orders").select("amount, items, status, created_at").gte("created_at", daysAgo(90)),
     ]);
     // bestsellers: top 8 by revenue over the last 90 days, same maths as admin analytics

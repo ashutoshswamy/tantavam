@@ -6,6 +6,8 @@ import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, type Review } from "@/lib/db
 import { couponLabel } from "@/lib/pricing";
 import { getApprovedReviews, getOffers, getProductBySlug, getSizeChart } from "@/lib/store";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
 import { Stars } from "../../stars";
 import { ReviewForm } from "./review-form";
 import { Gallery } from "./gallery";
@@ -18,12 +20,8 @@ const getProduct = getProductBySlug;
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">) {
   const p = await getProduct((await params).slug);
   if (!p) return {};
-  const description = p.description.replace(/\s+/g, " ").slice(0, 160);
-  return {
-    title: p.name,
-    description,
-    openGraph: { title: p.name, description, url: `/product/${p.slug}`, siteName: "Tantvam", locale: "en_IN", images: p.images.slice(0, 1) },
-  };
+  const description = p.description.replace(/\s+/g, " ").slice(0, 160) || `${p.name} from Tantvam. Ethnic wear for women, delivered across India.`;
+  return pageMeta({ title: p.name, description, path: `/product/${p.slug}`, images: p.images.slice(0, 3) });
 }
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
@@ -55,6 +53,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
     name: p.name,
     description: p.description,
     image: p.images.map((i) => new URL(i, SITE_URL).href),
+    sku: p.id,
     category: p.category,
     url,
     brand: { "@type": "Brand", name: "Tantvam" },
@@ -72,8 +71,8 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
   };
   return (
     <>
-      {/* "<" escaped so product text can't close the script tag */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumbLd([["Home", "/"], ["Shop", "/shop"], [p.name, `/product/${p.slug}`]])} />
       <div className="mx-auto max-w-6xl min-w-0 px-4 py-8 sm:py-12 grid md:grid-cols-2 gap-8 sm:gap-10">
         <Gallery images={p.images} alt={p.name} badge={p.badge} highlights={highlights} />
         <div className="min-w-0 md:sticky md:top-8 self-start">

@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
 import { CONTACT } from "@/lib/site";
+import { pageMeta } from "@/lib/seo";
 import { Instagram, WhatsApp } from "../social-icons";
 import contactImage from "@/public/contact-image.webp";
 import { ContactForm } from "./contact-form";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Contact",
-  description: "Questions about a piece, sizing or your order? Reach the Tantvam studio.",
-};
+  description: "Questions about a piece, sizing or your order? Call, WhatsApp, email or message the Tantvam studio. We reply fast.",
+  path: "/contact",
+});
 
 const channels = [
   { icon: Phone, label: "Call us", value: CONTACT.phone, href: `tel:${CONTACT.phone.replace(/\s/g, "")}` },

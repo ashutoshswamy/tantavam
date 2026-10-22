@@ -129,6 +129,13 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
       sync(n);
       return n;
     });
+  const shift = (i: number, d: number) =>
+    setCropped((c) => {
+      const n = [...c];
+      [n[i], n[i + d]] = [n[i + d], n[i]];
+      sync(n); // upload order follows the file input's order
+      return n;
+    });
   const over = kept + added > max;
   useEffect(() => input.current?.setCustomValidity(over ? `Max ${max} images. Remove ${kept + added - max}.` : ""), [over, kept, added, max]);
   return (
@@ -169,7 +176,21 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
             <div key={c.url} className="relative aspect-[4/5] w-24 rounded-md bg-line">
               {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview */}
               <img src={c.url} alt="" className="size-full rounded-md object-cover" />
-              <button type="button" aria-label="Remove image" onClick={() => drop(i)} className="absolute right-1 top-1 rounded bg-kajal/70 px-1.5 py-0.5 text-xs text-mallige">✕</button>
+              <span className="absolute inset-x-0 top-0 flex justify-between px-1 pt-1 text-xs">
+                {[-1, 1].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    aria-label={d < 0 ? "Move earlier" : "Move later"}
+                    disabled={i + d < 0 || i + d >= cropped.length}
+                    onClick={() => shift(i, d)}
+                    className="rounded bg-kajal/70 px-1.5 py-0.5 text-mallige disabled:opacity-30"
+                  >
+                    {d < 0 ? "←" : "→"}
+                  </button>
+                ))}
+              </span>
+              <button type="button" aria-label="Remove image" onClick={() => drop(i)} className="absolute inset-x-0 bottom-0 rounded-b-md bg-kajal/70 px-1.5 py-1 text-xs text-mallige">Remove</button>
             </div>
           ))}
         </div>

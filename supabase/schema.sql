@@ -36,8 +36,10 @@ create table if not exists collections (
   slug text unique not null,
   name text not null,
   description text not null default '',
+  cover text,                              -- chosen cover photo URL (a product image); empty = first product's first photo
   created_at timestamptz not null default now()
 );
+-- existing DBs: alter table collections add column if not exists cover text;
 
 create table if not exists collection_products (
   collection_id uuid not null references collections on delete cascade,

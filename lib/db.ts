@@ -25,7 +25,7 @@ export type Product = {
 };
 
 export type Category = { slug: string; name: string };
-export type Collection = { id: string; slug: string; name: string; description: string };
+export type Collection = { id: string; slug: string; name: string; description: string; cover: string | null };
 
 export type OrderItem = { id: string; name: string; size: string; qty: number; price: number };
 export type Order = {

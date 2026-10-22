@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Ban, Box, Layers, Receipt, RefreshCw, ShieldCheck, ShoppingBag, Tag, Truck, type LucideIcon } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Policies",
   description: "Tantvam store policies: general terms, online orders, exchange, and returns & refunds.",
-};
+  path: "/policies",
+});
 
 const policies: { id: string; title: string; items: [LucideIcon, string][] }[] = [
   {

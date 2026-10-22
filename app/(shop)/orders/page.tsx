@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
+import { noindex } from "@/lib/seo";
 import { db, inr } from "@/lib/db";
 import type { OrderStatus } from "@/lib/orders";
 
-export const metadata = { title: "Orders" };
+export const metadata = noindex("Orders");
 
 type Order = {
   id: string;

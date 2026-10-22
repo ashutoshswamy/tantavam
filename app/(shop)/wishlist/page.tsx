@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
+import { noindex } from "@/lib/seo";
 import { db, type Product } from "@/lib/db";
 import { ProductGrid } from "../product-grid";
 
-export const metadata = { title: "Wishlist" };
+export const metadata = noindex("Wishlist");
 
 export default async function Wishlist() {
   const { userId } = await auth();

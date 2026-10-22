@@ -1,9 +1,10 @@
 import Image from "next/image";
+import { noindex } from "@/lib/seo";
 import Link from "next/link";
 import { Logo } from "./logo";
 import illustration from "@/public/404-image.webp";
 
-export const metadata = { title: "Page not found" };
+export const metadata = noindex("Page not found");
 
 // Root 404: unknown URLs and every notFound() (missing product, no admin access). Sits outside the shop layout, so it carries its own logo.
 export default function NotFound() {

@@ -6,7 +6,7 @@ import ArcFlowCarousel from "@/components/ui/arc-flow-carousel";
 import type { Collection, Product } from "@/lib/db";
 import { CollectionSlides } from "./collection-slides";
 
-export type Mood = Pick<Collection, "slug" | "name" | "description"> & { products: Product[] };
+export type Mood = Pick<Collection, "slug" | "name" | "description" | "cover"> & { products: Product[] };
 
 // lib/db is server-only, so the client keeps its own copy (same as search-modal)
 const inr = (paise: number) =>
@@ -44,6 +44,7 @@ export function MoodCarousel({ moods }: { moods: Mood[] }) {
         items={products.map((p) => ({ src: p.images[0], alt: p.name, title: p.name, description: inr(p.price) }))}
         onItemClick={(i) => router.push(`/product/${products[i].slug}`)}
         cardRatio={0.3}
+        cardAspect={1080 / 1350} // same 4:5 frame as every product photo, so nothing is letterboxed
         minCardWidth={190}
         maxCardWidth={460}
         autoRotateSpeed={0.12}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { noindex } from "@/lib/seo";
 import Script from "next/script";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
@@ -9,7 +10,7 @@ import { normalizeCode } from "@/lib/pricing";
 import { allow } from "@/lib/ratelimit";
 import { CheckoutForm } from "./checkout-form";
 
-export const metadata = { title: "Checkout" };
+export const metadata = noindex("Checkout");
 
 export default async function Checkout({ searchParams }: PageProps<"/checkout">) {
   const [{ lines, total }, { userId }, sp] = await Promise.all([getCartLines(), auth(), searchParams]);

@@ -1,8 +1,10 @@
 import { headers } from "next/headers";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { INTRO_SEEN_KEY, SITE_URL } from "@/lib/site";
+import { BRAND, INTRO_SEEN_KEY, OG_IMAGE, SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
+import { organizationLd, websiteLd } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
 // display: Bricolage Grotesque (headlines, prices, big numbers); text: Geist (everything else)
@@ -11,21 +13,25 @@ const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Tantvam - Ethnic Wear for Women", template: "%s · Tantvam" },
-  description: "Anarkalis and kurtas for women. Ethnic wear for weddings, festivals and every day between, delivered across India.",
+  title: { default: `${BRAND} | Ethnic Wear for Women, XS to XXXL`, template: `%s · ${BRAND}` },
+  description: SITE_DESCRIPTION,
+  applicationName: BRAND,
+  keywords: ["Tantvam", "ethnic wear for women", "anarkali", "kurta set", "indo-western wear", "plus size ethnic wear", "festive wear", "wedding wear", "handblock cotton", "Chanderi", "buy ethnic wear online India"],
+  authors: [{ name: BRAND, url: SITE_URL }],
+  creator: BRAND,
+  publisher: BRAND,
+  category: "fashion",
+  formatDetection: { telephone: false, email: false, address: false },
   // "./" resolves against each route's own path, so every page is self-canonical without repeating this
   alternates: { canonical: "./" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   manifest: "/site.webmanifest",
   icons: { apple: "/apple-touch-icon.png" },
-  openGraph: {
-    type: "website",
-    siteName: "Tantvam",
-    locale: "en_IN",
-    url: "./",
-    images: [{ url: "/hero-poster.jpg", width: 1280, height: 720, alt: "Tantvam ethnic wear" }],
-  },
-  twitter: { card: "summary_large_image" },
+  openGraph: { type: "website", siteName: BRAND, locale: "en_IN", url: "./", title: `${BRAND} | Ethnic Wear for Women`, description: SITE_DESCRIPTION, images: [OG_IMAGE] },
+  twitter: { card: "summary_large_image", title: `${BRAND} | Ethnic Wear for Women`, description: SITE_DESCRIPTION, images: [OG_IMAGE.url] },
 };
+
+export const viewport: Viewport = { themeColor: "#f4ede1", width: "device-width", initialScale: 1 };
 
 const appearance = {
   variables: {
@@ -43,7 +49,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <ClerkProvider appearance={appearance} signInUrl="/sign-in" signUpUrl="/sign-up">
-      <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${display.variable} ${geist.variable} h-full antialiased`}>
+      <html lang="en-IN" suppressHydrationWarning data-scroll-behavior="smooth" className={`${display.variable} ${geist.variable} h-full antialiased`}>
         <head>
           {/* Runs before first paint: marks JS as on (motion pre-hide in globals.css) and hides the intro overlay for returning / reduced-motion visitors. Lives here because the
               root layout never re-renders on the client (React warns about <script> rendered by client components). */}
@@ -55,6 +61,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           />
         </head>
         <body className="min-h-full flex flex-col font-sans">
+          <JsonLd data={organizationLd} />
+          <JsonLd data={websiteLd} />
           {children}
         </body>
       </html>

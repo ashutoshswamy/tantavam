@@ -240,9 +240,13 @@ export async function saveCollection(formData: FormData) {
     await refresh();
     redirect(`/admin/collections/${data!.id}`);
   }
-  fail((await db.from("collections").update(fields).eq("id", id)).error);
-  fail((await db.from("collection_products").delete().eq("collection_id", id)).error);
   const links = formData.getAll("products").map((p) => ({ collection_id: id, product_id: String(p) }));
+  // the cover must be one of the photos of a product that stays in the collection; anything else falls back to automatic
+  const wanted = text(formData, "cover");
+  const { data: pics } = links.length && wanted ? await db.from("products").select("images").in("id", links.map((l) => l.product_id)) : { data: [] };
+  const cover = (pics ?? []).some((p) => (p.images as string[]).includes(wanted)) ? wanted : null;
+  fail((await db.from("collections").update({ ...fields, cover }).eq("id", id)).error);
+  fail((await db.from("collection_products").delete().eq("collection_id", id)).error);
   if (links.length) fail((await db.from("collection_products").insert(links)).error);
   await audit("collections", "Updated collection", `${fields.name} (${links.length} products)`);
   await refresh();

@@ -9,7 +9,13 @@ import { ProductGrid } from "./product-grid";
 import { StoryMotion } from "./story-motion";
 import { MoodCarousel, type Mood } from "./mood-carousel";
 import { getHomeData } from "@/lib/store";
-import { CONTACT, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION } from "@/lib/site";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = {
+  ...pageMeta({ title: "Tantvam | Ethnic Wear for Women, XS to XXXL", description: SITE_DESCRIPTION, path: "/" }),
+  title: { absolute: "Tantvam | Ethnic Wear for Women, XS to XXXL" },
+};
 
 const pillars = [
   { icon: fabricIcon, title: "Rich fabrics, lasting colour", body: "Picked for drape, comfort and colour that stays bright wash after wash." },
@@ -22,13 +28,6 @@ export default async function Home() {
   const moods = (collections as unknown as Mood[]).filter((m) => m.products.length);
   return (
     <>
-      {/* domain (thetantava.in) differs from the brand, so tell Google which name to show in results */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "Tantvam", url: SITE_URL, sameAs: [CONTACT.instagram] }),
-        }}
-      />
       <section className="relative flex flex-col md:block md:h-[min(56.25vw,calc(100svh-5rem))] md:min-h-[560px] bg-gulabi/30 text-kajal overflow-hidden">
         {/* md+: fade the cut-out's left edge behind the copy (#e2e2e6 = gulabi/30 on mallige) */}
         <div className="hidden md:block absolute inset-y-0 left-0 z-[5] w-[62%] lg:w-[55%] bg-gradient-to-r from-[#e2e2e6] from-55% to-transparent" aria-hidden />

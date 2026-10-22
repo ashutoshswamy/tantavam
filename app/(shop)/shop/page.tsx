@@ -3,6 +3,8 @@ import Link from "next/link";
 import { db, type Product } from "@/lib/db";
 import { getCategories, getCollections, getShopProducts } from "@/lib/store";
 import { ProductGrid } from "../product-grid";
+import { breadcrumbLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
 
 // category and collection views are their own indexable pages; search results are not
 export async function generateMetadata({ searchParams }: PageProps<"/shop">): Promise<Metadata> {
@@ -12,16 +14,17 @@ export async function generateMetadata({ searchParams }: PageProps<"/shop">): Pr
     typeof collection === "string" ? ["collections", "collection", collection] : typeof category === "string" ? ["categories", "category", category] : [];
   const { data } = table ? await db.from(table).select("*").eq("slug", slug).maybeSingle() : { data: null };
   if (!data)
-    return {
-      title: "Shop",
-      description: "Shop every Tantvam piece: anarkalis and kurtas for weddings, festivals and every day between.",
-      alternates: { canonical: "/shop" },
-    };
-  return {
-    title: data.name,
+    return pageMeta({
+      title: "Shop ethnic wear for women",
+      description: "Shop every Tantvam piece: anarkalis and kurtas for weddings, festivals and every day between, in sizes XS to XXXL.",
+      path: "/shop",
+    });
+  return pageMeta({
+    title: param === "collection" ? `${data.name} collection` : `Shop ${data.name}`,
     description: data.description || `Shop ${data.name} at Tantvam. Ethnic wear for women, delivered across India.`,
-    alternates: { canonical: `/shop?${param}=${slug}` },
-  };
+    path: `/shop?${param}=${slug}`,
+    images: param === "collection" && data.cover ? [data.cover] : undefined,
+  });
 }
 
 export default async function Shop({ searchParams }: PageProps<"/shop">) {
@@ -55,6 +58,7 @@ export default async function Shop({ searchParams }: PageProps<"/shop">) {
   const active = col ? `/shop?collection=${col.slug}` : cat ? `/shop?category=${cat.slug}` : "/shop";
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
+      {!search && <JsonLd data={breadcrumbLd([["Home", "/"], ["Shop", "/shop"], ...(col || cat ? ([[(col ?? cat)!.name, active]] as [string, string][]) : [])])} />}
       <p className="uppercase tracking-[0.25em] text-xs text-rani">{col ? "Collection" : "The collection"}</p>
       <h1 className="font-semibold tracking-tight text-3xl sm:text-5xl mt-2 break-words">{search ? `Results for “${search}”` : (col?.name ?? cat?.name ?? "All pieces")}</h1>
       {col?.description && <p className="mt-3 max-w-xl text-kajal/70">{col.description}</p>}

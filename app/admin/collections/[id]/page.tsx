@@ -42,6 +42,34 @@ export default async function EditCollection({ params }: PageProps<"/admin/colle
             <Submit className={btn}>Save collection</Submit>
           </div>
         </Card>
+        <div className="grid gap-6">
+        <Card title="Cover image">
+          <div className="p-4">
+            {(() => {
+              const pics = ((products ?? []) as Pick<Product, "id" | "name" | "images">[]).filter((p) => linked.has(p.id)).flatMap((p) => p.images.map((src) => ({ src, name: p.name })));
+              return !pics.length ? (
+                <p className="text-sm text-kajal/50">Add products below and save, then pick a cover from their photos.</p>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="grid w-24 cursor-pointer place-content-center gap-1 rounded-md border border-kajal/15 p-2 text-center text-xs has-checked:border-rani has-checked:bg-mallige aspect-[4/5]">
+                      <input type="radio" name="cover" value="" defaultChecked={!c.cover || !pics.some((x) => x.src === c.cover)} className="mx-auto accent-rani" />
+                      Automatic
+                    </label>
+                    {pics.map((x) => (
+                      <label key={x.src} className="group relative aspect-[4/5] w-24 cursor-pointer rounded-md bg-line outline-offset-2 has-checked:outline-2 has-checked:outline-rani">
+                        <input type="radio" name="cover" value={x.src} defaultChecked={x.src === c.cover} className="peer sr-only" />
+                        <Image src={x.src} alt={x.name} fill sizes="96px" className="rounded-md object-contain" />
+                        <span className="absolute inset-x-0 bottom-0 hidden rounded-b-md bg-rani px-1 py-0.5 text-center text-[10px] text-mallige peer-checked:block">Cover</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs text-kajal/50">Shown beside the collection name on the home page and in link previews. Automatic uses the first product&apos;s first photo.</p>
+                </>
+              );
+            })()}
+          </div>
+        </Card>
         <Card title="Products">
           <div className="grid gap-2 p-4 sm:grid-cols-2 xl:grid-cols-3">
             {((products ?? []) as Pick<Product, "id" | "name" | "price" | "images">[]).map((p) => (
@@ -58,6 +86,7 @@ export default async function EditCollection({ params }: PageProps<"/admin/colle
             ))}
           </div>
         </Card>
+        </div>
       </form>
       <form action={deleteCollection} className="mt-6">
         <input type="hidden" name="id" value={c.id} />

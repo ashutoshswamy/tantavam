@@ -18,7 +18,7 @@ export function CollectionSlides({ moods }: { moods: Mood[] }) {
         {slides.map((m, i) => (
           <Image
             key={m.slug}
-            src={m.products[0].images[0]}
+            src={m.cover ?? m.products[0].images[0]}
             alt={`${m.name} collection`}
             fill
             sizes="(min-width: 768px) 416px, 92vw"

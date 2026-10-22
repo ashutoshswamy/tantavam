@@ -8,7 +8,7 @@ import { Logo } from "../logo";
 import { Flash } from "@/components/flash";
 import { ArrowUpRight, Boxes, ChartColumn, FileText, History, Layers, LayoutDashboard, Inbox, Package, Settings, Shirt, Star, Tags, TicketPercent, Users } from "lucide-react";
 
-export const metadata = { title: { default: "Dashboard · Admin", template: "%s · Admin" } };
+export const metadata = { title: { default: "Dashboard · Admin", template: "%s · Admin" }, robots: { index: false, follow: false } };
 
 const NAV: { href: string; label: string; icon: ReactNode; section?: Section | "staff" }[] = [
   { href: "/admin", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
