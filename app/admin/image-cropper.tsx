@@ -91,13 +91,17 @@ export function CropDialog({ file, onDone, onCancel }: { file: File; onDone: (cr
         />
         {/* thirds grid so composition is easy to judge */}
         <div aria-hidden className="pointer-events-none absolute inset-0 border border-white/70 [background:linear-gradient(to_right,transparent_33%,rgb(255_255_255/.35)_33%,rgb(255_255_255/.35)_calc(33%+1px),transparent_calc(33%+1px),transparent_66%,rgb(255_255_255/.35)_66%,rgb(255_255_255/.35)_calc(66%+1px),transparent_calc(66%+1px)),linear-gradient(to_bottom,transparent_33%,rgb(255_255_255/.35)_33%,rgb(255_255_255/.35)_calc(33%+1px),transparent_calc(33%+1px),transparent_66%,rgb(255_255_255/.35)_66%,rgb(255_255_255/.35)_calc(66%+1px),transparent_calc(66%+1px))]" />
-        {/* head-size guide: a full-length look fills about 90% of the frame, so the head is roughly 1/8 of that, with a little headroom above */}
-        <div aria-hidden className="pointer-events-none absolute left-2 flex items-center gap-1.5" style={{ top: `${HEAD_TOP}%`, height: `${HEAD_LEN}%` }}>
-          <span className="h-full w-2 border-y-2 border-l-2 border-white/90" />
-          <span className="rounded-sm bg-kajal/60 px-1 py-0.5 text-[10px] leading-none text-white">Head</span>
-        </div>
+        {/* head-size guide: two full-width lines like the grid, top of head and chin. A full-length look fills about 90% of the frame, so the head is roughly 1/8 of that, with a little headroom above */}
+        {[
+          [HEAD_TOP, "Top of head"],
+          [HEAD_TOP + HEAD_LEN, "Chin"],
+        ].map(([top, text]) => (
+          <div key={text} aria-hidden className="pointer-events-none absolute inset-x-0 border-t border-dashed border-white/90" style={{ top: `${top}%` }}>
+            <span className="absolute left-1.5 top-0.5 rounded-sm bg-kajal/60 px-1 py-0.5 text-[9px] leading-none text-white">{text}</span>
+          </div>
+        ))}
       </div>
-      <p className="mt-2 text-center text-[11px] text-kajal/50">Line up the head with the bracket for a full-length look.</p>
+      <p className="mt-2 text-center text-[11px] text-kajal/50">Fit the head between the two dashed lines for a full-length look.</p>
       <label className="mt-4 flex items-center gap-3 text-xs">
         Zoom
         <input type="range" min={1} max={MAX_ZOOM} step={0.01} value={zoom} onChange={(e) => changeZoom(+e.target.value)} className="flex-1" />

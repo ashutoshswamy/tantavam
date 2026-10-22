@@ -13,7 +13,6 @@ export const metadata: Metadata = pageMeta({
   title: "Our story",
   description: "Tantvam began with one outfit Manasi couldn't find. Designer-level ethnic, indo-western and casual wear, in every size from XS to XXXL, at honest prices.",
   path: "/our-story",
-  images: ["/aboutus-image.webp"],
 });
 
 const promise = [

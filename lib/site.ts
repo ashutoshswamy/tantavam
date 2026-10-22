@@ -17,4 +17,4 @@ export const BRAND = "Tantvam";
 export const BRAND_ALIASES = ["The Tantava", "Tantava", "thetantava.in"];
 export const SITE_DESCRIPTION =
   "Tantvam: designer-level ethnic, indo-western and casual wear for women in every size from XS to XXXL, at honest prices. Anarkalis and kurtas for weddings, festivals and every day, delivered across India.";
-export const OG_IMAGE = { url: "/og-image.jpg", width: 1200, height: 630, alt: "Tantvam: ethnic wear for women, XS to XXXL" };
+export const OG_IMAGE = { url: "/og-image.webp", width: 1200, height: 630, alt: "Tantvam: ethnic wear for women, XS to XXXL" };
