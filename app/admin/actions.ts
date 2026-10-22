@@ -11,6 +11,7 @@ import { requireSection, SECTIONS, type Section } from "@/lib/store";
 import { invalidate } from "@/lib/cache";
 import { flash } from "@/lib/flash";
 import { couponLabel, normalizeCode } from "@/lib/pricing";
+import { invoiceNo, invoiceTotals, type InvoiceInput } from "@/lib/invoice";
 
 const text = (f: FormData, key: string) => String(f.get(key) ?? "").trim();
 const fail = (error: { message: string } | null) => {
@@ -139,6 +140,55 @@ export async function deleteProducts(formData: FormData) {
   await destroyFromCloudinary(data?.flatMap((p) => p.images) ?? []);
   await audit("products", "Deleted products", (data ?? []).map((p) => p.name).join(", "));
   await refresh();
+}
+
+// ---------- invoices ----------
+
+// Create when no id, else update. Amounts are recomputed here; the client's totals are never trusted.
+export async function saveInvoice(input: InvoiceInput, id?: string) {
+  await requireSection("orders");
+  const str = (v: unknown, max: number) => String(v ?? "").trim().slice(0, max);
+  const items = (input.items ?? []).slice(0, 100).map((i) => ({
+    productId: str(i.productId, 40),
+    name: str(i.name, 200),
+    size: str(i.size, 20),
+    qty: Math.floor(Number(i.qty)),
+    unit: Math.floor(Number(i.unit)),
+  }));
+  if (!items.length || items.some((i) => !i.name || !(i.qty >= 1 && i.qty <= 1000) || !(i.unit >= 0 && i.unit <= 1e9)))
+    throw new Error("Add at least one piece, with a quantity and price");
+  const adjustments = (input.adjustments ?? [])
+    .slice(0, 20)
+    .map((a) => ({
+      label: str(a.label, 100),
+      type: a.type === "charge" ? ("charge" as const) : ("discount" as const),
+      mode: a.mode === "percent" ? ("percent" as const) : ("flat" as const),
+      value: Number(a.value),
+    }))
+    .filter((a) => a.value > 0 && Number.isFinite(a.value) && (a.mode === "flat" || a.value <= 100))
+    .map((a) => ({ ...a, value: a.mode === "flat" ? Math.floor(a.value) : a.value }));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) throw new Error("Pick a valid date");
+  const { subtotal, total } = invoiceTotals(items, adjustments);
+  const row = {
+    invoice_date: input.date,
+    customer: { name: str(input.customer?.name, 100), phone: str(input.customer?.phone, 20), address: str(input.customer?.address, 500) },
+    items,
+    adjustments,
+    notes: str(input.notes, 1000),
+    subtotal,
+    total,
+  };
+  const { data, error } = await (id ? db.from("invoices").update(row).eq("id", id) : db.from("invoices").insert(row)).select("id, seq").single();
+  fail(error);
+  await audit("orders", id ? "Updated invoice" : "Created invoice", `${invoiceNo(data!.seq)} · ${row.customer.name || "no name"}`);
+  return { id: data!.id as string };
+}
+
+export async function deleteInvoice(formData: FormData) {
+  await requireSection("orders");
+  const { data, error } = await db.from("invoices").delete().eq("id", text(formData, "id")).select("seq");
+  fail(error);
+  await audit("orders", "Deleted invoice", data?.[0] ? invoiceNo(data[0].seq) : "");
 }
 
 // ---------- categories ----------

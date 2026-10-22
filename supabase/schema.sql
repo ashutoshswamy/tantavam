@@ -72,6 +72,19 @@ create table if not exists coupons (
 create unique index if not exists coupons_one_first_order on coupons (first_order) where first_order;
 insert into coupons (code, kind, value, active, first_order) values ('FIRST-ORDER', 'percent', 10, false, true) on conflict do nothing;
 
+create table if not exists invoices (                   -- admin-made invoices (/admin/invoices); rows are snapshots, so editing a product later never changes an old invoice
+  id uuid primary key default gen_random_uuid(),
+  seq bigint generated always as identity,       -- shown as TNT-0001
+  invoice_date date not null default current_date,
+  customer jsonb not null default '{}',          -- {name, phone, address}
+  items jsonb not null default '[]',             -- [{productId, name, size, qty, unit}] unit in paise
+  adjustments jsonb not null default '[]',       -- [{label, type: discount|charge, mode: flat|percent, value}] flat in paise
+  notes text not null default '',
+  subtotal int not null,                         -- paise
+  total int not null,                            -- paise
+  created_at timestamptz not null default now()
+);
+
 create table if not exists settings (                    -- store-wide switches, edited in /admin/settings
   key text primary key,
   value text not null
@@ -202,6 +215,7 @@ alter table audit_logs enable row level security;
 alter table stock_movements enable row level security;
 alter table coupons enable row level security;
 alter table settings enable row level security;
+alter table invoices enable row level security;
 
 -- Defense in depth: even if RLS were switched off on a table, the public API roles get nothing. Server uses the service role.
 revoke all on all tables in schema public from anon, authenticated;
