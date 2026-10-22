@@ -95,7 +95,7 @@ export async function searchSuggest(raw: string) {
   const q = raw.replace(/[,()*%]/g, " ").trim().slice(0, 100);
   if (q.length < 2) return { products: [], categories: [], collections: [] };
   const [products, categories, collections] = await Promise.all([
-    db.from("products").select("name, slug, price, images").ilike("name", `%${q}%`).limit(6),
+    db.from("products").select("name, slug, price, images").eq("hidden", false).ilike("name", `%${q}%`).limit(6),
     db.from("categories").select("name, slug").ilike("name", `%${q}%`).limit(4),
     db.from("collections").select("name, slug").ilike("name", `%${q}%`).limit(4),
   ]);
@@ -146,7 +146,7 @@ export async function submitReview(_: ReviewState, formData: FormData): Promise<
   const body = String(formData.get("body") ?? "").trim();
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "Pick a star rating." };
   if (body.length > 1000) return { error: "Please keep your review under 1000 characters." };
-  const { data: product } = await db.from("products").select("slug").eq("id", productId).maybeSingle();
+  const { data: product } = await db.from("products").select("slug").eq("hidden", false).eq("id", productId).maybeSingle();
   if (!product) return { error: "Product not found." };
   const author = [user.firstName, user.lastName?.[0] && `${user.lastName[0]}.`].filter(Boolean).join(" ") || "Customer";
   // editing an existing review sends it back for approval

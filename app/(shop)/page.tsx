@@ -170,8 +170,8 @@ export default async function Home() {
                 <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">
                   Explore the collection
                 </Link>
-                <Link href="/contact" className="border border-rani text-rani px-7 py-3.5 text-sm font-medium hover:bg-rani hover:text-mallige">
-                  Get in touch
+                <Link href="/our-story" className="border border-rani text-rani px-7 py-3.5 text-sm font-medium hover:bg-rani hover:text-mallige">
+                  Read our story
                 </Link>
               </div>
             </div>

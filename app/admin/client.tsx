@@ -106,28 +106,74 @@ export function ImagesField({ images, max }: { images: string[]; max: number }) 
   );
 }
 
-// Sizes text field; on create it also shows an opening-stock input per typed size.
-export function SizesField({ defaultValue, withStock, className }: { defaultValue: string; withStock: boolean; className: string }) {
-  const [value, setValue] = useState(defaultValue);
-  const sizes = [...new Set(value.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean))];
+const STANDARD_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+
+// Size picker: tap a size to offer it; on create each offered size gets a - / + counter for opening stock.
+// Submits the same `sizes` (comma joined) and `stock:<size>` fields the action already reads.
+export function SizesField({ defaultValue, withStock, className }: { defaultValue: string[]; withStock: boolean; className: string }) {
+  const [options, setOptions] = useState(() => [...new Set([...STANDARD_SIZES, ...defaultValue])]);
+  const [qty, setQty] = useState<Record<string, number>>(() => Object.fromEntries(defaultValue.map((s) => [s, 0])));
+  const [custom, setCustom] = useState("");
+  const picked = options.filter((s) => s in qty);
+  const toggle = (s: string) =>
+    setQty((q) => {
+      const { [s]: had, ...rest } = q;
+      return had === undefined ? { ...q, [s]: 0 } : rest;
+    });
+  const step = (s: string, d: number) => setQty((q) => ({ ...q, [s]: Math.max(0, q[s] + d) }));
+  const addCustom = () => {
+    const s = custom.trim().toUpperCase();
+    if (!s) return;
+    if (!options.includes(s)) setOptions((o) => [...o, s]);
+    setQty((q) => ({ ...q, [s]: q[s] ?? 0 }));
+    setCustom("");
+  };
+  const btn = "grid h-8 w-8 place-items-center rounded-md border border-kajal/15 text-base leading-none hover:bg-mallige/60";
   return (
     <>
-      <label className="grid gap-1.5 text-sm font-medium">
-        Sizes
-        <input name="sizes" required value={value} onChange={(e) => setValue(e.target.value)} className={className} />
-        <span className="text-xs font-normal text-kajal/50">
-          Comma separated.{withStock ? "" : " Set stock in Inventory."}
-        </span>
-      </label>
-      {withStock && !!sizes.length && (
+      <input type="hidden" name="sizes" value={picked.join(",")} />
+      <fieldset className="grid gap-1.5 text-sm font-medium">
+        <legend className="mb-1.5">Sizes</legend>
+        <div className="flex flex-wrap gap-2">
+          {options.map((s) => (
+            <button
+              key={s}
+              type="button"
+              aria-pressed={s in qty}
+              onClick={() => toggle(s)}
+              className={`rounded-md border px-3 py-1.5 text-xs ${s in qty ? "border-rani bg-rani text-white" : "border-kajal/15 text-kajal/70"}`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            value={custom}
+            onChange={(e) => setCustom(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustom())}
+            placeholder="Other size"
+            maxLength={20}
+            className={`${className} max-w-40`}
+          />
+          <button type="button" onClick={addCustom} className="rounded-md border border-kajal/15 px-3 text-xs hover:bg-mallige/60">Add</button>
+        </div>
+        {!picked.length && <span className="text-xs font-normal text-rani">Pick at least one size.</span>}
+        {!withStock && <span className="text-xs font-normal text-kajal/50">Set stock in Inventory.</span>}
+      </fieldset>
+      {withStock && !!picked.length && (
         <fieldset className="grid gap-1.5 text-sm font-medium">
           <legend className="mb-1.5">Quantity per size</legend>
-          <div className="flex flex-wrap gap-2">
-            {sizes.map((s) => (
-              <label key={s} className="grid gap-1 text-center text-xs font-normal text-kajal/60">
+          <div className="flex flex-wrap gap-3">
+            {picked.map((s) => (
+              <div key={s} className="grid justify-items-center gap-1 text-xs font-normal text-kajal/60">
                 {s}
-                <input name={`stock:${s}`} type="number" min="0" step="1" defaultValue={0} className="w-16 rounded-md border border-kajal/15 px-2 py-1.5 text-center text-sm tabular-nums text-kajal" />
-              </label>
+                <div className="flex items-center gap-1">
+                  <button type="button" aria-label={`Less ${s}`} onClick={() => step(s, -1)} className={btn}>−</button>
+                  <input name={`stock:${s}`} type="number" min="0" step="1" value={qty[s]} onChange={(e) => setQty((q) => ({ ...q, [s]: Math.max(0, Math.floor(Number(e.target.value)) || 0) }))} className="w-12 rounded-md border border-kajal/15 px-1 py-1.5 text-center text-sm tabular-nums text-kajal" />
+                  <button type="button" aria-label={`More ${s}`} onClick={() => step(s, 1)} className={btn}>+</button>
+                </div>
+              </div>
             ))}
           </div>
         </fieldset>

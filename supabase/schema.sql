@@ -19,8 +19,10 @@ create table if not exists products (
   sizes text[] not null default '{XS,S,M,L,XL,XXL,XXXL}',
   stock jsonb not null default '{}',       -- {"S": 4, "M": 0}; missing size = 0
   images text[] not null default '{}',     -- Cloudinary secure_urls
+  hidden boolean not null default false,   -- true = invisible and unbuyable on the storefront
   created_at timestamptz not null default now()
 );
+-- existing DBs: alter table products add column if not exists hidden boolean not null default false;
 
 create table if not exists collections (
   id uuid primary key default gen_random_uuid(),

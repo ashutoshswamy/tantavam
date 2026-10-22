@@ -17,6 +17,7 @@ export type Product = {
   sizes: string[];
   stock: Record<string, number>;
   images: string[];
+  hidden: boolean;
   created_at: string;
 };
 

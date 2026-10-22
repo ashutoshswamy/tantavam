@@ -50,7 +50,10 @@ export async function ProductForm({ product }: { product?: Product }) {
                 ))}
               </select>
             </label>
-            <SizesField defaultValue={product?.sizes.join(", ") ?? "XS, S, M, L, XL, XXL, XXXL"} withStock={!product} className={field} />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="hidden" defaultChecked={product?.hidden} /> Hide from the store (customers can&apos;t see or buy it)
+            </label>
+            <SizesField defaultValue={product?.sizes ?? ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]} withStock={!product} className={field} />
           </div>
         </Card>
         <Card title="Collections">

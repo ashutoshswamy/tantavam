@@ -30,7 +30,7 @@ export async function getCart(): Promise<CartItem[]> {
 export async function getCartLines() {
   const cart = await getCart();
   if (!cart.length) return { lines: [], total: 0 };
-  const { data } = await db.from("products").select("*").in("id", cart.map((i) => i.id));
+  const { data } = await db.from("products").select("*").eq("hidden", false).in("id", cart.map((i) => i.id));
   const lines = cart.flatMap((i) => {
     const p = (data as Product[] | null)?.find((p) => p.id === i.id);
     return p && p.sizes.includes(i.size) ? [{ ...i, product: p }] : [];
@@ -133,7 +133,7 @@ export async function getCheckoutMode(): Promise<CheckoutMode> {
 // Public storefront reads, cached in Upstash (lib/cache.ts); admin mutations call invalidate().
 // Never use these for stock checks at checkout or anything per-user.
 export const getProductBySlug = (slug: string) =>
-  cached(`product:${slug}`, 60, async () => ((await db.from("products").select("*").eq("slug", slug).maybeSingle()).data as Product | null) ?? null);
+  cached(`product:${slug}`, 60, async () => ((await db.from("products").select("*").eq("slug", slug).eq("hidden", false).maybeSingle()).data as Product | null) ?? null);
 
 export const getApprovedReviews = (productId: string) =>
   cached(`reviews:${productId}`, 120, async () => {
@@ -155,6 +155,7 @@ export const getShopProducts = (filter: { collection?: string; category?: string
     let q = db
       .from("products")
       .select(filter.collection ? "*, collections!inner(slug)" : "*")
+      .eq("hidden", false)
       .order("created_at", { ascending: false });
     if (filter.collection) q = q.eq("collections.slug", filter.collection);
     else if (filter.category) q = q.eq("category", filter.category);
@@ -164,14 +165,14 @@ export const getShopProducts = (filter: { collection?: string; category?: string
 export const getHomeData = () =>
   cached("home", 120, async () => {
     const [{ data }, { data: collections }, { data: orders }] = await Promise.all([
-      db.from("products").select("*").order("created_at", { ascending: false }).limit(8),
+      db.from("products").select("*").eq("hidden", false).order("created_at", { ascending: false }).limit(8),
       // moods = admin-managed collections, each with its pieces
-      db.from("collections").select("slug, name, description, products(*)").order("created_at").limit(24, { referencedTable: "products" }),
+      db.from("collections").select("slug, name, description, products(*)").eq("products.hidden", false).order("created_at").limit(24, { referencedTable: "products" }),
       db.from("orders").select("amount, items, status, created_at").gte("created_at", daysAgo(90)),
     ]);
     // bestsellers: top 8 by revenue over the last 90 days, same maths as admin analytics
     const topIds = summarize(orders ?? [], 90).topProducts.slice(0, 8).map((p) => p.id);
-    const { data: top } = topIds.length ? await db.from("products").select("*").in("id", topIds) : { data: [] };
+    const { data: top } = topIds.length ? await db.from("products").select("*").eq("hidden", false).in("id", topIds) : { data: [] };
     const bestsellers = topIds.map((id) => (top as Product[]).find((p) => p.id === id)).filter((p) => p !== undefined); // deleted products drop out
     return { products: (data ?? []) as Product[], collections: collections ?? [], bestsellers };
   });

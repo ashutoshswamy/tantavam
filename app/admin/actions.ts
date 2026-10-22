@@ -95,6 +95,7 @@ export async function saveProduct(formData: FormData) {
     sizes,
     stock: Object.fromEntries(sizes.map((s) => [s, old?.stock[s] ?? 0])),
     images: [...kept, ...uploads],
+    hidden: formData.get("hidden") === "on",
   };
   // slug follows the name; the timestamp suffix keeps it unique. Unchanged name keeps its URL.
   const slug = `${slugify(name)}-${Date.now().toString(36)}`;

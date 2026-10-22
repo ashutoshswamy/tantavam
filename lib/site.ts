@@ -4,9 +4,9 @@ export const INTRO_SEEN_KEY = "tantvam:intro-seen";
 
 export const CONTACT = {
   email: "business.tantvam@gmail.com",
-  phone: "+91 90677 81194",
+  phone: "+91 755 878 6317",
   instagram: "https://www.instagram.com/tantvam.official/",
-  whatsapp: "919067781194", // digits only, for wa.me
+  whatsapp: "917558786317", // digits only, for wa.me
 };
 
 // canonical origin: metadataBase, sitemap, robots and JSON-LD all read this

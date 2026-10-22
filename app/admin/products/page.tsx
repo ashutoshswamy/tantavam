@@ -51,10 +51,11 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                   <tr key={p.id} className={`${tr} hover:bg-mallige/60`}>
                     <td className={td}>
                       <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 font-medium hover:text-rani">
-                        <span className="relative h-12 w-9 shrink-0 overflow-hidden rounded bg-line">
-                          {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="36px" className="object-contain" />}
+                        <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-line">
+                          {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
                         </span>
                         {p.name}
+                        {p.hidden && <span className="rounded bg-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-kajal/60">Hidden</span>}
                       </Link>
                     </td>
                     <td className={`${td} text-kajal/70`}>{catName[p.category] ?? p.category}</td>

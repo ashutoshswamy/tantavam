@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { db, inStock, LOW_STOCK, lowSizes, type Product } from "@/lib/db";
 import { gate } from "@/lib/store";
@@ -20,7 +21,7 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
   const productId = typeof product === "string" ? product : "";
   let history = db.from("stock_movements").select("*").order("created_at", { ascending: false }).limit(100);
   if (productId) history = history.eq("product_id", productId);
-  const [{ data }, { data: moves }] = await Promise.all([db.from("products").select("id, name, sizes, stock").order("name"), history]);
+  const [{ data }, { data: moves }] = await Promise.all([db.from("products").select("id, name, sizes, stock, images").order("name"), history]);
   const movements = (moves ?? []) as Movement[];
   const products = ((data ?? []) as Product[]).filter((p) =>
     filter === "low" ? lowSizes(p).length : filter === "out" ? p.sizes.some((s) => !inStock(p, s)) : true,
@@ -64,10 +65,17 @@ export default async function Inventory({ searchParams }: PageProps<"/admin/inve
                 {products.map((p) => (
                   <tr key={p.id} className={tr}>
                     <td className={`${td} font-medium`}>
-                      {p.name}
-                      <Link href={`?filter=${filter}&product=${p.id}#history`} className="block text-xs font-normal text-kajal/50 hover:text-rani">
-                        History
-                      </Link>
+                      <div className="flex items-center gap-3">
+                        <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded bg-line">
+                          {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
+                        </span>
+                        <span>
+                          {p.name}
+                          <Link href={`?filter=${filter}&product=${p.id}#history`} className="block text-xs font-normal text-kajal/50 hover:text-rani">
+                            History
+                          </Link>
+                        </span>
+                      </div>
                     </td>
                     <td className={td}>
                       <div className="flex flex-wrap gap-2">

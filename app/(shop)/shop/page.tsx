@@ -39,6 +39,7 @@ export default async function Shop({ searchParams }: PageProps<"/shop">) {
     let q = db
       .from("products")
       .select(col ? "*, collections!inner(slug)" : "*")
+      .eq("hidden", false)
       .order("created_at", { ascending: false })
       .or(`name.ilike.*${search}*,description.ilike.*${search}*`);
     if (col) q = q.eq("collections.slug", col.slug);
