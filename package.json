@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test \"lib/*.test.ts\"",
+    "test": "node --experimental-test-module-mocks --import ./lib/test-setup.mjs --test \"lib/*.test.ts\"",
+    "test:e2e": "playwright test",
     "seed": "node --env-file=.env.local scripts/seed.ts",
     "seed:clear": "node --env-file=.env.local scripts/seed.ts --reset"
   },
@@ -26,6 +27,7 @@
     "simple-icons": "^16.35.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

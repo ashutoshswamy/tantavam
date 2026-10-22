@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BRAND, BRAND_ALIASES, CONTACT, OG_IMAGE, SITE_URL } from "./site";
+import { BRAND, BRAND_ALIASES, CONTACT, OG_IMAGE, SITE_URL } from "./site.ts";
 
 // One place that builds a page's title, description, canonical, Open Graph and Twitter card, so no public page ships half-filled.
 export function pageMeta({ title, description, path, images }: { title: string; description: string; path: string; images?: string[] }): Metadata {
