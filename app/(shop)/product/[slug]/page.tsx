@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
           <h2 className="text-3xl font-semibold tracking-tight">Reviews</h2>
           {showAverage && (
             <div className="mt-4 flex items-center gap-3">
-              <span className="text-4xl font-semibold tabular-nums">{average.toFixed(1)}</span>
+              <span className="font-display text-4xl font-semibold tabular-nums">{average.toFixed(1)}</span>
               <span>
                 <Stars value={average} size={18} />
                 <span className="block text-sm text-kajal/60">{reviews.length} reviews</span>

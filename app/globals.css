@@ -10,7 +10,8 @@
   --color-kamal: #6f8fe0; /* periwinkle */
   --color-gulabi: #b9c8f0; /* pale blue: hero wash, footer headings */
   --color-line: #e6dccb; /* hairlines, image wells */
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 }
 
 html,
@@ -25,6 +26,25 @@ body {
 
 main {
   min-width: 0;
+}
+
+/* Type system: Bricolage Grotesque for headings, Geist for text. Balanced headlines, no orphans in paragraphs. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+h1 {
+  letter-spacing: -0.035em;
+}
+h2 {
+  letter-spacing: -0.03em;
 }
 
 :focus-visible {
@@ -87,11 +107,11 @@ html:not([data-intro-seen]):has(.intro) {
 .introjs-tooltipReferenceLayer,
 .introjs-tooltipReferenceLayer *,
 .introjs-helperNumberLayer {
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-geist), sans-serif;
 }
 .tantvam-tour.introjs-tooltip {
   border-radius: 4px;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-geist);
   color: var(--color-kajal);
   background: var(--color-mallige);
   max-width: 320px;
@@ -128,7 +148,10 @@ html:not([data-intro-seen]):has(.intro) {
 /* Shop motion targets start hidden; SiteMotion reveals them. Only when JS is on and motion is allowed. */
 @media (prefers-reduced-motion: no-preference) {
   html[data-js] [data-reveal],
-  html[data-js] [data-auth-rise] {
+  html[data-js] [data-auth-rise],
+  html[data-js] [data-plate],
+  html[data-js] [data-word],
+  html[data-js] [data-sew] {
     visibility: hidden;
   }
 }

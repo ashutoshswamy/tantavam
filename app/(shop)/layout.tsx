@@ -27,6 +27,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
         <nav className="mx-auto max-w-6xl px-4 py-4 sm:py-0 sm:h-20 grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-y-3 text-[15px]">
           <div data-tour="categories" className="flex gap-4 sm:gap-8">
             <Link href="/shop" className="hover:text-rani">Shop</Link>
+            <Link href="/our-story" className="hover:text-rani whitespace-nowrap">Our story</Link>
           </div>
           <Link href="/" id="site-logo" className="justify-self-center col-span-2 sm:col-span-1 order-first sm:order-none">
             <Logo priority className="h-14 sm:h-16 w-auto" />

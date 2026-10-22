@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { INTRO_SEEN_KEY, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const dmSans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin"] });
+// display: Bricolage Grotesque (headlines, prices, big numbers); text: Geist (everything else)
+const display = Bricolage_Grotesque({ variable: "--font-bricolage", subsets: ["latin"] });
+const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,7 +32,7 @@ const appearance = {
     colorPrimary: "#0a3497",
     colorForeground: "#0b1638",
     colorBackground: "#f4ede1",
-    fontFamily: "var(--font-dm-sans)",
+    fontFamily: "var(--font-geist)",
     borderRadius: "2px",
   },
   // flat card so the form sits on the page instead of floating
@@ -41,7 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <ClerkProvider appearance={appearance} signInUrl="/sign-in" signUpUrl="/sign-up">
-      <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${dmSans.variable} h-full antialiased`}>
+      <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`${display.variable} ${geist.variable} h-full antialiased`}>
         <head>
           {/* Runs before first paint: marks JS as on (motion pre-hide in globals.css) and hides the intro overlay for returning / reduced-motion visitors. Lives here because the
               root layout never re-renders on the client (React warns about <script> rendered by client components). */}
