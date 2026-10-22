@@ -20,6 +20,7 @@ create table if not exists products (
   stock jsonb not null default '{}',       -- {"S": 4, "M": 0}; missing size = 0
   images text[] not null default '{}',     -- Cloudinary secure_urls
   hidden boolean not null default false,   -- true = invisible and unbuyable on the storefront
+  mrp int,                                 -- original price in paise, crossed out beside `price` (what is charged); empty = no discount shown
   badge text,                              -- optional label on cards and the product page ("Best seller")
   highlights text,                         -- "Craft: Rogan" lines, overlaid on the product photo; empty = none
   care text,                               -- wash care shown on the product page; empty = hidden
@@ -27,6 +28,7 @@ create table if not exists products (
 );
 -- existing DBs: alter table products add column if not exists hidden boolean not null default false;
 -- existing DBs: alter table products add column if not exists badge text;
+-- existing DBs: alter table products add column if not exists mrp int;
 -- existing DBs: alter table products add column if not exists care text;
 -- existing DBs: alter table products add column if not exists highlights text;
 -- existing DBs: alter table coupons add column if not exists public boolean not null default false;

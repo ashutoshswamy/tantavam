@@ -46,6 +46,28 @@ export function Submit({ children, className, confirm, disabled, ...rest }: { ch
 }
 
 // Bulk-delete bar for a table of `ids` checkboxes (they join this form by id="bulk"). Tracks the ticked count via bubbling change events.
+// Label dropdown for the products list: picking an option saves it straight away.
+export function BadgeSelect({ id, badge, options, action }: { id: string; badge: string | null; options: string[]; action: (f: FormData) => Promise<void> }) {
+  const all = badge && !options.includes(badge) ? [...options, badge] : options; // keep a custom label selectable
+  return (
+    <form action={action}>
+      <input type="hidden" name="id" value={id} />
+      <select
+        name="badge"
+        aria-label="Label"
+        defaultValue={badge ?? ""}
+        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+        className="w-36 rounded-md border border-kajal/15 bg-white px-2 py-1.5 text-xs"
+      >
+        <option value="">No label</option>
+        {all.map((b) => (
+          <option key={b} value={b}>{b}</option>
+        ))}
+      </select>
+    </form>
+  );
+}
+
 export function BulkDelete({ action }: { action: (f: FormData) => Promise<void> }) {
   const [n, setN] = useState(0);
   useEffect(() => {

@@ -194,8 +194,10 @@ export async function createOrder(formData: FormData) {
     // nothing is saved: the chat is the order, and staff enter it in /admin/orders/new once it's agreed
     if (formData.get("save")) await db.from("addresses").insert({ ...address, user_id: userId });
     const email = (await currentUser())?.primaryEmailAddress?.emailAddress;
-    await saveCart([]);
-    redirect(waOrderUrl(CONTACT.whatsapp, row, email));
+    // Returned, not redirect()ed, and the cart cookie is left alone: clearing it makes Next re-render /checkout (empty cart, so it
+    // redirects to /shop) while the external redirect is in flight, which intermittently threw React error 441. The cart stays until the
+    // order is agreed in chat; the browser opens WhatsApp itself.
+    return { whatsappUrl: waOrderUrl(CONTACT.whatsapp, row, email) };
   }
 
   const res = await fetch("https://api.razorpay.com/v1/orders", {

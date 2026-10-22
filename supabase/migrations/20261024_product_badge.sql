@@ -13,5 +13,8 @@ alter table products add column if not exists highlights text;
 -- Cover photo for a collection (one of its products' images). Empty = first product's first photo.
 alter table collections add column if not exists cover text;
 
+-- Original price (paise) shown crossed out beside the selling price. Empty = no discount shown. `price` stays what the customer pays.
+alter table products add column if not exists mrp int;
+
 -- Coupons the admin chose to advertise under the product (private codes stay private).
 alter table coupons add column if not exists public boolean not null default false;

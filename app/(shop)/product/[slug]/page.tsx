@@ -2,7 +2,7 @@ import { Submit } from "@/app/admin/client";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
-import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, type Review } from "@/lib/db";
+import { db, inr, inStock, MIN_RATINGS_FOR_AVERAGE, percentOff, type Review } from "@/lib/db";
 import { couponLabel } from "@/lib/pricing";
 import { getApprovedReviews, getOffers, getProductBySlug, getSizeChart } from "@/lib/store";
 import { SITE_URL } from "@/lib/site";
@@ -78,7 +78,15 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
         <div className="min-w-0 md:sticky md:top-8 self-start">
           <p className="uppercase tracking-[0.25em] text-xs text-rani">{p.category}</p>
           <h1 className="break-words font-semibold tracking-tight text-3xl sm:text-4xl md:text-5xl leading-tight mt-2">{p.name}</h1>
-          <p className="text-xl text-rani mt-4">{inr(p.price)}</p>
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="text-xl text-rani">{inr(p.price)}</span>
+            {percentOff(p) > 0 && (
+              <>
+                <s className="text-base text-kajal/50">{inr(p.mrp!)}</s>
+                <span className="bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-700">{percentOff(p)}% off</span>
+              </>
+            )}
+          </p>
           {showAverage && (
             <a href="#reviews" className="mt-3 inline-flex items-center gap-2 text-sm hover:text-rani">
               <Stars value={average} /> <span className="font-medium">{average.toFixed(1)}</span>

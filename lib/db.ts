@@ -18,6 +18,7 @@ export type Product = {
   stock: Record<string, number>;
   images: string[];
   hidden: boolean;
+  mrp: number | null;
   badge: string | null;
   care: string | null;
   highlights: string | null;
@@ -67,6 +68,9 @@ export const inStock = (p: Pick<Product, "stock">, size: string) => p.stock[size
 export const lowSizes = (p: Pick<Product, "sizes" | "stock">) => p.sizes.filter((s) => inStock(p, s) <= LOW_STOCK);
 
 export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+// whole-number percent off the original price; 0 when there is no (valid) original price
+export const percentOff = (p: Pick<Product, "price" | "mrp">) => (p.mrp && p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0);
 
 export const inr = (paise: number) =>
   (paise / 100).toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });

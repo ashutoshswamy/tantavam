@@ -30,8 +30,11 @@ export function CheckoutForm({ addresses, coupon, total, whatsapp }: { addresses
     setError("");
     setBusy(true);
     try {
-      // WhatsApp mode: the action redirects to the chat and never returns here
       const order = await createOrder(formData);
+      if (order.whatsappUrl) {
+        window.location.assign(order.whatsappUrl); // WhatsApp mode: leave busy on, the page is about to unload
+        return;
+      }
       if (!window.Razorpay) throw new Error("Checkout has changed. Reload the page and try again.");
       new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,

@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { db, inr, inStock, type Category, type Product } from "@/lib/db";
+import { db, inr, inStock, percentOff, type Category, type Product } from "@/lib/db";
 import { gate } from "@/lib/store";
-import { Card, Empty, Header, StockBadge, btn, btnGhost, field, td, th, tr } from "../ui";
+import { deleteProduct, setProductBadge, setProductHidden } from "../actions";
+import { BADGES } from "../badges";
+import { BadgeSelect, Submit } from "../client";
+import { Card, Empty, Header, StockBadge, btn, btnDanger, btnGhost, field, td, th, tr } from "../ui";
 
 export const metadata = { title: "Products" };
 
@@ -44,6 +47,8 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                   <th className={th}>Category</th>
                   <th className={`${th} text-right`}>Price</th>
                   <th className={`${th} text-right`}>Stock</th>
+                  <th className={th}>Label</th>
+                  <th className={th} />
                 </tr>
               </thead>
               <tbody>
@@ -55,14 +60,32 @@ export default async function Products({ searchParams }: PageProps<"/admin/produ
                           {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-contain" />}
                         </span>
                         {p.name}
-                        {p.badge && <span className="rounded bg-rani/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-rani">{p.badge}</span>}
                         {p.hidden && <span className="rounded bg-line px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-kajal/60">Hidden</span>}
                       </Link>
                     </td>
                     <td className={`${td} text-kajal/70`}>{catName[p.category] ?? p.category}</td>
-                    <td className={`${td} text-right tabular-nums`}>{inr(p.price)}</td>
+                    <td className={`${td} text-right tabular-nums`}>
+                      {inr(p.price)}
+                      {percentOff(p) > 0 && <span className="block text-xs text-kajal/50"><s>{inr(p.mrp!)}</s> · {percentOff(p)}% off</span>}
+                    </td>
                     <td className={`${td} text-right`}>
                       <StockBadge qty={p.sizes.reduce((s, size) => s + inStock(p, size), 0)} />
+                    </td>
+                    <td className={td}>
+                      <BadgeSelect id={p.id} badge={p.badge} options={BADGES} action={setProductBadge} />
+                    </td>
+                    <td className={td}>
+                      <div className="flex items-center justify-end gap-1">
+                        <form action={setProductHidden}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <input type="hidden" name="hidden" value={String(!p.hidden)} />
+                          <Submit className={`${btnGhost} px-3 py-1.5 text-xs`}>{p.hidden ? "Show" : "Hide"}</Submit>
+                        </form>
+                        <form action={deleteProduct}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <Submit className={btnDanger} confirm={`Delete ${p.name}? This can't be undone.`}>Delete</Submit>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 ))}

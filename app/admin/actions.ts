@@ -98,6 +98,7 @@ export async function saveProduct(formData: FormData) {
     images: [...kept, ...uploads],
     hidden: formData.get("hidden") === "on",
     badge: text(formData, "badge").slice(0, 24) || null,
+    mrp: mrp(formData),
     care: text(formData, "care").slice(0, 600) || null,
     highlights: text(formData, "highlights").slice(0, 400) || null,
   };
@@ -121,6 +122,34 @@ export async function saveProduct(formData: FormData) {
   await audit("products", id ? "Updated product" : "Created product", name);
   await refresh();
   redirect("/admin/products");
+}
+
+// original price in paise, only when it really is above the selling price
+function mrp(formData: FormData) {
+  const sell = Math.round(Number(formData.get("price")) * 100);
+  const orig = Math.round(Number(formData.get("mrp")) * 100);
+  if (!orig) return null;
+  if (orig <= sell) throw new Error("Original price must be higher than the selling price");
+  return orig;
+}
+
+// quick edits from the products list
+export async function setProductBadge(formData: FormData) {
+  await requireSection("products");
+  const badge = text(formData, "badge").slice(0, 24) || null;
+  const { data, error } = await db.from("products").update({ badge }).eq("id", text(formData, "id")).select("name").single();
+  fail(error);
+  await audit("products", badge ? `Set label "${badge}"` : "Removed label", data?.name);
+  await refresh();
+}
+
+export async function setProductHidden(formData: FormData) {
+  await requireSection("products");
+  const hidden = formData.get("hidden") === "true";
+  const { data, error } = await db.from("products").update({ hidden }).eq("id", text(formData, "id")).select("name").single();
+  fail(error);
+  await audit("products", hidden ? "Hid product" : "Showed product", data?.name);
+  await refresh();
 }
 
 export async function deleteProduct(formData: FormData) {

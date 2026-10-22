@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { inr, inStock, type Product } from "@/lib/db";
+import { inr, inStock, percentOff, type Product } from "@/lib/db";
 
 // row: one endlessly scrolling line. The list is repeated until one pass is wider than any screen,
 // then drawn twice and slid by half its width, so the loop is seamless with no gap at the end.
@@ -39,7 +39,15 @@ export function ProductGrid({ products, row = false, reverse = false }: { produc
         </div>
         <div className="mt-3 min-w-0">
           <h3 className="text-[15px] leading-snug break-words group-hover:text-rani">{p.name}</h3>
-          <p className="mt-1 text-[15px] font-medium text-rani">{inr(p.price)}</p>
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[15px]">
+            <span className="font-medium text-rani">{inr(p.price)}</span>
+            {percentOff(p) > 0 && (
+              <>
+                <s className="text-[13px] text-kajal/50">{inr(p.mrp!)}</s>
+                <span className="text-[13px] font-medium text-emerald-700">{percentOff(p)}% off</span>
+              </>
+            )}
+          </p>
           {p.sizes.some((s) => inStock(p, s) > 0) && (
             <ul aria-label="Available sizes" className="mt-2 flex flex-wrap gap-1">
               {p.sizes.filter((s) => inStock(p, s) > 0).map((s) => (

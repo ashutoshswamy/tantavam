@@ -5,7 +5,7 @@ import { ChangeBar } from "../change-bar";
 import { ImagesField, SizesField, Submit, UploadForm } from "../client";
 import { Card, btn, btnGhost, field } from "../ui";
 
-const BADGES = ["Best seller", "Fast selling", "New arrival", "Trending", "Limited stock", "Back in stock", "Customer favourite"];
+import { BADGES } from "../badges";
 const label = "grid gap-1.5 text-sm font-medium";
 
 export async function ProductForm({ product }: { product?: Product }) {
@@ -41,8 +41,14 @@ export async function ProductForm({ product }: { product?: Product }) {
         <Card title="Pricing & organisation">
           <div className="grid gap-4 p-5">
             <label className={label}>
-              Price (₹)
+              Selling price (₹)
               <input name="price" type="number" min="1" step="1" required defaultValue={product ? product.price / 100 : undefined} className={field} />
+              <span className="text-xs font-normal text-kajal/50">What the customer pays.</span>
+            </label>
+            <label className={label}>
+              Original price (₹, optional)
+              <input name="mrp" type="number" min="1" step="1" defaultValue={product?.mrp ? product.mrp / 100 : undefined} placeholder="e.g. 2499" className={field} />
+              <span className="text-xs font-normal text-kajal/50">Shown crossed out with the % off, to show the discount. Must be higher than the selling price. Leave empty for no discount.</span>
             </label>
             <label className={label}>
               Category
