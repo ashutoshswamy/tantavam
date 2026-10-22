@@ -11,7 +11,8 @@ import { saveInvoice } from "../actions";
 import { Card, btn, btnGhost, field } from "../ui";
 
 type P = { id: string; name: string; price: number; sizes: string[] };
-type Line = { key: number; productId: string; name: string; size: string; qty: number; price: string }; // price in rupees, editable
+type Line = { key: number; productId: string; custom: boolean; name: string; size: string; qty: number; price: string }; // price in rupees, editable; custom = typed in, not from the store
+const CUSTOM = "__custom";
 type Adj = { key: number; label: string; type: "discount" | "charge"; mode: "flat" | "percent"; value: string };
 
 const label = "grid gap-1.5 text-sm font-medium";
@@ -29,7 +30,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
   const [cust, setCust] = useState(initial?.customer ?? { name: "", phone: "", address: "" });
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [lines, setLines] = useState<Line[]>(() =>
-    (initial?.items ?? []).map((i) => ({ key: next++, productId: i.productId, name: i.name, size: i.size, qty: i.qty, price: String(i.unit / 100) })),
+    (initial?.items ?? []).map((i) => ({ key: next++, productId: i.productId, custom: !i.productId, name: i.name, size: i.size, qty: i.qty, price: String(i.unit / 100) })),
   );
   const [adjs, setAdjs] = useState<Adj[]>(() =>
     (initial?.adjustments ?? []).map((a) => ({ key: next++, label: a.label, type: a.type, mode: a.mode, value: String(a.mode === "flat" ? a.value / 100 : a.value) })),
@@ -39,12 +40,13 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
   const setLine = (key: number, patch: Partial<Line>) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
   const setAdj = (key: number, patch: Partial<Adj>) => setAdjs((as) => as.map((a) => (a.key === key ? { ...a, ...patch } : a)));
   const pick = (key: number, productId: string) => {
+    if (productId === CUSTOM) return setLine(key, { custom: true, productId: "", name: "", size: "", price: "" });
     const p = byId(productId);
-    setLine(key, { productId, name: p?.name ?? "", size: p?.sizes[0] ?? "", price: p ? String(p.price / 100) : "" });
+    setLine(key, { custom: false, productId, name: p?.name ?? "", size: p?.sizes[0] ?? "", price: p ? String(p.price / 100) : "" });
   };
 
   // what gets saved and previewed: only complete lines count
-  const items = lines.filter((l) => l.productId && l.name).map((l) => ({ productId: l.productId, name: l.name, size: l.size, qty: l.qty, unit: Math.round((Number(l.price) || 0) * 100) }));
+  const items = lines.filter((l) => (l.productId || l.custom) && l.name.trim()).map((l) => ({ productId: l.productId, name: l.name.trim(), size: l.size.trim(), qty: l.qty, unit: Math.round((Number(l.price) || 0) * 100) }));
   const adjustments = adjs
     .filter((a) => Number(a.value) > 0)
     .map((a) => ({ label: a.label, type: a.type, mode: a.mode, value: a.mode === "flat" ? Math.round(Number(a.value) * 100) : Number(a.value) }));
@@ -72,7 +74,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
       longDate(date),
       cust.name ? `Billed to: ${cust.name}` : null,
       "",
-      ...rows.map((r) => `${r.name} (${r.size}) × ${r.qty}: ${money(r.amount)}`),
+      ...rows.map((r) => `${r.name}${r.size ? ` (${r.size})` : ""} × ${r.qty}: ${money(r.amount)}`),
       "",
       `Subtotal: ${money(subtotal)}`,
       ...adjRows.map((a) => `${a.label}: ${a.amt < 0 ? "-" : "+"}${money(Math.abs(a.amt))}`),
@@ -98,7 +100,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
         <Card
           title="Pieces"
           action={
-            <button type="button" className={btnGhost} onClick={() => setLines((ls) => [...ls, { key: next++, productId: "", name: "", size: "", qty: 1, price: "" }])}>
+            <button type="button" className={btnGhost} onClick={() => setLines((ls) => [...ls, { key: next++, productId: "", custom: false, name: "", size: "", qty: 1, price: "" }])}>
               <Plus size={14} /> Add piece
             </button>
           }
@@ -109,17 +111,27 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
               const p = byId(l.productId);
               return (
                 <div key={l.key} className="grid grid-cols-[1fr_auto] gap-2 border-b border-kajal/10 pb-4 last:border-0 last:pb-0">
-                  <select value={l.productId} onChange={(e) => pick(l.key, e.target.value)} aria-label="Piece" className={field}>
+                  <select value={l.custom ? CUSTOM : l.productId} onChange={(e) => pick(l.key, e.target.value)} aria-label="Piece" className={field}>
                     <option value="">Choose a piece</option>
+                    <option value={CUSTOM}>Custom item (type it in)</option>
                     {l.productId && !p && <option value={l.productId}>{l.name} (removed from store)</option>}
                     {products.map((x) => <option key={x.id} value={x.id}>{x.name} · {money(x.price)}</option>)}
                   </select>
                   <button type="button" aria-label="Remove piece" onClick={() => setLines((ls) => ls.filter((x) => x.key !== l.key))} className="px-2 text-kajal/50 hover:text-rani"><X size={16} /></button>
+                  {l.custom && (
+                    <label className="col-span-2 grid gap-1 text-xs text-kajal/60">Item name
+                      <input value={l.name} onChange={(e) => setLine(l.key, { name: e.target.value })} maxLength={200} placeholder="e.g. Blouse stitching, custom lehenga" className={field} />
+                    </label>
+                  )}
                   <div className="col-span-2 grid grid-cols-3 gap-2">
-                    <label className="grid gap-1 text-xs text-kajal/60">Size
-                      <select value={l.size} onChange={(e) => setLine(l.key, { size: e.target.value })} disabled={!l.productId} className={field}>
-                        {(p?.sizes.includes(l.size) || !l.size ? p?.sizes ?? [] : [l.size, ...(p?.sizes ?? [])]).map((s) => <option key={s}>{s}</option>)}
-                      </select>
+                    <label className="grid gap-1 text-xs text-kajal/60">Size{l.custom && " (optional)"}
+                      {l.custom ? (
+                        <input value={l.size} onChange={(e) => setLine(l.key, { size: e.target.value })} maxLength={20} className={field} />
+                      ) : (
+                        <select value={l.size} onChange={(e) => setLine(l.key, { size: e.target.value })} disabled={!l.productId} className={field}>
+                          {(p?.sizes.includes(l.size) || !l.size ? p?.sizes ?? [] : [l.size, ...(p?.sizes ?? [])]).map((s) => <option key={s}>{s}</option>)}
+                        </select>
+                      )}
                     </label>
                     <label className="grid gap-1 text-xs text-kajal/60">Qty
                       <input type="number" min="1" value={l.qty} onChange={(e) => setLine(l.key, { qty: Math.max(1, Math.floor(Number(e.target.value)) || 1) })} className={`${field} text-center tabular-nums`} />
@@ -210,7 +222,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
             <tbody>
               {rows.map((r, i) => (
                 <tr key={i} className="border-b border-kajal/10">
-                  <td className="py-2">{r.name} <span className="text-kajal/50">· {r.size}</span></td>
+                  <td className="py-2">{r.name}{r.size && <span className="text-kajal/50"> · {r.size}</span>}</td>
                   <td className="py-2 text-right tabular-nums">{r.qty}</td>
                   <td className="py-2 text-right tabular-nums">{money(r.unit)}</td>
                   <td className="py-2 text-right tabular-nums">{money(r.amount)}</td>
