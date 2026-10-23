@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Printer, Save, X } from "lucide-react";
+import { Plus, Printer, Save, Share2, X } from "lucide-react";
 import { WhatsApp } from "@/app/(shop)/social-icons";
 import { Logo } from "../../logo";
 import { CONTACT } from "@/lib/site";
@@ -65,7 +65,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
       }
     });
 
-  // ponytail: WhatsApp links can't carry a file, so the invoice goes as text. Print/save PDF and attach it by hand if you need the sheet.
+  // ponytail: wa.me links cannot carry a file, so this sends text; Share PDF (saved invoices) sends the file.
   const shareOnWhatsApp = () => {
     const digits = cust.phone.replace(/\D/g, "");
     const to = digits.length === 10 ? `91${digits}` : digits; // bare 10-digit = Indian mobile; empty = WhatsApp asks who to send to
@@ -84,6 +84,31 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
     ].filter((l) => l !== null).join("\n");
     window.open(`https://wa.me/${to}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
   };
+
+  // Saved invoices only. Renders the sheet to a PDF; phones get the native share sheet (WhatsApp etc.) with the file attached,
+  // anything else downloads it and opens WhatsApp to the customer so it can be attached by hand.
+  const [sharing, startShare] = useTransition();
+  const sharePdf = () =>
+    startShare(async () => {
+      setError("");
+      try {
+        const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import("html2canvas-pro"), import("jspdf")]);
+        const canvas = await html2canvas(document.getElementById("invoice")!, { scale: 2, backgroundColor: "#ffffff" });
+        const pdf = new jsPDF({ unit: "pt", format: "a4" });
+        const w = pdf.internal.pageSize.getWidth() - 48; // ponytail: one page, scaled to fit; paginate if invoices ever run long
+        const h = Math.min((canvas.height * w) / canvas.width, pdf.internal.pageSize.getHeight() - 48);
+        pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 24, 24, (h * canvas.width) / canvas.height, h);
+        const name = `${no}.pdf`;
+        const file = new File([pdf.output("blob")], name, { type: "application/pdf" });
+        const text = `Tantvam invoice ${no}. Thank you for shopping with us.`;
+        if (navigator.canShare?.({ files: [file] })) return void (await navigator.share({ files: [file], text }));
+        pdf.save(name);
+        const digits = cust.phone.replace(/\D/g, "");
+        window.open(`https://wa.me/${digits.length === 10 ? `91${digits}` : digits}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+      } catch (e) {
+        if (!(e instanceof DOMException && e.name === "AbortError")) setError("Couldn't make the PDF"); // AbortError = share sheet dismissed
+      }
+    });
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
@@ -187,6 +212,7 @@ export function InvoiceGenerator({ products, initial }: { products: P[]; initial
         <div className="flex flex-wrap items-center justify-end gap-2 print:hidden">
           {error && <p role="alert" className="mr-auto text-sm text-red-700">{error}</p>}
           <button type="button" onClick={save} disabled={saving || !rows.length} aria-busy={saving} className={btn}><Save size={16} /> {initial ? "Save changes" : "Save invoice"}</button>
+          {initial && <button type="button" onClick={sharePdf} disabled={sharing || !rows.length} aria-busy={sharing} className={btnGhost}><Share2 size={16} /> Share PDF</button>}
           <button type="button" onClick={shareOnWhatsApp} disabled={!rows.length} className={btnGhost}><WhatsApp size={16} /> Share on WhatsApp</button>
           <button type="button" onClick={() => window.print()} disabled={!rows.length} className={btnGhost}><Printer size={16} /> Print / save PDF</button>
         </div>

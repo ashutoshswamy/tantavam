@@ -86,9 +86,9 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
             </ul>
           </div>
         </div>
-        {/* transparent loom-and-textiles frieze, edge to edge. Its top half is empty in the middle (vines only at the
-            corners), so it's pulled up under the links (z-10 above) instead of leaving a band of bare navy. */}
-        <Image data-grow src={footerArt} alt="" sizes="100vw" className="block w-full h-auto -mt-[12vw] pointer-events-none select-none" />
+        {/* transparent loom-and-textiles frieze, edge to edge. Its left edge (loom, vines) reaches the top of the image,
+            so it sits below the links, not under them. */}
+        <Image data-grow src={footerArt} alt="" sizes="100vw" className="block w-full h-auto mt-6 -mb-[2.5vw] pointer-events-none select-none" />
       </footer>
     </>
   );

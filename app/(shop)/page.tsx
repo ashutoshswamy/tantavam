@@ -127,18 +127,23 @@ export default async function Home() {
 
       {/* TODO(client): swap in the real brand story. -mb-24 cancels the footer's mt-24 so the bands meet. */}
       <StoryMotion className="mt-24 -mb-24 bg-gulabi/30 text-kajal overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
-          <div className="grid gap-12 md:grid-cols-[1fr_1.1fr] md:items-center">
-            <Image
-              src={aboutImage}
-              alt="A carved wooden handloom with wine silk, folded fabrics, thread spools, block-print stamps and brass scissors"
-              sizes="(min-width: 768px) 480px, 90vw"
-              data-float
-              className="w-full max-w-sm md:max-w-md h-auto mx-auto"
-            />
-            <div>
-              <p data-rise className="uppercase tracking-[0.25em] text-xs text-rani">Our story</p>
-              <h2 data-rise className="font-semibold tracking-tight text-4xl sm:text-5xl mt-3 leading-[1.1]">
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+          <div className="grid gap-14 md:grid-cols-12 md:items-center md:gap-x-10 lg:gap-x-16">
+            <div className="relative md:col-span-5">
+              {/* offset outline behind the stage, like a selvedge */}
+              <div aria-hidden className="absolute inset-0 translate-x-3 translate-y-3 border border-rani/40" />
+              <div className="relative overflow-hidden bg-gulabi/60 aspect-[4/3] md:aspect-square">
+                <Image
+                  src={aboutImage}
+                  alt="A carved wooden handloom with wine silk, folded fabrics, thread spools, block-print stamps and brass scissors"
+                  sizes="(min-width: 768px) 40vw, 90vw"
+                  data-float
+                  className="absolute inset-0 h-full w-full object-contain p-6 sm:p-8"
+                />
+              </div>
+            </div>
+            <div className="md:col-span-7">
+              <h2 data-rise className="font-semibold tracking-tight text-4xl sm:text-5xl leading-[1.1]">
                 Made for the moments you{" "}
                 <span className="relative inline-block">
                   remember.
@@ -158,14 +163,27 @@ export default async function Home() {
                   </svg>
                 </span>
               </h2>
-              <p data-rise className="mt-6 max-w-lg text-kajal/75 leading-relaxed">
+              <p data-rise className="mt-7 max-w-xl text-kajal/75 leading-relaxed">
                 Tantvam began with a simple wish: ethnic wear that feels as good as it looks, from the first mehendi to the last
                 dance. We choose rich fabrics, colours drawn from temple borders and festival flowers, and cuts that move with you.
               </p>
-              <p data-rise className="mt-4 max-w-lg text-kajal/75 leading-relaxed">
+              <p data-rise className="mt-4 max-w-xl text-kajal/75 leading-relaxed">
                 Every piece is made to be worn, celebrated in and handed down.
               </p>
-              <div data-rise className="mt-8 flex flex-wrap gap-3">
+              {/* running stitch instead of a hairline: sewn across by StoryMotion */}
+              <div data-stitch aria-hidden className="mt-10 border-t-2 border-dashed border-rani/35" />
+              <ul className="mt-8 grid gap-6">
+                {pillars.map(({ icon, title, body }) => (
+                  <li key={title} data-pillar className="flex items-center gap-5">
+                    <Image src={icon} alt="" sizes="80px" className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 object-contain" />
+                    <div>
+                      <h3 className="font-semibold text-lg">{title}</h3>
+                      <p className="mt-1 text-sm text-kajal/70 leading-relaxed max-w-md">{body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div data-rise className="mt-10 flex flex-wrap gap-3">
                 <Link href="/shop" className="bg-rani text-mallige px-7 py-3.5 text-sm font-medium hover:bg-rani/85">
                   Explore the collection
                 </Link>
@@ -175,19 +193,6 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          {/* running stitch instead of a hairline: sewn across by StoryMotion */}
-          <div data-stitch aria-hidden className="mt-16 border-t-2 border-dashed border-rani/35" />
-          <ul className="mt-12 grid gap-8 sm:grid-cols-3">
-            {pillars.map(({ icon, title, body }) => (
-              <li key={title} data-pillar className="flex gap-4">
-                <Image src={icon} alt="" sizes="64px" className="h-16 w-16 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-lg">{title}</h3>
-                  <p className="mt-1 text-sm text-kajal/70 leading-relaxed">{body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
         </div>
       </StoryMotion>
     </>
