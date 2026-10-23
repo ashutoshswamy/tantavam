@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import ArcFlowCarousel from "@/components/ui/arc-flow-carousel";
 import type { Collection, Product } from "@/lib/db";
@@ -12,9 +12,23 @@ export type Mood = Pick<Collection, "slug" | "name" | "description" | "cover"> &
 const inr = (paise: number) =>
   (paise / 100).toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
+// phones get a much bigger card (the desktop ratio left it ~1/3 of the screen); the carousel re-measures when this flips
+const phone = "(max-width: 639px)";
+const useIsPhone = () =>
+  useSyncExternalStore(
+    (cb) => {
+      const m = window.matchMedia(phone);
+      m.addEventListener("change", cb);
+      return () => m.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(phone).matches,
+    () => false,
+  );
+
 export function MoodCarousel({ moods }: { moods: Mood[] }) {
   const [moodIndex, setMoodIndex] = useState(0);
   const router = useRouter();
+  const isPhone = useIsPhone();
   const mood = moods[moodIndex];
   const products = mood.products.filter((p) => p.images[0]);
 
@@ -43,13 +57,13 @@ export function MoodCarousel({ moods }: { moods: Mood[] }) {
         key={mood.slug}
         items={products.map((p) => ({ src: p.images[0], alt: p.name, title: p.name, description: inr(p.price) }))}
         onItemClick={(i) => router.push(`/product/${products[i].slug}`)}
-        cardRatio={0.3}
+        cardRatio={isPhone ? 0.66 : 0.3}
         cardAspect={1080 / 1350} // same 4:5 frame as every product photo, so nothing is letterboxed
-        minCardWidth={190}
+        minCardWidth={isPhone ? 230 : 190}
         maxCardWidth={460}
         autoRotateSpeed={0.12}
         surfaceColor="#f4ede1" // --color-mallige
-        className="mt-6 h-[min(90svh,820px)]"
+        className="mt-6 h-[480px] sm:h-[min(90svh,820px)]"
       />
 
       <CollectionSlides moods={moods} />
